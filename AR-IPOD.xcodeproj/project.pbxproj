@@ -15,6 +15,12 @@
 		A58DCDEC2088895500280CD2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A58DCDEA2088895500280CD2 /* LaunchScreen.storyboard */; };
 		A58DCDF72088895500280CD2 /* AR_IPODTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDF62088895500280CD2 /* AR_IPODTests.swift */; };
 		A58DCE022088895500280CD2 /* AR_IPODUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE012088895500280CD2 /* AR_IPODUITests.swift */; };
+		A58DCE1120888D1300280CD2 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1020888D1300280CD2 /* Camera.swift */; };
+		A58DCE1320888F4A00280CD2 /* DepthMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1220888F4A00280CD2 /* DepthMap.swift */; };
+		A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE142088A18300280CD2 /* PointCloud.swift */; };
+		A58DCE172088B85300280CD2 /* Voxel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE162088B85300280CD2 /* Voxel.swift */; };
+		A58DCE192088BABD00280CD2 /* Hasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE182088BABD00280CD2 /* Hasher.swift */; };
+		A58DCE1B2088BF5C00280CD2 /* VoxelSlice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +55,12 @@
 		A58DCDFD2088895500280CD2 /* AR-IPODUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AR-IPODUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A58DCE012088895500280CD2 /* AR_IPODUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR_IPODUITests.swift; sourceTree = "<group>"; };
 		A58DCE032088895500280CD2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A58DCE1020888D1300280CD2 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
+		A58DCE1220888F4A00280CD2 /* DepthMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepthMap.swift; sourceTree = "<group>"; };
+		A58DCE142088A18300280CD2 /* PointCloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloud.swift; sourceTree = "<group>"; };
+		A58DCE162088B85300280CD2 /* Voxel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voxel.swift; sourceTree = "<group>"; };
+		A58DCE182088BABD00280CD2 /* Hasher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hasher.swift; sourceTree = "<group>"; };
+		A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxelSlice.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +111,7 @@
 		A58DCDDE2088895500280CD2 /* AR-IPOD */ = {
 			isa = PBXGroup;
 			children = (
+				A58DCE0F20888CFF00280CD2 /* model */,
 				A58DCDDF2088895500280CD2 /* AppDelegate.swift */,
 				A58DCDE12088895500280CD2 /* art.scnassets */,
 				A58DCDE32088895500280CD2 /* ViewController.swift */,
@@ -126,6 +139,19 @@
 				A58DCE032088895500280CD2 /* Info.plist */,
 			);
 			path = "AR-IPODUITests";
+			sourceTree = "<group>";
+		};
+		A58DCE0F20888CFF00280CD2 /* model */ = {
+			isa = PBXGroup;
+			children = (
+				A58DCE1020888D1300280CD2 /* Camera.swift */,
+				A58DCE1220888F4A00280CD2 /* DepthMap.swift */,
+				A58DCE142088A18300280CD2 /* PointCloud.swift */,
+				A58DCE162088B85300280CD2 /* Voxel.swift */,
+				A58DCE182088BABD00280CD2 /* Hasher.swift */,
+				A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */,
+			);
+			path = model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -263,8 +289,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A58DCE172088B85300280CD2 /* Voxel.swift in Sources */,
+				A58DCE1B2088BF5C00280CD2 /* VoxelSlice.swift in Sources */,
+				A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */,
+				A58DCE1320888F4A00280CD2 /* DepthMap.swift in Sources */,
 				A58DCDE42088895500280CD2 /* ViewController.swift in Sources */,
 				A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */,
+				A58DCE192088BABD00280CD2 /* Hasher.swift in Sources */,
+				A58DCE1120888D1300280CD2 /* Camera.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
