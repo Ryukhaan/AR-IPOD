@@ -10,10 +10,12 @@ import Foundation
 import ARKit
 import AVFoundation
 
-class VoxelSlice {
-    var voxels:     [Voxel]
+struct Volume {
+    var id:         Point3D
+    let resolution: Float
+    var origin:     Vector
     let dimensions: Vector
-    let resolution: CGFloat
+    var voxels:     [Voxel]
     
     init(dimensions: Vector, resolution: CGFloat) {
         self.dimensions = dimensions

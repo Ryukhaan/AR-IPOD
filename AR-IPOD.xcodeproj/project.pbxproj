@@ -26,8 +26,7 @@
 		A58DCE1320888F4A00280CD2 /* DepthMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1220888F4A00280CD2 /* DepthMap.swift */; };
 		A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE142088A18300280CD2 /* PointCloud.swift */; };
 		A58DCE172088B85300280CD2 /* Voxel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE162088B85300280CD2 /* Voxel.swift */; };
-		A58DCE192088BABD00280CD2 /* Hasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE182088BABD00280CD2 /* Hasher.swift */; };
-		A58DCE1B2088BF5C00280CD2 /* VoxelSlice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */; };
+		A58DCE1B2088BF5C00280CD2 /* Volume.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* Volume.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,8 +72,7 @@
 		A58DCE1220888F4A00280CD2 /* DepthMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepthMap.swift; sourceTree = "<group>"; };
 		A58DCE142088A18300280CD2 /* PointCloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloud.swift; sourceTree = "<group>"; };
 		A58DCE162088B85300280CD2 /* Voxel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voxel.swift; sourceTree = "<group>"; };
-		A58DCE182088BABD00280CD2 /* Hasher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hasher.swift; sourceTree = "<group>"; };
-		A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxelSlice.swift; sourceTree = "<group>"; };
+		A58DCE1A2088BF5C00280CD2 /* Volume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Volume.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,8 +182,7 @@
 				A5494B082089E420007EA2FB /* geometry */,
 				A58DCE142088A18300280CD2 /* PointCloud.swift */,
 				A58DCE162088B85300280CD2 /* Voxel.swift */,
-				A58DCE182088BABD00280CD2 /* Hasher.swift */,
-				A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */,
+				A58DCE1A2088BF5C00280CD2 /* Volume.swift */,
 				A5494B17208A1748007EA2FB /* Integrator.swift */,
 			);
 			path = model;
@@ -331,13 +328,12 @@
 				A5494B18208A1748007EA2FB /* Integrator.swift in Sources */,
 				A5494B1C208A2768007EA2FB /* Types.swift in Sources */,
 				A58DCE172088B85300280CD2 /* Voxel.swift in Sources */,
-				A58DCE1B2088BF5C00280CD2 /* VoxelSlice.swift in Sources */,
+				A58DCE1B2088BF5C00280CD2 /* Volume.swift in Sources */,
 				A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */,
 				A58DCE1320888F4A00280CD2 /* DepthMap.swift in Sources */,
 				A5494B1A208A1B9C007EA2FB /* SIMDExtension.swift in Sources */,
 				A58DCDE42088895500280CD2 /* ViewController.swift in Sources */,
 				A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */,
-				A58DCE192088BABD00280CD2 /* Hasher.swift in Sources */,
 				A58DCE1120888D1300280CD2 /* Camera.swift in Sources */,
 				A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */,
 				A5494B0A2089E43A007EA2FB /* Box.swift in Sources */,
