@@ -11,10 +11,10 @@ import ARKit
 import AVFoundation
 
 struct Voxel {
-    static let UNDEFINED_SDF: CGFloat = 9999
+    static let UNDEFINED_SDF: Float = 9999.0
     
-    var sdf:    CGFloat
-    var weight: CGFloat
+    var sdf:    Float
+    var weight: Float
     
     init() {
         sdf     = Voxel.UNDEFINED_SDF
@@ -26,7 +26,7 @@ struct Voxel {
         weight  = 0
     }
     
-    mutating func update(sdfUpdate: CGFloat, weightUpdate: CGFloat) {
+    mutating func update(sdfUpdate: Float, weightUpdate: Float) {
         let oldSDF      = sdf
         let oldWeight   = weight
         let oldProduct  = oldWeight * oldSDF

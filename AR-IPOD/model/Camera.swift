@@ -13,12 +13,15 @@ import AVFoundation
 struct Camera {
     let intrinsics: matrix_float3x3
     var extrinsics: matrix_float4x4
-    let dimensions: CGSize
+
+    let width:      UInt16
+    let height:     UInt16
     
     init(intrinsics: matrix_float3x3, dimensions: CGSize) {
         self.intrinsics = intrinsics
         extrinsics      = matrix_float4x4()
-        self.dimensions = dimensions
+        width           = UInt16(dimensions.width)
+        height          = UInt16(dimensions.height)
     }
     
     mutating func update(position: matrix_float4x4) {
@@ -29,10 +32,9 @@ struct Camera {
         return intrinsics * (( 1.0 / point.z) * point)
     }
     
-    func unproject(pixel: float2, depth: Float) -> float3 {
-        let homogene    = float3(depth*pixel.x, depth*pixel.y, depth)
+    func unproject(i: Int, j: Int, depth: Float) -> float3 {
+        let homogene    = float3(depth*Float(i), depth*Float(j), depth)
         return intrinsics.inverse * homogene
         
     }
 }
-

@@ -11,37 +11,21 @@ import ARKit
 import AVFoundation
 
 struct DepthMap {
-    let resolution: CGSize
-    var data:       [CGFloat]
+    let width:  UInt16
+    let heigth: UInt16
+    var data:   [Float]
     
-    init(resolution: CGSize) {
-        self.resolution = resolution
-        data = Array(repeating: 0.0, count: Int(resolution.width * resolution.height))
+    init(width: UInt16, heigth: UInt16) {
+        self.width  = width
+        self.heigth = heigth
+        data        = Array(repeating: 0.0, count: Int(width*heigth))
     }
     
-    init(width: Int, heigth: Int) {
-        self.resolution = CGSize(width: width, height: heigth)
-        data = Array(repeating: 0.0, count: width*heigth)
+    func at(row: Int, column: Int) -> Int {
+        return row * Int(width) + column
     }
     
-    func getIndex(row: Int, column: Int, width: Int) -> Int {
-        return row * width + column
-    }
-    
-    func getWidth(from: DepthMap) -> Int {
-        return Int(from.resolution.width)
-    }
-    
-    func getHeight(from: DepthMap) -> Int {
-        return Int(from.resolution.height)
-    }
-    
-    func atIndex(from: DepthMap, i: Int, j: Int) -> CGFloat {
-        let w = getWidth(from: from)
-        return from.data[getIndex(row: i, column: j, width: w)]
-    }
-    
-    mutating func update(data: [CGFloat]) {
+    mutating func update(data: [Float]) {
         assert(self.data.count == data.count,
                "Data sizes are different")
         self.data = data
