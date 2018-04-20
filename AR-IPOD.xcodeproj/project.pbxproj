@@ -12,6 +12,7 @@
 		A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0D2089E63D007EA2FB /* Plane.swift */; };
 		A5494B102089E644007EA2FB /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0F2089E644007EA2FB /* Frustrum.swift */; };
 		A5494B122089E657007EA2FB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B112089E657007EA2FB /* Geometry.swift */; };
+		A5494B16208A0C0F007EA2FB /* Raycast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B15208A0C0F007EA2FB /* Raycast.swift */; };
 		A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDDF2088895500280CD2 /* AppDelegate.swift */; };
 		A58DCDE22088895500280CD2 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = A58DCDE12088895500280CD2 /* art.scnassets */; };
 		A58DCDE42088895500280CD2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDE32088895500280CD2 /* ViewController.swift */; };
@@ -26,7 +27,6 @@
 		A58DCE172088B85300280CD2 /* Voxel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE162088B85300280CD2 /* Voxel.swift */; };
 		A58DCE192088BABD00280CD2 /* Hasher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE182088BABD00280CD2 /* Hasher.swift */; };
 		A58DCE1B2088BF5C00280CD2 /* VoxelSlice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */; };
-		A58DCE1D2088CFBD00280CD2 /* SliceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1C2088CFBD00280CD2 /* SliceManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +52,7 @@
 		A5494B0D2089E63D007EA2FB /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		A5494B0F2089E644007EA2FB /* Frustrum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustrum.swift; sourceTree = "<group>"; };
 		A5494B112089E657007EA2FB /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
+		A5494B15208A0C0F007EA2FB /* Raycast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Raycast.swift; sourceTree = "<group>"; };
 		A58DCDDC2088895500280CD2 /* AR-IPOD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-IPOD.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A58DCDDF2088895500280CD2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A58DCDE12088895500280CD2 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -72,7 +73,6 @@
 		A58DCE162088B85300280CD2 /* Voxel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voxel.swift; sourceTree = "<group>"; };
 		A58DCE182088BABD00280CD2 /* Hasher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hasher.swift; sourceTree = "<group>"; };
 		A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoxelSlice.swift; sourceTree = "<group>"; };
-		A58DCE1C2088CFBD00280CD2 /* SliceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliceManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +109,24 @@
 				A5494B112089E657007EA2FB /* Geometry.swift */,
 			);
 			path = geometry;
+			sourceTree = "<group>";
+		};
+		A5494B13208A0BCA007EA2FB /* camera */ = {
+			isa = PBXGroup;
+			children = (
+				A58DCE1020888D1300280CD2 /* Camera.swift */,
+				A58DCE1220888F4A00280CD2 /* DepthMap.swift */,
+			);
+			path = camera;
+			sourceTree = "<group>";
+		};
+		A5494B14208A0BDA007EA2FB /* math */ = {
+			isa = PBXGroup;
+			children = (
+				A5494B0B2089E4D8007EA2FB /* SCNVector3Extension.swift */,
+				A5494B15208A0C0F007EA2FB /* Raycast.swift */,
+			);
+			path = math;
 			sourceTree = "<group>";
 		};
 		A58DCDD32088895500280CD2 = {
@@ -167,15 +185,13 @@
 		A58DCE0F20888CFF00280CD2 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				A5494B14208A0BDA007EA2FB /* math */,
+				A5494B13208A0BCA007EA2FB /* camera */,
 				A5494B082089E420007EA2FB /* geometry */,
-				A58DCE1020888D1300280CD2 /* Camera.swift */,
-				A58DCE1220888F4A00280CD2 /* DepthMap.swift */,
 				A58DCE142088A18300280CD2 /* PointCloud.swift */,
 				A58DCE162088B85300280CD2 /* Voxel.swift */,
 				A58DCE182088BABD00280CD2 /* Hasher.swift */,
 				A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */,
-				A58DCE1C2088CFBD00280CD2 /* SliceManager.swift */,
-				A5494B0B2089E4D8007EA2FB /* SCNVector3Extension.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -324,8 +340,8 @@
 				A58DCE1320888F4A00280CD2 /* DepthMap.swift in Sources */,
 				A58DCDE42088895500280CD2 /* ViewController.swift in Sources */,
 				A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */,
+				A5494B16208A0C0F007EA2FB /* Raycast.swift in Sources */,
 				A58DCE192088BABD00280CD2 /* Hasher.swift in Sources */,
-				A58DCE1D2088CFBD00280CD2 /* SliceManager.swift in Sources */,
 				A58DCE1120888D1300280CD2 /* Camera.swift in Sources */,
 				A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */,
 				A5494B0A2089E43A007EA2FB /* Box.swift in Sources */,
