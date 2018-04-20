@@ -13,6 +13,8 @@
 		A5494B102089E644007EA2FB /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0F2089E644007EA2FB /* Frustrum.swift */; };
 		A5494B122089E657007EA2FB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B112089E657007EA2FB /* Geometry.swift */; };
 		A5494B16208A0C0F007EA2FB /* Raycast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B15208A0C0F007EA2FB /* Raycast.swift */; };
+		A5494B18208A1748007EA2FB /* Integrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B17208A1748007EA2FB /* Integrator.swift */; };
+		A5494B1A208A1B9C007EA2FB /* SIMDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B19208A1B9C007EA2FB /* SIMDExtension.swift */; };
 		A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDDF2088895500280CD2 /* AppDelegate.swift */; };
 		A58DCDE22088895500280CD2 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = A58DCDE12088895500280CD2 /* art.scnassets */; };
 		A58DCDE42088895500280CD2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDE32088895500280CD2 /* ViewController.swift */; };
@@ -53,6 +55,8 @@
 		A5494B0F2089E644007EA2FB /* Frustrum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustrum.swift; sourceTree = "<group>"; };
 		A5494B112089E657007EA2FB /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		A5494B15208A0C0F007EA2FB /* Raycast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Raycast.swift; sourceTree = "<group>"; };
+		A5494B17208A1748007EA2FB /* Integrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Integrator.swift; sourceTree = "<group>"; };
+		A5494B19208A1B9C007EA2FB /* SIMDExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIMDExtension.swift; sourceTree = "<group>"; };
 		A58DCDDC2088895500280CD2 /* AR-IPOD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-IPOD.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A58DCDDF2088895500280CD2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A58DCDE12088895500280CD2 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -125,6 +129,7 @@
 			children = (
 				A5494B0B2089E4D8007EA2FB /* SCNVector3Extension.swift */,
 				A5494B15208A0C0F007EA2FB /* Raycast.swift */,
+				A5494B19208A1B9C007EA2FB /* SIMDExtension.swift */,
 			);
 			path = math;
 			sourceTree = "<group>";
@@ -192,6 +197,7 @@
 				A58DCE162088B85300280CD2 /* Voxel.swift */,
 				A58DCE182088BABD00280CD2 /* Hasher.swift */,
 				A58DCE1A2088BF5C00280CD2 /* VoxelSlice.swift */,
+				A5494B17208A1748007EA2FB /* Integrator.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -333,11 +339,13 @@
 			files = (
 				A5494B102089E644007EA2FB /* Frustrum.swift in Sources */,
 				A5494B122089E657007EA2FB /* Geometry.swift in Sources */,
+				A5494B18208A1748007EA2FB /* Integrator.swift in Sources */,
 				A5494B0C2089E4D8007EA2FB /* SCNVector3Extension.swift in Sources */,
 				A58DCE172088B85300280CD2 /* Voxel.swift in Sources */,
 				A58DCE1B2088BF5C00280CD2 /* VoxelSlice.swift in Sources */,
 				A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */,
 				A58DCE1320888F4A00280CD2 /* DepthMap.swift in Sources */,
+				A5494B1A208A1B9C007EA2FB /* SIMDExtension.swift in Sources */,
 				A58DCDE42088895500280CD2 /* ViewController.swift in Sources */,
 				A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */,
 				A5494B16208A0C0F007EA2FB /* Raycast.swift in Sources */,

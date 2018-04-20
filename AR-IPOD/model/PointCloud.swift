@@ -11,13 +11,13 @@ import ARKit
 import AVFoundation
 
 struct PointCloud {
-    var points: [SCNVector3]
+    var data: [float3]
     
-    mutating func addPoint(point: SCNVector3) {
-        self.points.append(point)
+    mutating func addPoint(point: float3) {
+        data.append(point)
     }
     
     mutating func clear() {
-        self.points.removeAll()
+        data.removeAll()
     }
 }

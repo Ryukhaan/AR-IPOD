@@ -78,18 +78,18 @@ func rayIntersectsBox(start: SCNVector3,
  * (i.e. change the integer part of the coordinate) in the variables
  * tMaxX, tMaxY, and tMaxZ.
  */
-func raycast(start: SCNVector3,
-                      end: SCNVector3,
-                      min: SCNVector3,
-                      max: SCNVector3,
-                      output: inout [SCNVector3]) {
+func raycast(start: float3,
+             end: float3,
+             min: int3,
+             max: int3,
+             output: inout [int3]) {
     // Create Interger cube
-    var x = Int(floor(start.x))
-    var y = Int(floor(start.y))
-    var z = Int(floor(start.z))
-    let endX = Int(floor(end.x))
-    let endY = Int(floor(end.y))
-    let endZ = Int(floor(end.z))
+    var x = Int32(floor(start.x))
+    var y = Int32(floor(start.y))
+    var z = Int32(floor(start.z))
+    let endX = Int32(floor(end.x))
+    let endY = Int32(floor(end.y))
+    let endZ = Int32(floor(end.z))
     let direction = (end - start)
     let maxDistance = direction.length()
     
@@ -99,9 +99,9 @@ func raycast(start: SCNVector3,
     let dz = Float(endZ - z)
     
     // Step increments
-    let stepX = Int(signed(x: Int(dx)))
-    let stepY = Int(signed(x: Int(dy)))
-    let stepZ = Int(signed(x: Int(dz)))
+    let stepX = Int32(signed(x: Int(dx)))
+    let stepY = Int32(signed(x: Int(dy)))
+    let stepZ = Int32(signed(x: Int(dz)))
     
     // See description above. The initial values depend on the fractional part of the origin.
     var tMaxX = intBound(s: start.x, d: dx)
@@ -125,9 +125,9 @@ func raycast(start: SCNVector3,
             && y >= Int(min.y) && y < Int(max.y)
             && z >= Int(min.z) && y < Int(max.z))
         {
-            let point = SCNVector3Make(Float(x), Float(y), Float(z))
+            let point = int3(x, y, z)
             output.append(point)
-            distance = Int((point - start).length())
+            distance = Int((float3(Float(x), Float(y), Float(z)) - start).length())
             if (Float(distance) > maxDistance) { return }
             assert(output.count < thresh, "Too many voxels")
         }
