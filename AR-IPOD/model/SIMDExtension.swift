@@ -10,23 +10,26 @@ import Foundation
 import ARKit
 
 extension Vector {
+    
+    /**
+     * Calculate vector's length (Euclidean nomr)
+     */
     func length() -> Float {
         return sqrtf(x*x + y*y + z*z)
     }
     
     /**
-     * Normalizes the vector described by the Vector to length 1.0 and returns
-     * the result as a new Vector.
+     * Normalizes the vector  to length 1.0
+     * Returns a new Vector.
      */
     func normalized() -> Vector {
         return self / length()
     }
     
     /**
-     * Cacultates the distance between two SCNVector3.
+     * Cacultates the distance between this Vector and an other one.
      */
-    func distance(vector: Vector) -> Float {
-        return (self - vector).length()
+    func distance(ohter: Vector) -> Float {
+        return (self - other).length()
     }
-    
 }

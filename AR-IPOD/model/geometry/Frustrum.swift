@@ -75,6 +75,9 @@ class Frustrum {
         }
     }
     
+    /**
+     * Returns an array with all planes.
+     */
     func getPlanes() -> [Plane] {
         return [Plane](arrayLiteral: far, near, top, bottom, left, right)
     }

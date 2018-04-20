@@ -13,4 +13,5 @@ func integrateDepthMap(pointCloud: inout PointCloud,
                          camera: Camera,
                          maxDist: Float) {
     // TO DO
+    let v = Vector(0, 0, 0)
 }

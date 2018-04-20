@@ -16,7 +16,6 @@ struct Camera {
 
     let width:      UInt16
     let height:     UInt16
-    
     init(intrinsics: matrix_float3x3, dimensions: CGSize) {
         self.intrinsics = intrinsics
         extrinsics      = matrix_float4x4()

@@ -18,15 +18,24 @@ class Box {
         max = Vector(1, 1, 1)
     }
     
+    /**
+     * Initializes a Box given two vectors.
+     */
     init(min: Vector, max:Vector) {
         self.min = min
         self.max = max
     }
     
+    /**
+     * Get the absolute center of the box (centroid)
+     */
     func getCenter() -> Vector {
         return 0.5 * (max + min)
     }
     
+    /**
+     * Get relative center of the box
+     */
     func getExtent() -> Vector {
         return 0.5 * (max - min)
     }
