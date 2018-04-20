@@ -12,10 +12,10 @@ import AVFoundation
 
 class VoxelSlice {
     var voxels:     [Voxel]
-    let dimensions: float3
+    let dimensions: Vector
     let resolution: CGFloat
     
-    init(dimensions: float3, resolution: CGFloat) {
+    init(dimensions: Vector, resolution: CGFloat) {
         self.dimensions = dimensions
         self.resolution = resolution
         voxels          = Array(repeating: Voxel(),

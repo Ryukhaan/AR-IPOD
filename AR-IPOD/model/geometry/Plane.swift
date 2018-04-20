@@ -10,19 +10,19 @@ import Foundation
 import ARKit
 
 class Plane {
-    var normal:     SCNVector3
+    var normal:     Vector
     var distance:   Float
     
-    init(vector: SCNVector3, d: Float) {
+    init(vector: Vector, d: Float) {
         normal      = vector
         distance    = d
     }
-    init(vector: SCNVector4) {
-        normal      = SCNVector3Make(vector.x, vector.y, vector.z)
+    init(vector: float4) {
+        normal      = Vector(vector.x, vector.y, vector.z)
         distance    = vector.w
     }
-    init(_ a: SCNVector3, _ b:SCNVector3, _ c:SCNVector3) {
-        normal   = SCNVector3.cross(u: b-a, v: c-a)
+    init(_ a: Vector, _ b:Vector, _ c:Vector) {
+        normal   = cross(b-a, c-a)
         distance = 0
         //distance = distance(vector: normal)
     }

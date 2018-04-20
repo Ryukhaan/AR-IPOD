@@ -28,12 +28,12 @@ struct Camera {
         extrinsics = position
     }
     
-    func project(point: float3) -> float3 {
+    func project(point: Vector) -> Vector {
         return intrinsics * (( 1.0 / point.z) * point)
     }
     
-    func unproject(i: Int, j: Int, depth: Float) -> float3 {
-        let homogene    = float3(depth*Float(i), depth*Float(j), depth)
+    func unproject(i: Int, j: Int, depth: Float) -> Vector {
+        let homogene    = Vector(depth*Float(i), depth*Float(j), depth)
         return intrinsics.inverse * homogene
         
     }

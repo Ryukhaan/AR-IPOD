@@ -10,19 +10,24 @@ import Foundation
 import ARKit
 
 class Box {
-    var min: SCNVector3
-    var max: SCNVector3
+    var min: Vector
+    var max: Vector
     
-    init(min: SCNVector3, max:SCNVector3) {
+    init() {
+        min = Vector(0, 0, 0)
+        max = Vector(1, 1, 1)
+    }
+    
+    init(min: Vector, max:Vector) {
         self.min = min
         self.max = max
     }
     
-    func getCenter() -> SCNVector3 {
+    func getCenter() -> Vector {
         return 0.5 * (max + min)
     }
     
-    func getExtent() -> SCNVector3 {
+    func getExtent() -> Vector {
         return 0.5 * (max - min)
     }
 }

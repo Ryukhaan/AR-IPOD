@@ -16,13 +16,13 @@ class Frustrum {
     var right: Plane
     var near: Plane
     var far: Plane
-    var pointels    = [SCNVector3?](repeating: nil, count: 8)
+    var pointels    = [Vector](repeating: Vector(0,0,0), count: 8)
     var linels      = [Int](repeating: 0, count: 24)
     
-    init(forward: SCNVector3,
-         pos: SCNVector3,
-         rightVec: SCNVector3,
-         up: SCNVector3,
+    init(forward: Vector,
+         pos: Vector,
+         rightVec: Vector,
+         up: Vector,
          nearDist: Float,
          farDist: Float,
          fov: Float,
