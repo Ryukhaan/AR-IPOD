@@ -74,4 +74,8 @@ class Frustrum {
             linels[2*i+17]  = i + 4
         }
     }
+    
+    func getPlanes() -> [Plane] {
+        return [Plane](arrayLiteral: far, near, top, bottom, left, right)
+    }
 }
