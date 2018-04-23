@@ -29,7 +29,7 @@ extension Vector {
     /**
      * Cacultates the distance between this Vector and an other one.
      */
-    func distance(ohter: Vector) -> Float {
+    func distance(other: Vector) -> Float {
         return (self - other).length()
     }
 }
