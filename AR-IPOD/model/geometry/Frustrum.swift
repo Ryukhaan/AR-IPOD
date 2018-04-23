@@ -19,14 +19,23 @@ class Frustrum {
     var pointels    = [Vector](repeating: Vector(0,0,0), count: 8)
     var linels      = [Int](repeating: 0, count: 24)
     
-    init(forward: Vector,
-         pos: Vector,
-         rightVec: Vector,
-         up: Vector,
-         nearDist: Float,
-         farDist: Float,
-         fov: Float,
-         aspect: Float) {
+    init() {
+        top     = Plane()
+        bottom  = Plane()
+        left    = Plane()
+        right   = Plane()
+        near    = Plane()
+        far     = Plane()
+    }
+    
+    func setUpFromVectors(forward: Vector,
+                          pos: Vector,
+                          rightVec: Vector,
+                          up: Vector,
+                          nearDist: Float,
+                          farDist: Float,
+                          fov: Float,
+                          aspect: Float) {
         
         let angleTangent = tan(fov / 2)
         let heightFar = angleTangent * farDist
@@ -80,5 +89,27 @@ class Frustrum {
      */
     func getPlanes() -> [Plane] {
         return [Plane](arrayLiteral: far, near, top, bottom, left, right)
+    }
+    
+    /**
+     * Set up Frustum given a camra
+     */
+    func setUp(camera: Camera) {
+        let rot         = camera.extrinsics
+        let right       = Vector(rot[0][0], rot[1][0], rot[2][0])
+        let up          = -Vector(rot[0][1], rot[1][1], rot[2][1])
+        let d           = Vector(rot[0][2], rot[1][2], rot[2][2])
+        let position    = Vector(rot[0][3], rot[1][3],rot[2][3])
+        let fx          = camera.intrinsics[0][0]
+        let fy          = camera.intrinsics[1][1]
+        let cy          = camera.intrinsics[1][2]
+        let aspect = (fx * Float(camera.width)) / (fy * Float(camera.height));
+        let fov = atan2(cy, fy) + atan2(Float(camera.height) - cy, fy);
+        setUpFromVectors(forward: d,
+                         pos: position,
+                         rightVec: right,
+                         up: up,
+                         nearDist: Float(camera.zNear), farDist: Float(camera.zFar),
+                         fov: fov, aspect: aspect)
     }
 }

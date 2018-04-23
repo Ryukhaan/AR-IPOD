@@ -53,9 +53,21 @@ struct Volume {
         return voxels[getVoxelID(i: Int(coordinate.x), j: Int(coordinate.y), k: Int(coordinate.z))]
     }
     
+    func voxelAtFromWorld(worldPoint: Point3D) -> Voxel {
+        return voxelAt(coordinate: localCoordinate(worldPoint: worldPoint))
+    }
     
-    func voxelAtFromWorld(from: Point3D) -> Voxel {
-        return voxelAt(coordinate: localCoordinate(worldPoint: from))
+    func voxelCoordinate(worldVector: Vector) -> Point3D {
+        let roundX = 1.0 / (resolution * Float(dimensions.x))
+        let roundY = 1.0 / (resolution * Float(dimensions.y))
+        let roundZ = 1.0 / (resolution * Float(dimensions.z))
+        return Point3D(floor(worldVector.x) * roundX,
+                       floor(worldVector.y) * roundY,
+                       floor(worldVector.z) * roundZ)
+    }
+    
+    func voxelAtFromWorld(worldVector: Vector) -> Voxel {
+        return voxelAt(coordinate: voxelCoordinate(worldVector: worldVector))
     }
     
     func isEmpty() -> Bool {
@@ -63,8 +75,18 @@ struct Volume {
     }
     
     func localCoordinate(worldPoint: Point3D) -> Point3D {
-        return worldPoint &- Point3D(id.x * dimensions.x,
+        return worldPoint - Point3D(id.x * dimensions.x,
                                      id.y * dimensions.y,
                                      id.z * dimensions.z)
     }
+    
+    func index() -> Int {
+        let g = { (x: Int, y: Int) -> Int in
+            let x1 = x + y
+            return x1 * (x1 + 1) / 2 + y
+            
+        }
+        return g(g(Int(id.x), Int(id.y)), Int(id.z))
+    }
+    
 }

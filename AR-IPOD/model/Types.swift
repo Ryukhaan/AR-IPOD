@@ -10,7 +10,7 @@ import Foundation
 import ARKit
 
 typealias Vector    = float3
-typealias Point3D   = int3
-typealias Pixel     = int2
+typealias Point3D   = float3
+typealias Pixel     = float2
 
 

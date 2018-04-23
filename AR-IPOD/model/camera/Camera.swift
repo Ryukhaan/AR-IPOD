@@ -14,26 +14,34 @@ struct Camera {
     let intrinsics: matrix_float3x3
     var extrinsics: matrix_float4x4
 
-    let width:      UInt16
-    let height:     UInt16
-    init(intrinsics: matrix_float3x3, dimensions: CGSize) {
-        self.intrinsics = intrinsics
-        extrinsics      = matrix_float4x4()
-        width           = UInt16(dimensions.width)
-        height          = UInt16(dimensions.height)
+    let width:      CGFloat
+    let height:     CGFloat
+    var zFar:       CGFloat = 0.0
+    var zNear:      CGFloat = 0.0
+    
+    init(_intrinsics: matrix_float3x3, dim: CGSize) {
+        intrinsics  = _intrinsics
+        extrinsics  = matrix_float4x4()
+        width       = dim.width
+        height      = dim.height
     }
     
+    /**
+     * Updates extrinsics matrix (rotation and position matrix).
+     */
     mutating func update(position: matrix_float4x4) {
         extrinsics = position
     }
     
-    func project(point: Vector) -> Vector {
-        return intrinsics * (( 1.0 / point.z) * point)
+    func project(vector: Vector) -> Pixel {
+        return AR_IPOD.project(vector: vector, K: intrinsics)
     }
     
     func unproject(i: Int, j: Int, depth: Float) -> Vector {
-        let homogene    = Vector(depth*Float(i), depth*Float(j), depth)
-        return intrinsics.inverse * homogene
-        
+        return AR_IPOD.unproject(vector: Vector(Float(i), Float(j), depth), K: intrinsics)
+    }
+    
+    func unproject(pixel: Pixel, depth: Float) -> Vector {
+        return AR_IPOD.unproject(pixel: pixel, depth: depth, K: intrinsics)
     }
 }

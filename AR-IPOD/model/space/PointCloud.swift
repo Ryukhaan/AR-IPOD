@@ -11,7 +11,7 @@ import ARKit
 import AVFoundation
 
 struct PointCloud {
-    var data: [Vector]
+    var data: [Vector] = [Vector]()
     
     mutating func addPoint(point: Vector) {
         data.append(point)

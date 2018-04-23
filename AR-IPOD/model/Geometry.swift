@@ -182,4 +182,32 @@ func computeBoundingBox(frustrum: Frustrum, box: Box) -> Box {
     return Box(min: tmpMin, max: tmpMax)
 }
 
+/**
+ * Project a vector to image plane given a matrix K.
+ * Projection between 3D and 2D.
+ */
+func project(vector: Vector, K: matrix_float3x3) -> Pixel {
+    let temp = Vector(vector.x / vector.z, vector.y / vector.z, 1)
+    let all  = K * temp
+    return Pixel(all.x, all.y)
+}
 
+/**
+ * Unproject a pixel to the 3D world coordinate given a matrix K.
+ * (Un)Projection between 2D and 3D.
+ */
+func unproject(pixel: Pixel, depth: Float, K: matrix_float3x3) -> Vector {
+    let temp = Point3D(pixel.x, pixel.y, 1)
+    let all = K.inverse * temp
+    return Vector(all.x * depth, all.y * depth, depth)
+}
+
+/**
+ * Unproject a pixel to the 3D world coordinate given a matrix K.
+ * (Un)Projection between 2D and 3D.
+ */
+func unproject(vector: Vector, K: matrix_float3x3) -> Vector {
+    let temp = Point3D(vector.x, vector.y, 1)
+    let all = K.inverse * temp
+    return Vector(all.x * vector.z, all.y * vector.z, vector.z)
+}

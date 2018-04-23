@@ -11,9 +11,9 @@
 		A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0D2089E63D007EA2FB /* Plane.swift */; };
 		A5494B102089E644007EA2FB /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0F2089E644007EA2FB /* Frustrum.swift */; };
 		A5494B122089E657007EA2FB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B112089E657007EA2FB /* Geometry.swift */; };
-		A5494B18208A1748007EA2FB /* Integrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B17208A1748007EA2FB /* Integrator.swift */; };
 		A5494B1A208A1B9C007EA2FB /* SIMDExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B19208A1B9C007EA2FB /* SIMDExtension.swift */; };
 		A5494B1C208A2768007EA2FB /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B1B208A2768007EA2FB /* Types.swift */; };
+		A5494B20208DCF9A007EA2FB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B1F208DCF9A007EA2FB /* Model.swift */; };
 		A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDDF2088895500280CD2 /* AppDelegate.swift */; };
 		A58DCDE22088895500280CD2 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = A58DCDE12088895500280CD2 /* art.scnassets */; };
 		A58DCDE42088895500280CD2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDE32088895500280CD2 /* ViewController.swift */; };
@@ -23,7 +23,7 @@
 		A58DCDF72088895500280CD2 /* AR_IPODTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDF62088895500280CD2 /* AR_IPODTests.swift */; };
 		A58DCE022088895500280CD2 /* AR_IPODUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE012088895500280CD2 /* AR_IPODUITests.swift */; };
 		A58DCE1120888D1300280CD2 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1020888D1300280CD2 /* Camera.swift */; };
-		A58DCE1320888F4A00280CD2 /* DepthMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1220888F4A00280CD2 /* DepthMap.swift */; };
+		A58DCE1320888F4A00280CD2 /* DepthImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1220888F4A00280CD2 /* DepthImage.swift */; };
 		A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE142088A18300280CD2 /* PointCloud.swift */; };
 		A58DCE172088B85300280CD2 /* Voxel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE162088B85300280CD2 /* Voxel.swift */; };
 		A58DCE1B2088BF5C00280CD2 /* Volume.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* Volume.swift */; };
@@ -51,9 +51,9 @@
 		A5494B0D2089E63D007EA2FB /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		A5494B0F2089E644007EA2FB /* Frustrum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustrum.swift; sourceTree = "<group>"; };
 		A5494B112089E657007EA2FB /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
-		A5494B17208A1748007EA2FB /* Integrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Integrator.swift; sourceTree = "<group>"; };
 		A5494B19208A1B9C007EA2FB /* SIMDExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIMDExtension.swift; sourceTree = "<group>"; };
 		A5494B1B208A2768007EA2FB /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		A5494B1F208DCF9A007EA2FB /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		A58DCDDC2088895500280CD2 /* AR-IPOD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-IPOD.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A58DCDDF2088895500280CD2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A58DCDE12088895500280CD2 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -69,7 +69,7 @@
 		A58DCE012088895500280CD2 /* AR_IPODUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AR_IPODUITests.swift; sourceTree = "<group>"; };
 		A58DCE032088895500280CD2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A58DCE1020888D1300280CD2 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
-		A58DCE1220888F4A00280CD2 /* DepthMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepthMap.swift; sourceTree = "<group>"; };
+		A58DCE1220888F4A00280CD2 /* DepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepthImage.swift; sourceTree = "<group>"; };
 		A58DCE142088A18300280CD2 /* PointCloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloud.swift; sourceTree = "<group>"; };
 		A58DCE162088B85300280CD2 /* Voxel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voxel.swift; sourceTree = "<group>"; };
 		A58DCE1A2088BF5C00280CD2 /* Volume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Volume.swift; sourceTree = "<group>"; };
@@ -106,7 +106,6 @@
 				A5494B092089E43A007EA2FB /* Box.swift */,
 				A5494B0D2089E63D007EA2FB /* Plane.swift */,
 				A5494B0F2089E644007EA2FB /* Frustrum.swift */,
-				A5494B112089E657007EA2FB /* Geometry.swift */,
 			);
 			path = geometry;
 			sourceTree = "<group>";
@@ -115,9 +114,19 @@
 			isa = PBXGroup;
 			children = (
 				A58DCE1020888D1300280CD2 /* Camera.swift */,
-				A58DCE1220888F4A00280CD2 /* DepthMap.swift */,
+				A58DCE1220888F4A00280CD2 /* DepthImage.swift */,
 			);
 			path = camera;
+			sourceTree = "<group>";
+		};
+		A5494B21208DF6AB007EA2FB /* space */ = {
+			isa = PBXGroup;
+			children = (
+				A58DCE142088A18300280CD2 /* PointCloud.swift */,
+				A58DCE162088B85300280CD2 /* Voxel.swift */,
+				A58DCE1A2088BF5C00280CD2 /* Volume.swift */,
+			);
+			path = space;
 			sourceTree = "<group>";
 		};
 		A58DCDD32088895500280CD2 = {
@@ -178,12 +187,11 @@
 			children = (
 				A5494B1B208A2768007EA2FB /* Types.swift */,
 				A5494B19208A1B9C007EA2FB /* SIMDExtension.swift */,
+				A5494B112089E657007EA2FB /* Geometry.swift */,
 				A5494B13208A0BCA007EA2FB /* camera */,
 				A5494B082089E420007EA2FB /* geometry */,
-				A58DCE142088A18300280CD2 /* PointCloud.swift */,
-				A58DCE162088B85300280CD2 /* Voxel.swift */,
-				A58DCE1A2088BF5C00280CD2 /* Volume.swift */,
-				A5494B17208A1748007EA2FB /* Integrator.swift */,
+				A5494B21208DF6AB007EA2FB /* space */,
+				A5494B1F208DCF9A007EA2FB /* Model.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -325,12 +333,12 @@
 			files = (
 				A5494B102089E644007EA2FB /* Frustrum.swift in Sources */,
 				A5494B122089E657007EA2FB /* Geometry.swift in Sources */,
-				A5494B18208A1748007EA2FB /* Integrator.swift in Sources */,
 				A5494B1C208A2768007EA2FB /* Types.swift in Sources */,
 				A58DCE172088B85300280CD2 /* Voxel.swift in Sources */,
 				A58DCE1B2088BF5C00280CD2 /* Volume.swift in Sources */,
 				A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */,
-				A58DCE1320888F4A00280CD2 /* DepthMap.swift in Sources */,
+				A5494B20208DCF9A007EA2FB /* Model.swift in Sources */,
+				A58DCE1320888F4A00280CD2 /* DepthImage.swift in Sources */,
 				A5494B1A208A1B9C007EA2FB /* SIMDExtension.swift in Sources */,
 				A58DCDE42088895500280CD2 /* ViewController.swift in Sources */,
 				A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */,

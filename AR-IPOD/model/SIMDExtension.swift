@@ -33,3 +33,38 @@ extension Vector {
         return (self - other).length()
     }
 }
+
+extension Point3D {
+    
+    /**
+     * Creates a unique Int from a Point3D (int, int, int)
+     */
+    func index() -> Int {
+        let g = { (x: Int, y: Int) -> Int in
+            let x1 = x + y
+            return x1 * (x1 + 1) / 2 + y
+            
+        }
+        return g(g(Int(x), Int(y)), Int(z))
+    }
+    
+    /**
+     * Get Point3D from a unique Int
+     */
+    static func inverse(n: Int) -> Point3D {
+        let g_inv = { (n: Int) -> (Int, Int) in
+            var m = Int(floor(sqrt(2.0 * Double(n))))
+            var y = 0
+            while true {
+                y = n - m * (m + 1) / 2
+                if y >= 0 { break }
+                m -= 1
+            }
+            let x = m - y
+            return (x, y)
+        }
+        let (w, z) = g_inv(n)
+        let (x, y) = g_inv(w)
+        return Point3D(Float(x), Float(y), Float(z))
+    }
+}

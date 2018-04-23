@@ -13,6 +13,11 @@ class Plane {
     var normal:     Vector
     var distance:   Float
     
+    init() {
+        normal      = Vector(0, 0, 0)
+        distance    = 0.0
+    }
+    
     /**
      * Initializes a plane given a Vector and a distance
      */
