@@ -39,4 +39,11 @@ class Box {
     func getExtent() -> Vector {
         return 0.5 * (max - min)
     }
+    
+    /**
+     * Checks if the box has been initialized
+     */
+    func hasBeenInit() -> Bool {
+        return (min == Vector(0, 0, 0) && max == Vector(1, 1, 1))
+    }
 }

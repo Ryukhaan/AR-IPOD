@@ -35,7 +35,6 @@ extension Vector {
 }
 
 extension Point3D {
-    
     /**
      * Creates a unique Int from a Point3D (int, int, int)
      */

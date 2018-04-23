@@ -164,10 +164,9 @@ func contains(frustrum: Frustrum, point: Vector) -> Bool {
  */
 
 /**
- * Compute intersectino between Frustum and Box.
- * It returns a Box
+ * Compute a Box given a Frustum
  */
-func computeBoundingBox(frustrum: Frustrum, box: Box) -> Box {
+func computeBoundingBox(frustrum: Frustrum) -> Box {
     let bigNum = Float(Int32.max)
     var tmpMin = Vector(-bigNum, -bigNum, -bigNum)
     var tmpMax = Vector(bigNum, bigNum, bigNum)
@@ -210,4 +209,77 @@ func unproject(vector: Vector, K: matrix_float3x3) -> Vector {
     let temp = Point3D(vector.x, vector.y, 1)
     let all = K.inverse * temp
     return Vector(all.x * vector.z, all.y * vector.z, vector.z)
+}
+
+/**
+ * Mapping between a world point and a voxel coordinate
+ * Step is a Float, but in pratical it will be an Integer.
+ */
+func mappingVoxel(worldPoint: Vector, dim: Point3D, step: Float) -> Point3D {
+    return step * Point3D(worldPoint.x / dim.x + 0.5,
+                   worldPoint.y / dim.y + 0.5,
+                   worldPoint.z / dim.z + 0.5)
+}
+
+/**
+ * Computes linear interpolation.
+ */
+func linearInterpolate(u: Point3D, v: Point3D, tx: Float) -> Point3D {
+    return tx * u + (1 - tx) * v
+}
+
+/**
+ * Computes bilinear interpolation.
+ */
+func bilinearInterpolate(c00: Point3D, c01: Point3D, c10: Point3D, c11: Point3D, tx: Float, ty: Float) -> Point3D {
+    return linearInterpolate(u: linearInterpolate(u: c00, v: c10, tx: tx),
+                             v: linearInterpolate(u: c01, v: c11, tx: tx),
+                             tx: ty)
+}
+
+/**
+ * Computes trilinear interpolation with linear and bilinear interpolation.
+ */
+func trilinearInterpolate(position: Point3D) -> Vector {
+    let gp = Vector(floor(position.x), floor(position.y), floor(position.z))
+    let (tx, ty, tz) = (position.x - gp.x, position.y - gp.y, position.z - gp.z)
+    let c000 = Vector(gp.x, gp.y, gp.z)
+    let c100 = Vector(gp.x+1, gp.y, gp.z)
+    let c010 = Vector(gp.x, gp.y+1, gp.z)
+    let c110 = Vector(gp.x+1, gp.y+1, gp.z)
+    let c001 = Vector(gp.x, gp.y, gp.z+1)
+    let c101 = Vector(gp.x+1, gp.y, gp.z+1)
+    let c011 = Vector(gp.x, gp.y+1, gp.z+1)
+    let c111 = Vector(gp.x+1, gp.y+1, gp.z+1)
+    let e = bilinearInterpolate(c00: c000, c01: c100, c10: c010, c11: c110, tx: tx, ty: ty)
+    let f = bilinearInterpolate(c00: c001, c01: c101, c10: c011, c11: c111, tx: tx, ty: ty)
+    return linearInterpolate(u: e, v: f, tx: tz)
+}
+
+/**
+ * From global coordinate to local
+ */
+func globalToLocal(worldPoint: Vector, Rt: matrix_float4x4) -> Vector {
+    let truncation = matrix_float4x3(rows: [Rt[0], Rt[1], Rt[2]])
+    let rotation = matrix_float3x3(truncation.columns.0, truncation.columns.1, truncation.columns.2)
+    let translation = truncation.columns.3
+    return rotation * (worldPoint - translation)
+}
+
+/**
+ * Retrives all ID in a certain box
+ */
+func retriveIDs(from: Box) -> [Int] {
+    var list = [Int]()
+    let mini = from.min
+    let maxi = from.max
+    for x in Int(mini.x)...Int(maxi.x) {
+        for y in Int(mini.y)...Int(maxi.y) {
+            for z in Int(mini.z)...Int(maxi.z) {
+                let n = Point3D(Float(x), Float(y), Float(z)).index()
+                list.append(n)
+            }
+        }
+    }
+    return list
 }

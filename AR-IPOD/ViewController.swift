@@ -13,6 +13,7 @@ import ARKit
 class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
+    var myVolume: Volume = Volume(_size: Point3D(256,256,256), _resolution: 0.1)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,25 +29,15 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Set the scene to the view
         sceneView.scene = scene
-        
-        print("Box : \(MemoryLayout<Box>.size)")
-        print("Box : \(MemoryLayout<Box>.stride)")
-        print("Box : \(MemoryLayout<Box>.alignment)")
 
-        print("SCNBox : \(MemoryLayout<SCNBox>.size)")
-        print("SCNBox : \(MemoryLayout<SCNBox>.stride)")
-        print("SCNBox : \(MemoryLayout<SCNBox>.alignment)")
-        
-        print("Voxel : \(MemoryLayout<Voxel>.size)")
-        print("Voxel : \(MemoryLayout<Voxel>.stride)")
-        print("Voxel : \(MemoryLayout<Voxel>.alignment)")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
+        //let configuration = ARWorldTrackingConfiguration()
+        let configuration = ARFaceTrackingConfiguration()
 
         // Run the view's session
         sceneView.session.run(configuration)
