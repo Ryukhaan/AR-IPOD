@@ -269,19 +269,21 @@ func globalToLocal(worldPoint: Vector, Rt: matrix_float4x4) -> Vector {
 /**
  * Retrives all ID in a certain box
  */
-func retriveIDs(from: Box, dim: Point3D, step: Float) -> [Int] {
+func retriveIDs(from: Box, dim: Point3D, step: Float) -> ([Int], [Vector]) {
     var list = [Int]()
+    var centroids = [Vector]()
     let mini = from.min
     let maxi = from.max
-    for x in Int(mini.x)...Int(maxi.x) {
-        for y in Int(mini.y)...Int(maxi.y) {
-            for z in Int(mini.z)...Int(maxi.z) {
+    for x in Int(floor(mini.x))...Int(floor(maxi.x)) {
+        for y in Int(floor(mini.y))...Int(floor(maxi.y)) {
+            for z in Int(floor(mini.z))...Int(floor(maxi.z)) {
                 let worldPoint  = Vector(Float(x), Float(y), Float(z))
                 let approx      = mappingVoxel(worldPoint: worldPoint, dim: dim, step: step)
-                let nindex      = trilinearInterpolate(position: approx).index()
-                list.append(nindex)
+                let center      = trilinearInterpolate(position: approx)
+                centroids.append(center)
+                list.append(worldPoint.index())
             }
         }
     }
-    return list
+    return (list, centroids)
 }

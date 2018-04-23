@@ -11,7 +11,7 @@ import ARKit
 import AVFoundation
 
 struct Volume {
-    static let tau_min: Float = 0.5
+    static let tau_min: Float = 0.4
     
     var size:       Point3D // X size, Y size and Z size
     var resolution: Float   // Number of voxels per meter
@@ -53,17 +53,16 @@ struct Volume {
         frustrum.setUp(camera: copyCamera)
         // Determines intersects between frustrum and volume
         let bbox = computeBoundingBox(frustrum: frustrum)
-        let voxelsIDs = retriveIDs(from: bbox, dim: size, step: resolution)
+        let (voxelsIDs, voxelsPos) = retriveIDs(from: bbox, dim: size, step: resolution)
         // For each voxel/centroid retrieved
-        for id in voxelsIDs {
+        for i in 0..<voxelsIDs.count {
+            let id = voxelsIDs[i]
+            let pos = voxelsPos[i]
+            // Check if centroids exists
             if centroids.index(forKey: id) == nil {
-                var pos = Point3D.inverse(n: id)
-                let round = 1.0 / resolution
-                pos.x = (round * pos.x - 0.5) * size.x
-                pos.y = (round * pos.y - 0.5) * size.y
-                pos.z = (round * pos.z - 0.5) * size.z
                 centroids[id] = pos
             }
+            // Check if voxels exists
             if voxels.index(forKey: id) == nil {
                 voxels[id] = Voxel()
             }
@@ -78,9 +77,9 @@ struct Volume {
                 let range   = proj.length()
                 let tau     = truncation(range: range)
                 if distance >= Volume.tau_min && distance < tau - range {
-                    voxels[id]?.update(sdfUpdate: tau, weightUpdate: 0.5)
+                    voxels[id]?.carve()
                 }
-                else if distance >= tau - range && distance <= tau + range {
+                else if fabs(distance) >= tau + range {
                     voxels[id]?.update(sdfUpdate: uv.x, weightUpdate: 1.0)
                 }
             }
