@@ -22,6 +22,7 @@ struct Volume {
         size        = _size
         resolution  = _resolution
         allocate()
+        
     }
     
     private mutating func allocate() {
@@ -52,14 +53,27 @@ struct Volume {
         frustrum.setUp(camera: copyCamera)
         // Determines intersects between frustrum and volume
         let bbox = computeBoundingBox(frustrum: frustrum)
-        let voxelsIDs = retriveIDs(from: bbox)
+        let voxelsIDs = retriveIDs(from: bbox, dim: size, step: resolution)
         // For each voxel/centroid retrieved
         for id in voxelsIDs {
+            if centroids.index(forKey: id) == nil {
+                var pos = Point3D.inverse(n: id)
+                let round = 1.0 / resolution
+                pos.x = (round * pos.x - 0.5) * size.x
+                pos.y = (round * pos.y - 0.5) * size.y
+                pos.z = (round * pos.z - 0.5) * size.z
+                centroids[id] = pos
+            }
+            if voxels.index(forKey: id) == nil {
+                voxels[id] = Voxel()
+            }
+            
             if let centroid = centroids[id] {
                 let positionCamera = camera.extrinsics.columns.3
                 let distance = (centroid - Vector(positionCamera.x, positionCamera.y, positionCamera.z)).length()
                 let uv      = camera.project(vector: centroid)
                 let depth   = image.at(row: Int(uv.x), column: Int(uv.y))
+                if depth.isNaN { continue }
                 let proj    = camera.unproject(pixel: uv, depth: Float(depth))
                 let range   = proj.length()
                 let tau     = truncation(range: range)
@@ -70,7 +84,6 @@ struct Volume {
                     voxels[id]?.update(sdfUpdate: uv.x, weightUpdate: 1.0)
                 }
             }
-            
         }
     }
 }

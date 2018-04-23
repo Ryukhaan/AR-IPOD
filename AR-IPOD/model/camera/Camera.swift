@@ -14,10 +14,15 @@ struct Camera {
     let intrinsics: matrix_float3x3
     var extrinsics: matrix_float4x4
 
-    let width:      CGFloat
-    let height:     CGFloat
+    var width:      CGFloat = 0
+    var height:     CGFloat = 0
     var zFar:       CGFloat = 0.0
     var zNear:      CGFloat = 0.0
+    
+    init() {
+        intrinsics = matrix_float3x3(diagonal: Vector(1,1,1))
+        extrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
+    }
     
     init(_intrinsics: matrix_float3x3, dim: CGSize) {
         intrinsics  = _intrinsics

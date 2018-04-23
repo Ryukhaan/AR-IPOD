@@ -14,6 +14,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     var myVolume: Volume = Volume(_size: Point3D(256,256,256), _resolution: 0.1)
+    var depthImage: DepthImage = DepthImage(_width: 360, _heigth: 480)
+    var myCamera: Camera = Camera()
+    
+    @IBOutlet weak var depthView: UIImageView!
+    var myDepthStrings = [String]()
+    var myDepthImage: UIImage?
+    var myFocus: CGFloat = 0.5
+    var mySlope: CGFloat = 4.0
+    var myDepthData: AVDepthData?
+    var myDepthDataRaw: AVDepthData?
+    var myCIImage: CIImage?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +52,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
         // Run the view's session
         sceneView.session.run(configuration)
+        
+        if let frame = sceneView.session.currentFrame {
+            myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
+            myCamera.update(position: frame.camera.transform)
+        }
+        else {
+            assertionFailure("Camera has not been initialized ! ")
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -79,5 +98,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
+    }
+    
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        // Capture DepthMap
+        if frame.capturedDepthData != nil {
+            myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
+            myDepthDataRaw =  frame.capturedDepthData
+            let depthDataMap = myDepthData?.depthDataMap
+            // Potential Pre-processing
+            //compCIImage(depthDataMap: depthDataMap!)
+            //myDepthImage = UIImage(ciImage: myCIImage!)
+            //depthView.image = myDepthImage
+            depthImage.update(_data: depthDataMap as! [CGFloat])
+        }
+        myCamera.update(position: frame.camera.transform)
+        myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
     }
 }
