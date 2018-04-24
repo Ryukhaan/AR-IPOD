@@ -13,7 +13,7 @@ import ARKit
 class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
-    var myVolume: Volume = Volume(_size: Point3D(256,256,256), _resolution: 0.1)
+    var myVolume: Volume = Volume.sharedInstance
     var depthImage: DepthImage = DepthImage(_width: 360, _heigth: 480)
     var myCamera: Camera = Camera()
     
@@ -56,6 +56,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if let frame = sceneView.session.currentFrame {
             myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
             myCamera.update(position: frame.camera.transform)
+            myVolume.initialize()
         }
         else {
             assertionFailure("Camera has not been initialized ! ")
@@ -106,11 +107,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
             myDepthDataRaw =  frame.capturedDepthData
             let depthDataMap = myDepthData?.depthDataMap
-            // Potential Pre-processing
-            //compCIImage(depthDataMap: depthDataMap!)
-            //myDepthImage = UIImage(ciImage: myCIImage!)
-            //depthView.image = myDepthImage
-            depthImage.update(_data: depthDataMap as! [CGFloat])
+            CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
+            let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<CGFloat>.self)
+            /*
+             * Potential Pre-processing : Median Filter.
+             * We have to convert depthDataMap into an UIImage to do this.
+            compCIImage(depthDataMap: depthDataMap!)
+            myDepthImage = UIImage(ciImage: myCIImage!)
+            depthView.image = myDepthImage
+            */
+            depthImage.update(_data: depthPointer)
         }
         myCamera.update(position: frame.camera.transform)
         myVolume.integrateDepthMap(image: depthImage, camera: myCamera)

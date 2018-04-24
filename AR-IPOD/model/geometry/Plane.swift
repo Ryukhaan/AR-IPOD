@@ -9,9 +9,12 @@
 import Foundation
 import ARKit
 
+/**
+ * Plane stands for the mathematic object called Plane !
+ */
 class Plane {
-    var normal:     Vector
-    var distance:   Float
+    var normal:     Vector  // Normal
+    var distance:   Float   // ???
     
     init() {
         normal      = Vector(0, 0, 0)

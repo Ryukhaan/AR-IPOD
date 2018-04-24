@@ -11,25 +11,30 @@ import ARKit
 import AVFoundation
 
 struct Volume {
+    // Singleton pattern : Only one volume will be create
+    static let sharedInstance = Volume()
+    
     static let tau_min: Float = 0.4
     
     var size:       Point3D // X size, Y size and Z size
     var resolution: Float   // Number of voxels per meter
-    var voxels:     [Int: Voxel] = [Int: Voxel]()
-    var centroids:  [Int: Vector] = [Int: Vector]()
+    lazy var voxels:     [Int: Voxel]   = self.allocate()
+    lazy var centroids:  [Int: Vector]  = self.allocate()
     
-    init(_size: Point3D, _resolution: Float) {
-        size        = _size
-        resolution  = _resolution
-        allocate()
-        
+    // Prevents others from using default init() for this class
+    private init() {
+        size        = Point3D(0, 0, 0)
+        resolution  = 1.0
     }
     
-    private mutating func allocate() {
-        voxels.removeAll()
-        voxels.reserveCapacity(numberOfVoxels())
-        centroids.removeAll()
-        centroids.reserveCapacity(numberOfVoxels())
+    func allocate<T>() -> [Int: T] {
+        var allocator = [Int: T]()
+        allocator.removeAll()
+        allocator.reserveCapacity(numberOfVoxels())
+        return allocator
+    }
+    
+    mutating func initialize() {
         for i in 0..<Int(size.x) {
             for j in 0..<Int(size.y) {
                 for k in 0..<Int(size.z) {
