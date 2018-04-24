@@ -60,12 +60,22 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.run(configuration)
         
         // Initialize Volume
-        var start   = CFAbsoluteTimeGetCurrent()
-        myVolume.initialize()
-        var end    = CFAbsoluteTimeGetCurrent()
-        var elapsedTime = Double(end) - Double(start)
+        /*
+        var z: UInt16   = 3
+        let m: Float    = 43.0
+        let n: UInt16   = 43
+        let start   = CFAbsoluteTimeGetCurrent()
+        for _ in 0..<1_000_000 {
+            z = n
+        }
+        let end    = CFAbsoluteTimeGetCurrent()
+        let elapsedTime = Double(end) - Double(start)
         print("Time : \(elapsedTime)")
-        
+        */
+        let mem = MemoryLayout<Voxel>.size
+        let ali = MemoryLayout<Voxel>.alignment
+        let str = MemoryLayout<Voxel>.stride
+        print("Size: \(mem) \n Alignement: \(ali) \n Stride: \(str)")
         
         if let frame = sceneView.session.currentFrame {
             myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
@@ -122,7 +132,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             myDepthDataRaw =  frame.capturedDepthData
             let depthDataMap = myDepthData?.depthDataMap
             CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
-            let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<CGFloat>.self)
+            let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
             /*
              * Potential Pre-processing : Median Filter.
              * We have to convert depthDataMap into an UIImage to do this.

@@ -16,8 +16,8 @@ struct Volume {
     
     static let tau_min: Float = 0.4
     
-    var size:       Point3D // X size, Y size and Z size
     var resolution: Float   // Number of voxels per meter
+    var size:       Point3D // X size, Y size and Z size
     // Since i now the hash function, is adictionary still necessary ?
     //lazy var voxels:     [Int: Voxel]   = self.allocate()
     //lazy var centroids:  [Int: Vector]  = self.allocate()
@@ -95,7 +95,7 @@ struct Volume {
                 voxels[id].carve()
             }
             else if fabs(distance) >= tau + range {
-                voxels[id].update(sdfUpdate: uv.x, weightUpdate: 1.0)
+                voxels[id].update(sdfUpdate: uv.x, weightUpdate: 1)
             }
         }
     }
