@@ -290,7 +290,7 @@ func retriveIDs(from: Box, dim: Point3D, step: Float) -> ([Int], [Vector]) {
                 let approx      = mappingVoxel(worldPoint: worldPoint, dim: dim, step: step)
                 let center      = trilinearInterpolate(position: approx)
                 centroids.append(center)
-                list.append(worldPoint.index())
+                list.append(worldPoint.index(base: Int(dim.x)))
             }
         }
     }

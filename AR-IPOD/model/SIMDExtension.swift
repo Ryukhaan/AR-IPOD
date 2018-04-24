@@ -38,32 +38,24 @@ extension Point3D {
     /**
      * Creates a unique Int from a Point3D (int, int, int)
      */
-    func index() -> Int {
-        let g = { (x: Int, y: Int) -> Int in
-            let x1 = x + y
-            return x1 * (x1 + 1) / 2 + y
-            
-        }
-        return g(g(Int(x), Int(y)), Int(z))
+    func index(base: Int) -> Int {
+        let a: Int = Int(x) * (base ^ 2)
+        let b: Int = Int(y) * base
+        let c: Int = Int(z)
+        return a + b + c
     }
     
     /**
      * Get Point3D from a unique Int
      */
-    static func inverse(n: Int) -> Point3D {
-        let g_inv = { (n: Int) -> (Int, Int) in
-            var m = Int(floor(sqrt(2.0 * Double(n))))
-            var y = 0
-            while true {
-                y = n - m * (m + 1) / 2
-                if y >= 0 { break }
-                m -= 1
-            }
-            let x = m - y
-            return (x, y)
-        }
-        let (w, z) = g_inv(n)
-        let (x, y) = g_inv(w)
+    static func hashInverse(n: Int, base: Int) -> Point3D {
+        let fbase: Float = Float(base)
+        var remainder: Float = Float(n)
+        let x: Float = floor(remainder / (fbase * fbase))
+        remainder = remainder - x * (fbase * fbase)
+        let y: Float = floor(remainder / Float(base))
+        remainder = remainder - x * fbase
+        let z: Float = remainder
         return Point3D(Float(x), Float(y), Float(z))
     }
 }
