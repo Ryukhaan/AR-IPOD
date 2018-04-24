@@ -45,15 +45,6 @@ struct Volume {
             let p = Point3D.hashInverse(n: i, base: Int(size.x))
             centroids[i] = mappingVoxel(worldPoint: p, dim: size, step: resolution)
         }
-        for i in 0..<Int(size.x) {
-            for j in 0..<Int(size.y) {
-                for k in 0..<Int(size.z) {
-                    let p = Point3D(Float(i), Float(j), Float(k))
-                    centroids[n] = mappingVoxelCentroid(voxel: p, dim: size, step: resolution)
-                    n += 1
-                }
-            }
-        }
     }
     
     func numberOfVoxels() -> Int {
