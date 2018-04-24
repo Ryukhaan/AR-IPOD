@@ -230,6 +230,15 @@ func mappingVoxelCentroid(voxel: Point3D, dim: Point3D, step: Float) -> Vector {
                          voxel.y / dim.y,
                          voxel.z / dim.z)
 }
+
+/**
+ * Mapping between voxel coordinate and centroid in a cube
+ */
+func mappingVoxelToCentroid(voxel: Point3D, dim: Int, voxelResolution: Float) -> Vector {
+    let round = voxelResolution / Float(dim)
+    return (0.5 * voxelResolution) + (round * voxel)
+}
+
 /**
  * Computes linear interpolation.
  */

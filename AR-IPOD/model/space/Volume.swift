@@ -26,7 +26,8 @@ struct Volume {
     
     // Prevents others from using default init() for this class
     private init() {
-        size        = Point3D(0, 0, 0)
+    //init() {
+        size        = Point3D(256, 256, 256)
         resolution  = 1.0
     }
     
@@ -40,10 +41,19 @@ struct Volume {
     mutating func initialize() {
         let count = Int(size.x * size.y * size.z)
         voxels = [Voxel](repeating: Voxel(), count: count)
-        var n = 0
-        for i in 0..<count {
-            let p = Point3D.hashInverse(n: i, base: Int(size.x))
-            centroids[i] = mappingVoxel(worldPoint: p, dim: size, step: resolution)
+        centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
+        centroids = (0..<count).map {
+                let x = Float($0 / 65536)
+                let remainder = $0 % (65536)
+                let y = Float(remainder / 256)
+                let z = Float(remainder % 256)
+                return Point3D(x, y, z)
+        }
+        
+        centroids = centroids.map {
+            mappingVoxelToCentroid(voxel: $0,
+                                   dim: Int(size.x),
+                                   voxelResolution: resolution)
         }
     }
     

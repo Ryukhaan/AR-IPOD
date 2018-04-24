@@ -35,6 +35,10 @@ extension Vector {
 }
 
 extension Point3D {
+    
+    static func + (scalar: Float, vector: Point3D) -> Vector {
+        return Vector(scalar + vector.x, scalar + vector.y, scalar + vector.z)
+    }
     /**
      * Creates a unique Int from a Point3D (int, int, int)
      */

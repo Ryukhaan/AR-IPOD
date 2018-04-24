@@ -10,6 +10,12 @@ import UIKit
 import SceneKit
 import ARKit
 
+func measureTime(block: () -> () ) {
+    let start = CFAbsoluteTimeGetCurrent()
+    block()
+    let elapsed = CFAbsoluteTimeGetCurrent() - start
+    print("Time : \(elapsed)")
+}
 class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
@@ -52,6 +58,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
         // Run the view's session
         sceneView.session.run(configuration)
+        
+        // Initialize Volume
+        var start   = CFAbsoluteTimeGetCurrent()
+        myVolume.initialize()
+        var end    = CFAbsoluteTimeGetCurrent()
+        var elapsedTime = Double(end) - Double(start)
+        print("Time : \(elapsedTime)")
+        
         
         if let frame = sceneView.session.currentFrame {
             myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
