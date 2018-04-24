@@ -10,12 +10,6 @@ import UIKit
 import SceneKit
 import ARKit
 
-func measureTime(block: () -> () ) {
-    let start = CFAbsoluteTimeGetCurrent()
-    block()
-    let elapsed = CFAbsoluteTimeGetCurrent() - start
-    print("Time : \(elapsed)")
-}
 class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
@@ -71,12 +65,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let end    = CFAbsoluteTimeGetCurrent()
         let elapsedTime = Double(end) - Double(start)
         print("Time : \(elapsedTime)")
-        */
+         */
         let mem = MemoryLayout<Voxel>.size
         let ali = MemoryLayout<Voxel>.alignment
         let str = MemoryLayout<Voxel>.stride
         print("Size: \(mem) \n Alignement: \(ali) \n Stride: \(str)")
-        
+ 
         if let frame = sceneView.session.currentFrame {
             myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
             myCamera.update(position: frame.camera.transform)
