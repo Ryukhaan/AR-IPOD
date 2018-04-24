@@ -222,6 +222,14 @@ func mappingVoxel(worldPoint: Vector, dim: Point3D, step: Float) -> Point3D {
 }
 
 /**
+ * Mapping between voxel coordinate and centroid
+ */
+func mappingVoxelCentroid(voxel: Point3D, dim: Point3D, step: Float) -> Vector {
+    return step * Vector(voxel.x / dim.x,
+                         voxel.y / dim.y,
+                         voxel.z / dim.z)
+}
+/**
  * Computes linear interpolation.
  */
 func linearInterpolate(u: Point3D, v: Point3D, tx: Float) -> Point3D {

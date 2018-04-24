@@ -30,6 +30,16 @@ struct Volume {
         voxels.reserveCapacity(numberOfVoxels())
         centroids.removeAll()
         centroids.reserveCapacity(numberOfVoxels())
+        for i in 0..<Int(size.x) {
+            for j in 0..<Int(size.y) {
+                for k in 0..<Int(size.z) {
+                    let p = Point3D(Float(i), Float(j), Float(k))
+                    let n = p.index()
+                    voxels[n] = Voxel()
+                    centroids[n] = mappingVoxelCentroid(voxel: p, dim: size, step: resolution)
+                }
+            }
+        }
     }
     
     func numberOfVoxels() -> Int {
@@ -53,20 +63,10 @@ struct Volume {
         frustrum.setUp(camera: copyCamera)
         // Determines intersects between frustrum and volume
         let bbox = computeBoundingBox(frustrum: frustrum)
-        let (voxelsIDs, voxelsPos) = retriveIDs(from: bbox, dim: size, step: resolution)
+        let (voxelsIDs, _) = retriveIDs(from: bbox, dim: size, step: resolution)
         // For each voxel/centroid retrieved
         for i in 0..<voxelsIDs.count {
             let id = voxelsIDs[i]
-            let pos = voxelsPos[i]
-            // Check if centroids exists
-            if centroids.index(forKey: id) == nil {
-                centroids[id] = pos
-            }
-            // Check if voxels exists
-            if voxels.index(forKey: id) == nil {
-                voxels[id] = Voxel()
-            }
-            
             if let centroid = centroids[id] {
                 let positionCamera = camera.extrinsics.columns.3
                 let distance = (centroid - Vector(positionCamera.x, positionCamera.y, positionCamera.z)).length()
