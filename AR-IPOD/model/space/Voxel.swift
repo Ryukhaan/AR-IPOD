@@ -29,8 +29,8 @@ struct Voxel {
     mutating func update(sdfUpdate: Float, weightUpdate: UInt8) {
         let oldSDF      = sdf
         let oldWeight   = weight
-        let oldProduct  = Float(oldWeight) * oldSDF
         let newWeight   = oldWeight + weightUpdate
+        let oldProduct  = Float(oldWeight) * oldSDF
         let newProduct  = sdfUpdate * Float(weightUpdate)
         let newSDF      = (newProduct + oldProduct ) / Float(newWeight)
         

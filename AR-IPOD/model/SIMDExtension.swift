@@ -43,7 +43,7 @@ extension Point3D {
      * Creates a unique Int from a Point3D (int, int, int)
      */
     func index(base: Int) -> Int {
-        let a: Int = Int(x) * (base ^ 2)
+        let a: Int = Int(x) * (base * base)
         let b: Int = Int(y) * base
         let c: Int = Int(z)
         return a + b + c

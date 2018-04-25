@@ -10,14 +10,21 @@ import Foundation
 import ARKit
 import AVFoundation
 
-struct PointCloud {
-    var data: [Vector] = [Vector]()
+class PointCloud {
+    var vertices: [Vector] = [Vector]()
+    var edges:    [Line]   = [Line]()
     
-    mutating func addPoint(point: Vector) {
-        data.append(point)
+    func addPoint(point: Vector) {
+        vertices.append(point)
+    }
+    func addEdge(edge: Line) {
+        edges.append(edge)
     }
     
-    mutating func clear() {
-        data.removeAll()
+    func clear() {
+        vertices.removeAll()
+        edges.removeAll()
     }
+    
+    
 }

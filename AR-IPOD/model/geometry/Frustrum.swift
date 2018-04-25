@@ -9,7 +9,7 @@
 import Foundation
 import ARKit
 
-class Frustrum {
+struct Frustrum {
     var top: Plane
     var left: Plane
     var bottom: Plane
@@ -28,7 +28,7 @@ class Frustrum {
         far     = Plane()
     }
     
-    func setUpFromVectors(forward: Vector,
+    mutating func setUpFromVectors(forward: Vector,
                           pos: Vector,
                           rightVec: Vector,
                           up: Vector,
@@ -94,7 +94,7 @@ class Frustrum {
     /**
      * Set up Frustum given a camra
      */
-    func setUp(camera: Camera) {
+    mutating func setUp(camera: Camera) {
         let rot         = camera.extrinsics
         let right       = Vector(rot[0][0], rot[1][0], rot[2][0])
         let up          = -Vector(rot[0][1], rot[1][1], rot[2][1])

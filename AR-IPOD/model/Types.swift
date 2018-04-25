@@ -11,7 +11,7 @@ import ARKit
 
 typealias Vector    = float3
 typealias Point3D   = float3
-typealias Point2D   = float2
+typealias Line      = int2
 typealias Pixel     = float2
 
 

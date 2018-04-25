@@ -10,14 +10,17 @@ import Foundation
 import ARKit
 import AVFoundation
 
-struct Volume {
+class Volume {
     // Singleton pattern : Only one volume will be create
     static let sharedInstance = Volume()
     
     static let tau_min: Float = 0.4
     
     var resolution: Float   // Number of voxels per meter
-    var size:       Point3D // X size, Y size and Z size
+    // Can size be only an Int ? Let's do this !
+    //var size:       Point3D // X size, Y size and Z size
+    var size:   Int
+    
     // Since i now the hash function, is adictionary still necessary ?
     //lazy var voxels:     [Int: Voxel]   = self.allocate()
     //lazy var centroids:  [Int: Vector]  = self.allocate()
@@ -25,9 +28,15 @@ struct Volume {
     lazy var centroids: [Vector]    = self.allocate()
     
     // Prevents others from using default init() for this class
+    /*
     private init() {
-    //init() {
-        size        = Point3D(256, 256, 256)
+        size        = Point3D(128, 128, 128)
+        resolution  = 1.0
+    }
+    */
+    
+    private init() {
+        size        = 256
         resolution  = 1.0
     }
     
@@ -38,27 +47,30 @@ struct Volume {
         return allocator
     }
     
-    mutating func initialize() {
+    func initialize() {
+        // TO DO : change 65536 by size dim
+        /* When size is an (Float, Float, Float)
         let count = Int(size.x * size.y * size.z)
+        let base2 = Int(size.x * size.x)
+        let base = Int(size.x)
+        */
+        let count = numberOfVoxels()
+        let square = size * size
         voxels = [Voxel](repeating: Voxel(), count: count)
         centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
         centroids = (0..<count).map {
-                let x = Float($0 / 65536)
-                let remainder = $0 % (65536)
-                let y = Float(remainder / 256)
-                let z = Float(remainder % 256)
+                let x = Float($0 / square)
+                let remainder = $0 % (square)
+                let y = Float(remainder / size)
+                let z = Float(remainder % size)
                 return Point3D(x, y, z)
         }
-        
-        centroids = centroids.map {
-            mappingVoxelToCentroid(voxel: $0,
-                                   dim: Int(size.x),
-                                   voxelResolution: resolution)
-        }
+        centroids = centroids.map { mappingIntegerToCentroid(point: $0, dim: size, voxelResolution: resolution) }
     }
     
     func numberOfVoxels() -> Int {
-        return Int(size.x * size.y * size.z)
+        //return Int(size.x * size.y * size.z)
+        return size * size * size
     }
     
     func truncation(range: Float) -> Float {
@@ -66,21 +78,27 @@ struct Volume {
         return 1
     }
     
-    mutating func integrateDepthMap(image: DepthImage, camera: Camera) {
+    func integrateDepthMap(image: DepthImage, camera: Camera) {
         // Get nearest and farthest depth
         let (minimumDepth, maximumDepth, _) = image.getStats()
+        
         // Set near range and far range
         var copyCamera = camera
         copyCamera.zFar = maximumDepth
         copyCamera.zNear = minimumDepth
+        
         // Create camera frustum
-        let frustrum = Frustrum()
+        var frustrum = Frustrum()
         frustrum.setUp(camera: copyCamera)
+        
         // Determines intersects between frustrum and volume
         let bbox = computeBoundingBox(frustrum: frustrum)
-        let (voxelsIDs, _) = retriveIDs(from: bbox, dim: size, step: resolution)
+        let voxelsIDs = retrieveIDs(from: bbox, dim: size, voxelResolution: resolution)
+        
         // For each voxel/centroid retrieved
-        for i in 0..<voxelsIDs.count {
+        let count = min(voxelsIDs.count, 10000)
+        for i in 0..<count {
+            //let start   = Double(CFAbsoluteTimeGetCurrent())
             let id = voxelsIDs[i]
             let centroid = centroids[id]
             let positionCamera = camera.extrinsics.columns.3
@@ -88,6 +106,7 @@ struct Volume {
             let uv      = camera.project(vector: centroid)
             let depth   = image.at(row: Int(uv.x), column: Int(uv.y))
             if depth.isNaN { continue }
+            if depth == 0.0 { continue }
             let proj    = camera.unproject(pixel: uv, depth: Float(depth))
             let range   = proj.length()
             let tau     = truncation(range: range)
@@ -97,6 +116,8 @@ struct Volume {
             else if fabs(distance) >= tau + range {
                 voxels[id].update(sdfUpdate: uv.x, weightUpdate: 1)
             }
+    
+            //print("\( Double(CFAbsoluteTimeGetCurrent()) - start )")
         }
     }
 }

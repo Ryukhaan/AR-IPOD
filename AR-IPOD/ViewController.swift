@@ -14,7 +14,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     var myVolume: Volume = Volume.sharedInstance
-    var depthImage: DepthImage = DepthImage(_width: 360, _heigth: 480)
+    var depthImage: DepthImage = DepthImage()
     var myCamera: Camera = Camera()
     
     @IBOutlet weak var depthView: UIImageView!
@@ -54,22 +54,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.run(configuration)
         
         // Initialize Volume
-        /*
-        var z: UInt16   = 3
-        let m: Float    = 43.0
-        let n: UInt16   = 43
+        myVolume.initialize()
+        let depthMap = importDepthMap(fromFile: "/Users/Remi/Documents/Adagio/Data/result1.sdp")
+        depthImage.update(_data: depthMap)
         let start   = CFAbsoluteTimeGetCurrent()
-        for _ in 0..<1_000_000 {
-            z = n
-        }
+    
+        myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
+        
         let end    = CFAbsoluteTimeGetCurrent()
         let elapsedTime = Double(end) - Double(start)
         print("Time : \(elapsedTime)")
-         */
-        let mem = MemoryLayout<Voxel>.size
-        let ali = MemoryLayout<Voxel>.alignment
-        let str = MemoryLayout<Voxel>.stride
-        print("Size: \(mem) \n Alignement: \(ali) \n Stride: \(str)")
+        
+        exportToPlyFormat(volume: myVolume, fileName: "cube.ply")
  
         if let frame = sceneView.session.currentFrame {
             myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)

@@ -13,7 +13,7 @@ import ARKit
  * Box stands for a Cube.
  * Only two points are required : min and max.
  */
-class Box {
+struct Box {
     var min: Vector // Lowest Vector (lexicographic order)
     var max: Vector // Highest Vector (lexicographic order)
     

@@ -12,7 +12,7 @@ import ARKit
 /**
  * Plane stands for the mathematic object called Plane !
  */
-class Plane {
+struct Plane {
     var normal:     Vector  // Normal
     var distance:   Float   // ???
     

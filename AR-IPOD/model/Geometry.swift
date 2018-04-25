@@ -212,31 +212,21 @@ func unproject(vector: Vector, K: matrix_float3x3) -> Vector {
     return Vector(all.x * vector.z, all.y * vector.z, vector.z)
 }
 
+
 /**
  * Mapping between a world point and a voxel coordinate
  * Step is a Float, but in pratical it will be an Integer.
  */
-func mappingVoxel(worldPoint: Vector, dim: Point3D, step: Float) -> Point3D {
-    return step * Point3D(worldPoint.x / dim.x + 0.5,
-                   worldPoint.y / dim.y + 0.5,
-                   worldPoint.z / dim.z + 0.5)
+func mappingIntegerToCentroid(point: Point3D, dim: Int, voxelResolution: Float) -> Vector {
+    return (voxelResolution / Float(dim)) * (0.5 + point)
 }
 
 /**
- * Mapping between voxel coordinate and centroid
+ * Mapping between a world point and a voxel coordinate
+ * Step is a Float, but in pratical it will be an Integer.
  */
-func mappingVoxelCentroid(voxel: Point3D, dim: Point3D, step: Float) -> Vector {
-    return step * Vector(voxel.x / dim.x,
-                         voxel.y / dim.y,
-                         voxel.z / dim.z)
-}
-
-/**
- * Mapping between voxel coordinate and centroid in a cube
- */
-func mappingVoxelToCentroid(voxel: Point3D, dim: Int, voxelResolution: Float) -> Vector {
-    let round = voxelResolution / Float(dim)
-    return (0.5 * voxelResolution) + (round * voxel)
+func mappingCentroidToInteger(centroid: Vector, dim: Int, voxelResolution: Float) -> Point3D {
+    return -0.5 + (Float(dim) / voxelResolution) * centroid
 }
 
 /**
@@ -287,21 +277,33 @@ func globalToLocal(worldPoint: Vector, Rt: matrix_float4x4) -> Vector {
 /**
  * Retrives all ID in a certain box
  */
-func retriveIDs(from: Box, dim: Point3D, step: Float) -> ([Int], [Vector]) {
+func retrieveIDs(from: Box, dim: Int, voxelResolution: Float) -> [Int] {
     var list = [Int]()
-    var centroids = [Vector]()
-    let mini = from.min
-    let maxi = from.max
-    for x in Int(floor(mini.x))...Int(floor(maxi.x)) {
-        for y in Int(floor(mini.y))...Int(floor(maxi.y)) {
-            for z in Int(floor(mini.z))...Int(floor(maxi.z)) {
+    let mini = mappingCentroidToInteger(centroid: trilinearInterpolate(position: from.min),
+                                        dim: dim,
+                                        voxelResolution: voxelResolution)
+    let maxi = mappingCentroidToInteger(centroid: trilinearInterpolate(position: from.max),
+                                        dim: dim,
+                                        voxelResolution: voxelResolution)
+    let (minx, maxx) = (max(0, Int(mini.x)), min(dim, Int(maxi.x)))
+    let (miny, maxy) = (max(0, Int(mini.y)), min(dim, Int(maxi.y)))
+    let (minz, maxz) = (max(0, Int(mini.z)), min(dim, Int(maxi.z)))
+    for x in minx...maxx {
+        for y in miny...maxy {
+            for z in minz...maxz {
                 let worldPoint  = Vector(Float(x), Float(y), Float(z))
-                let approx      = mappingVoxel(worldPoint: worldPoint, dim: dim, step: step)
-                let center      = trilinearInterpolate(position: approx)
-                centroids.append(center)
-                list.append(worldPoint.index(base: Int(dim.x)))
+                list.append(worldPoint.index(base: dim))
             }
         }
     }
-    return (list, centroids)
+    return list
+}
+
+
+/**
+ * Straight-forward Marching Cube
+ */
+func marchingCubes() -> PointCloud {
+    var pointCloud = PointCloud()
+    return pointCloud
 }

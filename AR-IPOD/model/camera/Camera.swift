@@ -30,7 +30,10 @@ struct Camera {
      * Initializes both matrices as identity.
      */
     init() {
-        intrinsics = matrix_float3x3(diagonal: Vector(1,1,1))
+        //intrinsics = matrix_float3x3(diagonal: Vector(1,1,1))
+        intrinsics =  matrix_float3x3(float3(4, 0, 645),
+                                      float3(0, 2.5, 31544),
+                                      float3(0, 0, 1))
         extrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
     }
     
