@@ -36,7 +36,7 @@ class Volume {
     */
     
     private init() {
-        size        = 128
+        size        = 64
         resolution  = 1.0
     }
     
@@ -150,12 +150,70 @@ class Volume {
     }
     
     func falseIntegration(pointCloud: PointCloud) {
-        for vertex in pointCloud.vertices {
+        let group = DispatchGroup()
+        let _ = DispatchQueue.global(qos: .userInteractive)
+        /*
+        DispatchQueue.concurrentPerform(iterations: pointCloud.vertices.count) { i in
+            let vertex = pointCloud.vertices[i]
             let depth = vertex.z
-            if depth == 0.0 {continue}
-            let id = mappingCentroidToInteger(centroid: vertex, dim: size, voxelResolution: resolution).index(base: size)
-            let distance = (vertex - centroids[id]).length()
-            voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
+            if depth != 0.0 {
+                group.enter()
+                let id = mappingCentroidToInteger(centroid: vertex, dim: size, voxelResolution: resolution).index(base: size)
+                let distance = (vertex - centroids[id]).length()
+                voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
+                group.leave()
+            }
         }
+         */
+        //for vertex in pointCloud.vertices {
+        //let start = CFAbsoluteTimeGetCurrent()
+        //while Double(CFAbsoluteTimeGetCurrent()) - Double(start) < 1.0 {
+        let thread1 = DispatchQueue(label: "Thread1", qos: .userInteractive, attributes: .concurrent)
+        let thread2 = DispatchQueue(label: "Thread2", qos: .userInteractive, attributes: .concurrent)
+        let thread3 = DispatchQueue(label: "Thread3", qos: .userInteractive, attributes: .concurrent)
+        /*
+        for i in 0..<(pointCloud.vertices.count/3) {
+            let j = Int(arc4random_uniform(UInt32(pointCloud.vertices.count)))
+            let k = Int(arc4random_uniform(UInt32(pointCloud.vertices.count)))
+            let m = Int(arc4random_uniform(UInt32(pointCloud.vertices.count)))
+            let vertex1 = pointCloud.vertices[j]
+            let vertex2 = pointCloud.vertices[k]
+            let vertex3 = pointCloud.vertices[m]
+            thread1.async {
+                let depth = vertex1.z
+                if depth != 0.0 {
+                    let id = mappingCentroidToInteger(centroid: vertex1, dim: self.size, voxelResolution: self.resolution).index(base: self.size)
+                    let distance = (vertex1 - self.centroids[id]).length()
+                    self.voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
+                }
+            }
+            thread2.async {
+                let depth = vertex2.z
+                if depth != 0.0 {
+                    let id = mappingCentroidToInteger(centroid: vertex2, dim: self.size, voxelResolution: self.resolution).index(base: self.size)
+                    let distance = (vertex2 - self.centroids[id]).length()
+                    self.voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
+                }
+            }
+            thread3.async {
+                let depth = vertex3.z
+                if depth != 0.0 {
+                    let id = mappingCentroidToInteger(centroid: vertex3, dim: self.size, voxelResolution: self.resolution).index(base: self.size)
+                    let distance = (vertex3 - self.centroids[id]).length()
+                    self.voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
+                }
+            }
+        }
+        DispatchQueue.main.sync {
+            print("Done")
+        }
+        */
+        //operationQueue.addOperations(operation1, waitUntilFinished: false)
+        //}
+        /*
+        DispatchQueue.main.async {
+            print("Integrate done")
+        }
+         */
     }
 }

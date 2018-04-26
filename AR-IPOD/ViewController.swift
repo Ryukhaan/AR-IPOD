@@ -54,25 +54,32 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.run(configuration)
         
         // Initialize Volume
-        let start   = CFAbsoluteTimeGetCurrent()
-        // All pipeline
-        
+        print("Initialize...")
         self.myVolume.initialize()
+        print("Import...")
+        let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
+        let start   = CFAbsoluteTimeGetCurrent()
+        
         //let depthMap = importDepthMap(fromFile: "/Users/Remi/Documents/result_resized.sdp")
-        let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/result_resized2.sdp")
         //self.depthImage.update(_data: depthMap)
+        //myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
+
+        print("Integrate...")
         myVolume.falseIntegration(pointCloud: pointCloud)
-        //myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
-        let cells = convertVolumeIntoCells(volume: myVolume)
-        let tritri = extractMesh(from: cells, isolevel: 20)
-        //myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
+        
         let end    = CFAbsoluteTimeGetCurrent()
         let elapsedTime = Double(end) - Double(start)
         print("Time : \(elapsedTime)")
         
-        exportToPLY(triangles: tritri, fileName: "meshCube.ply")
-        exportToPLY(volume: myVolume, fileName: "cube.ply")
- 
+        print("Convert...")
+        let cells = convertVolumeIntoCells(volume: myVolume)
+        print("Extract...")
+        let tritri = extractMesh(from: cells, isolevel: 20)
+        print("Export...")
+        exportToPLY(triangles: tritri, fileName: "mesh_\(myVolume.size).ply")
+        exportToPLY(volume: myVolume, fileName: "volume_\(myVolume.size).ply")
+        print("Done !")
+            
         if let frame = sceneView.session.currentFrame {
             myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
             myCamera.update(position: frame.camera.transform)
