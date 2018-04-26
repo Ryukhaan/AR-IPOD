@@ -35,7 +35,7 @@ struct Voxel {
         let newSDF      = (newProduct + oldProduct ) / Float(newWeight)
         
         sdf     = newSDF
-        weight  = newWeight
+        weight  = newWeight < 100 ? newWeight : 100
     }
     
     mutating func carve() {

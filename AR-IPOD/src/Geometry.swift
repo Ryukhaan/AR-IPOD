@@ -298,12 +298,3 @@ func retrieveIDs(from: Box, dim: Int, voxelResolution: Float) -> [Int] {
     }
     return list
 }
-
-
-/**
- * Straight-forward Marching Cube
- */
-func marchingCubes() -> PointCloud {
-    var pointCloud = PointCloud()
-    return pointCloud
-}

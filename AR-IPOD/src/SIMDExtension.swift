@@ -32,6 +32,16 @@ extension Vector {
     func distance(other: Vector) -> Float {
         return (self - other).length()
     }
+    
+    static func < (u: Vector, v: Vector) -> Bool {
+        if u.x < v.x { return true }
+        else if u.x > v.x { return false }
+        if u.y < v.y { return true }
+        else if u.y > v.y { return false }
+        if u.z < v.z { return true }
+        else if u.z > v.z { return false }
+        return false
+    }
 }
 
 extension Point3D {

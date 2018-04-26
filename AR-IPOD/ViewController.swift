@@ -54,18 +54,24 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.run(configuration)
         
         // Initialize Volume
-        myVolume.initialize()
-        let depthMap = importDepthMap(fromFile: "/Users/Remi/Documents/Adagio/Data/result1.sdp")
-        depthImage.update(_data: depthMap)
         let start   = CFAbsoluteTimeGetCurrent()
-    
-        myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
+        // All pipeline
         
+        self.myVolume.initialize()
+        //let depthMap = importDepthMap(fromFile: "/Users/Remi/Documents/result_resized.sdp")
+        let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/result_resized2.sdp")
+        //self.depthImage.update(_data: depthMap)
+        myVolume.falseIntegration(pointCloud: pointCloud)
+        //myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
+        let cells = convertVolumeIntoCells(volume: myVolume)
+        let tritri = extractMesh(from: cells, isolevel: 20)
+        //myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
         let end    = CFAbsoluteTimeGetCurrent()
         let elapsedTime = Double(end) - Double(start)
         print("Time : \(elapsedTime)")
         
-        exportToPlyFormat(volume: myVolume, fileName: "cube.ply")
+        exportToPLY(triangles: tritri, fileName: "meshCube.ply")
+        exportToPLY(volume: myVolume, fileName: "cube.ply")
  
         if let frame = sceneView.session.currentFrame {
             myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
