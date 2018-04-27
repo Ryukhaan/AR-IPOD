@@ -62,57 +62,50 @@ class ViewController: UIViewController, ARSCNViewDelegate {
          */
         let start   = CFAbsoluteTimeGetCurrent()
         
-        //let depthMap = importDepthMap(fromFile: "/Users/Remi/Documents/result_resized.sdp")
-        //self.depthImage.update(_data: depthMap)
-        //myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
-        /* WORK ITEM */
-        /*
         let thread1 = DispatchQueue(label: "Thread1", attributes: .concurrent)
         let thread2 = DispatchQueue(label: "Thread2", attributes: .concurrent)
+        let group = DispatchGroup()
         var pointCloud = PointCloud()
-        let initializeItem = DispatchWorkItem {
-            print("Initialize...")
-            self.myVolume.initialize()
-        }
-        let importItem = DispatchWorkItem {
-            print("Import...")
-            pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
-        }
-        thread1.async(execute: initializeItem)
-        thread2.async(execute: importItem)
-        
-        initializeItem.wait()
-        importItem.wait()
-        */
         /* SERIAL */
+        
         print("Initialize...")
-        self.myVolume.initialize()
-        
-        let end    = CFAbsoluteTimeGetCurrent()
-        let elapsedTime = Double(end) - Double(start)
-        print("Time : \(elapsedTime)")
-        
-        print("Integrate...\(myVolume.centroids.count)")
-        /*
-        print("Import...")
-        let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
-        myVolume.falseIntegration(pointCloud: pointCloud)
-        print("Convert...")
-        let cells = convertVolumeIntoCells(volume: myVolume)
-        print("Extract...")
-        let tritri = extractMesh(from: cells, isolevel: 20)
-        print("Export...")
-        exportToPLY(triangles: tritri, fileName: "mesh_\(myVolume.size).ply")
-        exportToPLY(volume: myVolume, fileName: "volume_\(myVolume.size).ply")
-        print("Done !")
-        */
-        if let frame = sceneView.session.currentFrame {
-            myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
-            myCamera.update(position: frame.camera.transform)
-            myVolume.initialize()
+        group.enter()
+        thread1.async {
+            self.myVolume.initialize()
+            group.leave()
         }
-        else {
-            assertionFailure("Camera has not been initialized ! ")
+        group.enter()
+        thread2.async {
+            pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
+            group.leave()
+        }
+        group.wait()
+        group.notify(queue: .main) {
+            let end    = CFAbsoluteTimeGetCurrent()
+            let elapsedTime = Double(end) - Double(start)
+            print("Time : \(elapsedTime)")
+            print("Integrate...\(self.myVolume.centroids.count)")
+            /*
+             print("Import...")
+             let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
+             myVolume.falseIntegration(pointCloud: pointCloud)
+             print("Convert...")
+             let cells = convertVolumeIntoCells(volume: myVolume)
+             print("Extract...")
+             let tritri = extractMesh(from: cells, isolevel: 20)
+             print("Export...")
+             exportToPLY(triangles: tritri, fileName: "mesh_\(myVolume.size).ply")
+             exportToPLY(volume: myVolume, fileName: "volume_\(myVolume.size).ply")
+             print("Done !")
+             */
+            if let frame = self.sceneView.session.currentFrame {
+                self.myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
+                self.myCamera.update(position: frame.camera.transform)
+                self.myVolume.initialize()
+            }
+            else {
+                assertionFailure("Camera has not been initialized ! ")
+            }
         }
     }
     
