@@ -54,20 +54,19 @@ class Volume {
     func initialize() {
         /* Sequence - serial */
         let count = numberOfVoxels()
-        let square = size * size
+        //let square = size * size
         voxels = [Voxel](repeating: Voxel(), count: count)
         centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
-        centroids = (0..<count).map {
-                let x = Float($0 / square)
-                let remainder = $0 % (square)
-                let y = Float(remainder / size)
-                let z = Float(remainder % size)
-                return mappingIntegerToCentroid(point: Point3D(x,y,z), dim: size, voxelResolution: resolution)
-        }
+        
+        let stride = MemoryLayout<Point3D>.stride
+        let byteCount = stride * count
+        let points = UnsafeMutablePointer<Point3D>.allocate(capacity: byteCount)
+        bridge_initializeCentroids(points, Int32(size), resolution)
+        let buffer = UnsafeBufferPointer(start: points, count: count)
+        centroids = Array(buffer)
     }
     
     func numberOfVoxels() -> Int {
-        //return Int(size.x * size.y * size.z)
         return size * size * size
     }
     

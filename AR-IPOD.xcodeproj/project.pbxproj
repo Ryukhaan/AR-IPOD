@@ -15,6 +15,7 @@
 		A52C3D4B2091CE8200BA5BDC /* Tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D4A2091CE8200BA5BDC /* Tables.swift */; };
 		A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */; };
 		A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4E2091E00700BA5BDC /* TriTableContents */; };
+		A52C3D652093185000BA5BDC /* parallelism.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D632093185000BA5BDC /* parallelism.cpp */; };
 		A5494B0A2089E43A007EA2FB /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B092089E43A007EA2FB /* Box.swift */; };
 		A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0D2089E63D007EA2FB /* Plane.swift */; };
 		A5494B102089E644007EA2FB /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0F2089E644007EA2FB /* Frustrum.swift */; };
@@ -62,6 +63,9 @@
 		A52C3D4A2091CE8200BA5BDC /* Tables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tables.swift; sourceTree = "<group>"; };
 		A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */ = {isa = PBXFileReference; lastKnownFileType = text; path = EdgeTableContents; sourceTree = "<group>"; };
 		A52C3D4E2091E00700BA5BDC /* TriTableContents */ = {isa = PBXFileReference; lastKnownFileType = text; path = TriTableContents; sourceTree = "<group>"; };
+		A52C3D622093185000BA5BDC /* AR-IPOD-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AR-IPOD-Bridging-Header.h"; sourceTree = "<group>"; };
+		A52C3D632093185000BA5BDC /* parallelism.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = parallelism.cpp; sourceTree = "<group>"; };
+		A52C3D642093185000BA5BDC /* parallelism.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parallelism.hpp; sourceTree = "<group>"; };
 		A5494B092089E43A007EA2FB /* Box.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		A5494B0D2089E63D007EA2FB /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		A5494B0F2089E644007EA2FB /* Frustrum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustrum.swift; sourceTree = "<group>"; };
@@ -195,6 +199,9 @@
 				A58DCDED2088895500280CD2 /* Info.plist */,
 				A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */,
 				A52C3D4E2091E00700BA5BDC /* TriTableContents */,
+				A52C3D632093185000BA5BDC /* parallelism.cpp */,
+				A52C3D642093185000BA5BDC /* parallelism.hpp */,
+				A52C3D622093185000BA5BDC /* AR-IPOD-Bridging-Header.h */,
 			);
 			path = "AR-IPOD";
 			sourceTree = "<group>";
@@ -301,6 +308,7 @@
 				TargetAttributes = {
 					A58DCDDB2088895500280CD2 = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 					};
 					A58DCDF12088895500280CD2 = {
@@ -373,6 +381,7 @@
 				A5494B102089E644007EA2FB /* Frustrum.swift in Sources */,
 				A5494B122089E657007EA2FB /* Geometry.swift in Sources */,
 				A5494B1C208A2768007EA2FB /* Types.swift in Sources */,
+				A52C3D652093185000BA5BDC /* parallelism.cpp in Sources */,
 				A52C3D452091CE4B00BA5BDC /* Meshing.swift in Sources */,
 				A52C3D472091CE5C00BA5BDC /* Triangle.swift in Sources */,
 				A52C3D492091CE6F00BA5BDC /* Cell.swift in Sources */,
@@ -554,12 +563,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "AR-IPOD/AR-IPOD-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -569,12 +581,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "AR-IPOD/AR-IPOD-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
