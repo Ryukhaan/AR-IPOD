@@ -9,6 +9,7 @@
 import Foundation
 import ARKit
 
+/*
 func interpolateVertex(isolevel: Float, a: Vector, b: Vector, alpha: Float, beta: Float) -> Vector {
     if (abs(isolevel-alpha) < 0.00001)  { return a }
     if (abs(isolevel-beta) < 0.00001)   { return b }
@@ -75,12 +76,16 @@ func polygonise(gridCell: Cell, isolevel: Float) ->  (Int, [Triangle]) {
     var i = 0
     while Tables.triTable[cubeindex][i] != -1 {
         var triangle = Triangle()
-        triangle.points[0] = vertexlist[Tables.triTable[cubeindex][i+0]]
-        triangle.points[1] = vertexlist[Tables.triTable[cubeindex][i+1]]
-        triangle.points[2] = vertexlist[Tables.triTable[cubeindex][i+2]]
+        let i1 = Tables.triTable[cubeindex][i+0]
+        let i2 = Tables.triTable[cubeindex][i+1]
+        let i3 = Tables.triTable[cubeindex][i+2]
+        triangle.points[0] = vertexlist[Int(i1)]
+        triangle.points[1] = vertexlist[Int(i2)]
+        triangle.points[2] = vertexlist[Int(i3)]
         triangles.append(triangle)
         ntriangle += 1
         i += 3
     }
     return (ntriangle, triangles)
 }
+*/

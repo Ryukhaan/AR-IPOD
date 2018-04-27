@@ -9,8 +9,9 @@
 import Foundation
 import ARKit
 
-func convertVolumeIntoCells(volume: Volume) -> [Cell] {
-    var cells = [Cell]()
+func extractMesh(volume: Volume, isolevel: Float) -> [Vector] {
+    /*
+    var triangles = [Vector]()
     let n = volume.size
     for i in 0..<(n-1) {
         for j in 0..<(n-1) {
@@ -29,19 +30,33 @@ func convertVolumeIntoCells(volume: Volume) -> [Cell] {
                 let values = [volume.voxels[i0].sdf, volume.voxels[i1].sdf, volume.voxels[i2].sdf, volume.voxels[i3].sdf,
                               volume.voxels[i4].sdf, volume.voxels[i5].sdf, volume.voxels[i6].sdf, volume.voxels[i7].sdf]
                 let cell = Cell(_points : points, _values: values)
-                cells.append(cell)
+                //cells.append(cell)
+                let (i, temp) = polygonise(gridCell: cell, isolevel: isolevel)
+                if i == 0 { continue }
+                for triangle in temp {
+                    triangles.append(triangle.points[0])
+                    triangles.append(triangle.points[1])
+                    triangles.append(triangle.points[2])
+                }
             }
         }
     }
-    return cells
+    return triangles
+    */
+    let count = volume.numberOfVoxels()
+    let stride = MemoryLayout<Vector>.stride
+    let byteCount = 5 * 3 * count * stride
+    let triangles = UnsafeMutablePointer<Vector>.allocate(capacity: byteCount)
+    var sdfs = volume.voxels.map { $0.sdf }
+    var tempTri = Tables.triTable.flatMap { $0 }
+    let numberOfTriangles = bridge_extractMesh( triangles,
+                       &sdfs,
+                       &volume.centroids,
+                       &Tables.edgeTable,
+                       &tempTri,
+                       Int32(volume.size),
+                       isolevel)
+    let buffer = UnsafeBufferPointer(start: triangles, count: Int(numberOfTriangles))
+    return Array(buffer)
 }
 
-func extractMesh(from: [Cell], isolevel: Float) -> [Triangle] {
-    var triangles = [Triangle]()
-    for cell in from {
-        let (i, temp) = polygonise(gridCell: cell, isolevel: isolevel)
-        if i == 0 { continue }
-        for triangle in temp { triangles.append(triangle) }
-    }
-    return triangles
-}

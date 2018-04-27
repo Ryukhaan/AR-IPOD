@@ -14,6 +14,7 @@ extension Vector {
     /**
      * Calculate vector's length (Euclidean nomr)
      */
+    @inline(__always)
     func length() -> Float {
         return sqrtf(x*x + y*y + z*z)
     }
@@ -22,6 +23,7 @@ extension Vector {
      * Normalizes the vector  to length 1.0
      * Returns a new Vector.
      */
+    @inline(__always)
     func normalized() -> Vector {
         return self / length()
     }
@@ -29,6 +31,7 @@ extension Vector {
     /**
      * Cacultates the distance between this Vector and an other one.
      */
+    @inline(__always)
     func distance(other: Vector) -> Float {
         return (self - other).length()
     }
@@ -46,6 +49,7 @@ extension Vector {
 
 extension Point3D {
     
+    @inline(__always)
     static func + (scalar: Float, vector: Point3D) -> Vector {
         return Vector(scalar + vector.x, scalar + vector.y, scalar + vector.z)
     }

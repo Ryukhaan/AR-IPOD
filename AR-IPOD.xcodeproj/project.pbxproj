@@ -137,6 +137,13 @@
 			path = mesh;
 			sourceTree = "<group>";
 		};
+		A52C3D6620933EAC00BA5BDC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A5494B082089E420007EA2FB /* geometry */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,6 +180,7 @@
 				A58DCDF52088895500280CD2 /* AR-IPODTests */,
 				A58DCE002088895500280CD2 /* AR-IPODUITests */,
 				A58DCDDD2088895500280CD2 /* Products */,
+				A52C3D6620933EAC00BA5BDC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -500,9 +508,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LIBRARY_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -551,8 +562,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LIBRARY_SEARCH_PATHS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
@@ -566,8 +580,14 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
+				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/llvm/4.0.1/lib,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "AR-IPOD/AR-IPOD-Bridging-Header.h";
@@ -584,8 +604,14 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
+				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/llvm/4.0.1/lib,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "AR-IPOD/AR-IPOD-Bridging-Header.h";

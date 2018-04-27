@@ -8,9 +8,12 @@
 
 import Foundation
 import ARKit
-
+/*
+ * For C files -> Int32
+ * Otherwise -> Int
+ */
 struct Tables {
-    static let edgeTable: [Int]  = {
+    static var edgeTable: [Int32]  = {
         var text: String = ""
         if let path = Bundle.main.path(forAuxiliaryExecutable: "EdgeTableContents") {
             do {
@@ -23,10 +26,10 @@ struct Tables {
         let preprocess = text.components(separatedBy: .whitespacesAndNewlines).joined()
             //.components(separatedBy: " ").joined() // Remove spaces
             .components(separatedBy: "0x").joined() // Remove 0x
-        return preprocess.components(separatedBy: ",").map { Int($0, radix: 16)! }
+        return preprocess.components(separatedBy: ",").map { Int32($0, radix: 16)! }
     }()
     
-    static let triTable: [[Int]] = {
+    static var triTable: [[Int32]] = {
         var text: String = ""
         if let path = Bundle.main.path(forAuxiliaryExecutable: "TriTableContents") {
             do {
@@ -37,7 +40,8 @@ struct Tables {
             }
         }
         return text.components(separatedBy: .newlines).map {
-            $0.components(separatedBy: " ").joined().components(separatedBy: ",").map { Int($0)! }
+            $0.components(separatedBy: " ").joined().components(separatedBy: ",").map { Int32($0)! }
         }
     }()
 }
+

@@ -12,11 +12,14 @@ import ARKit
 func importPointCloud(fromFile: String) -> PointCloud {
     var text: String = ""
     let pc = PointCloud()
+    print("Starter Import")
     do {
         try text = String(contentsOfFile: fromFile, encoding: .utf8)
     }
     catch {}
+    print("Document Loaded")
     let rows = text.components(separatedBy: .newlines)
+    print("Rows splitted")
     for row in rows {
         let temp = row.components(separatedBy: " ")
         if temp.count < 1 { continue }
@@ -90,7 +93,7 @@ func exportToPLY(volume: Volume, fileName: String) {
     }
 }
 
-func exportToPLY(triangles: [Triangle], fileName: String) {
+func exportToPLY(triangles: [Vector], fileName: String) {
     let numberOfVertices = 3 * triangles.count
     var text: String = ""
     let header = "ply \n"
@@ -113,7 +116,7 @@ func exportToPLY(triangles: [Triangle], fileName: String) {
         // Writing vertex
         //let number = triangles.count
         for triangle in triangles {
-            text += "\(triangle.points[0].x) \(triangle.points[0].y) \(triangle.points[0].z)\n\(triangle.points[1].x) \(triangle.points[1].y) \(triangle.points[1].z)\n\(triangle.points[2].x) \(triangle.points[2].y) \(triangle.points[2].z)\n"
+            text += "\(triangle.x) \(triangle.y) \(triangle.z)\n"
         }
         // Writing faces
         for i in 0..<triangles.count {

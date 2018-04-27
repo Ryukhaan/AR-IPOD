@@ -217,6 +217,7 @@ func unproject(vector: Vector, K: matrix_float3x3) -> Vector {
  * Mapping between a world point and a voxel coordinate
  * Step is a Float, but in pratical it will be an Integer.
  */
+@inline(__always)
 func mappingIntegerToCentroid(point: Point3D, dim: Int, voxelResolution: Float) -> Vector {
     return (voxelResolution / Float(dim)) * (0.5 + point)
 }
@@ -225,6 +226,7 @@ func mappingIntegerToCentroid(point: Point3D, dim: Int, voxelResolution: Float) 
  * Mapping between a world point and a voxel coordinate
  * Step is a Float, but in pratical it will be an Integer.
  */
+@inline(__always)
 func mappingCentroidToInteger(centroid: Vector, dim: Int, voxelResolution: Float) -> Point3D {
     return -0.5 + (Float(dim) / voxelResolution) * centroid
 }
@@ -232,6 +234,7 @@ func mappingCentroidToInteger(centroid: Vector, dim: Int, voxelResolution: Float
 /**
  * Computes linear interpolation.
  */
+@inline(__always)
 func linearInterpolate(u: Point3D, v: Point3D, tx: Float) -> Point3D {
     return tx * u + (1 - tx) * v
 }
@@ -239,6 +242,7 @@ func linearInterpolate(u: Point3D, v: Point3D, tx: Float) -> Point3D {
 /**
  * Computes bilinear interpolation.
  */
+@inline(__always)
 func bilinearInterpolate(c00: Point3D, c01: Point3D, c10: Point3D, c11: Point3D, tx: Float, ty: Float) -> Point3D {
     return linearInterpolate(u: linearInterpolate(u: c00, v: c10, tx: tx),
                              v: linearInterpolate(u: c01, v: c11, tx: tx),

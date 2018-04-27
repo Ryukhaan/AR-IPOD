@@ -60,14 +60,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         print("Import...")
         let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
          */
-        let start   = CFAbsoluteTimeGetCurrent()
         
         let thread1 = DispatchQueue(label: "Thread1", attributes: .concurrent)
         let thread2 = DispatchQueue(label: "Thread2", attributes: .concurrent)
         let group = DispatchGroup()
         var pointCloud = PointCloud()
         /* SERIAL */
-        
+        /*
         print("Initialize...")
         group.enter()
         thread1.async {
@@ -80,32 +79,38 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             group.leave()
         }
         group.wait()
-        group.notify(queue: .main) {
-            let end    = CFAbsoluteTimeGetCurrent()
-            let elapsedTime = Double(end) - Double(start)
-            print("Time : \(elapsedTime)")
-            print("Integrate...\(self.myVolume.centroids.count)")
-            /*
-             print("Import...")
-             let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
-             myVolume.falseIntegration(pointCloud: pointCloud)
-             print("Convert...")
-             let cells = convertVolumeIntoCells(volume: myVolume)
-             print("Extract...")
-             let tritri = extractMesh(from: cells, isolevel: 20)
-             print("Export...")
-             exportToPLY(triangles: tritri, fileName: "mesh_\(myVolume.size).ply")
-             exportToPLY(volume: myVolume, fileName: "volume_\(myVolume.size).ply")
-             print("Done !")
-             */
-            if let frame = self.sceneView.session.currentFrame {
-                self.myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
-                self.myCamera.update(position: frame.camera.transform)
-                self.myVolume.initialize()
-            }
-            else {
-                assertionFailure("Camera has not been initialized ! ")
-            }
+        */
+        print("Init...")
+        /*
+        myVolume.initialize()
+        pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
+        var tritri = [Vector]()
+        print("Integrate...")
+        //self.myVolume.falseIntegration(pointCloud: pointCloud)
+        self.myVolume.cuboid(at: Point3D(2,2,2))
+        print("Extract...")
+        */
+        let start   = CFAbsoluteTimeGetCurrent()
+        
+        myVolume.initialize()
+        //tritri = extractMesh(volume: self.myVolume, isolevel: 20)
+        
+        let end    = CFAbsoluteTimeGetCurrent()
+        let elapsedTime = Double(end) - Double(start)
+        print("Time : \(elapsedTime)")
+        /*
+        print("Export...")
+        exportToPLY(triangles: tritri, fileName: "mesh_\(self.myVolume.size).ply")
+        exportToPLY(volume: self.myVolume, fileName: "volume_\(self.myVolume.size).ply")
+        print("Done !")
+        */
+        if let frame = self.sceneView.session.currentFrame {
+            self.myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
+            self.myCamera.update(position: frame.camera.transform)
+            self.myVolume.initialize()
+        }
+        else {
+            assertionFailure("Camera has not been initialized ! ")
         }
     }
     

@@ -147,7 +147,9 @@ class Volume {
     }
     
     func falseIntegration(pointCloud: PointCloud) {
-        for vertex in pointCloud.vertices {
+        for (i, vertex) in pointCloud.vertices.enumerated() {
+            if i > 1_000 { break }
+            //let vertex = pointCloud.vertices[i]
             let depth = vertex.z
             if depth == 0.0 { continue }
             let id = mappingCentroidToInteger(centroid: vertex, dim: size, voxelResolution: resolution).index(base: size)
