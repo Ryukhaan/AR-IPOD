@@ -54,23 +54,49 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.run(configuration)
         
         // Initialize Volume
+        /*
         print("Initialize...")
         self.myVolume.initialize()
         print("Import...")
         let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
+         */
         let start   = CFAbsoluteTimeGetCurrent()
         
         //let depthMap = importDepthMap(fromFile: "/Users/Remi/Documents/result_resized.sdp")
         //self.depthImage.update(_data: depthMap)
         //myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
-
-        print("Integrate...")
-        myVolume.falseIntegration(pointCloud: pointCloud)
+        /* WORK ITEM */
+        /*
+        let thread1 = DispatchQueue(label: "Thread1", attributes: .concurrent)
+        let thread2 = DispatchQueue(label: "Thread2", attributes: .concurrent)
+        var pointCloud = PointCloud()
+        let initializeItem = DispatchWorkItem {
+            print("Initialize...")
+            self.myVolume.initialize()
+        }
+        let importItem = DispatchWorkItem {
+            print("Import...")
+            pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
+        }
+        thread1.async(execute: initializeItem)
+        thread2.async(execute: importItem)
+        
+        initializeItem.wait()
+        importItem.wait()
+        */
+        /* SERIAL */
+        print("Initialize...")
+        self.myVolume.initialize()
         
         let end    = CFAbsoluteTimeGetCurrent()
         let elapsedTime = Double(end) - Double(start)
         print("Time : \(elapsedTime)")
         
+        print("Integrate...\(myVolume.centroids.count)")
+        /*
+        print("Import...")
+        let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
+        myVolume.falseIntegration(pointCloud: pointCloud)
         print("Convert...")
         let cells = convertVolumeIntoCells(volume: myVolume)
         print("Extract...")
@@ -79,7 +105,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         exportToPLY(triangles: tritri, fileName: "mesh_\(myVolume.size).ply")
         exportToPLY(volume: myVolume, fileName: "volume_\(myVolume.size).ply")
         print("Done !")
-            
+        */
         if let frame = sceneView.session.currentFrame {
             myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
             myCamera.update(position: frame.camera.transform)

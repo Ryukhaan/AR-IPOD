@@ -36,7 +36,7 @@ class Volume {
     */
     
     private init() {
-        size        = 64
+        size        = 256
         resolution  = 1.0
     }
     
@@ -47,13 +47,12 @@ class Volume {
         return allocator
     }
     
+    func isComplete() -> Bool {
+        return true
+    }
+    
     func initialize() {
-        // TO DO : change 65536 by size dim
-        /* When size is an (Float, Float, Float)
-        let count = Int(size.x * size.y * size.z)
-        let base2 = Int(size.x * size.x)
-        let base = Int(size.x)
-        */
+        /* Sequence - serial */
         let count = numberOfVoxels()
         let square = size * size
         voxels = [Voxel](repeating: Voxel(), count: count)
@@ -63,9 +62,8 @@ class Volume {
                 let remainder = $0 % (square)
                 let y = Float(remainder / size)
                 let z = Float(remainder % size)
-                return Point3D(x, y, z)
+                return mappingIntegerToCentroid(point: Point3D(x,y,z), dim: size, voxelResolution: resolution)
         }
-        centroids = centroids.map { mappingIntegerToCentroid(point: $0, dim: size, voxelResolution: resolution) }
     }
     
     func numberOfVoxels() -> Int {
@@ -150,70 +148,12 @@ class Volume {
     }
     
     func falseIntegration(pointCloud: PointCloud) {
-        let group = DispatchGroup()
-        let _ = DispatchQueue.global(qos: .userInteractive)
-        /*
-        DispatchQueue.concurrentPerform(iterations: pointCloud.vertices.count) { i in
-            let vertex = pointCloud.vertices[i]
+        for vertex in pointCloud.vertices {
             let depth = vertex.z
-            if depth != 0.0 {
-                group.enter()
-                let id = mappingCentroidToInteger(centroid: vertex, dim: size, voxelResolution: resolution).index(base: size)
-                let distance = (vertex - centroids[id]).length()
-                voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
-                group.leave()
-            }
+            if depth == 0.0 { continue }
+            let id = mappingCentroidToInteger(centroid: vertex, dim: size, voxelResolution: resolution).index(base: size)
+            let distance = (vertex - centroids[id]).length()
+            voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
         }
-         */
-        //for vertex in pointCloud.vertices {
-        //let start = CFAbsoluteTimeGetCurrent()
-        //while Double(CFAbsoluteTimeGetCurrent()) - Double(start) < 1.0 {
-        let thread1 = DispatchQueue(label: "Thread1", qos: .userInteractive, attributes: .concurrent)
-        let thread2 = DispatchQueue(label: "Thread2", qos: .userInteractive, attributes: .concurrent)
-        let thread3 = DispatchQueue(label: "Thread3", qos: .userInteractive, attributes: .concurrent)
-        /*
-        for i in 0..<(pointCloud.vertices.count/3) {
-            let j = Int(arc4random_uniform(UInt32(pointCloud.vertices.count)))
-            let k = Int(arc4random_uniform(UInt32(pointCloud.vertices.count)))
-            let m = Int(arc4random_uniform(UInt32(pointCloud.vertices.count)))
-            let vertex1 = pointCloud.vertices[j]
-            let vertex2 = pointCloud.vertices[k]
-            let vertex3 = pointCloud.vertices[m]
-            thread1.async {
-                let depth = vertex1.z
-                if depth != 0.0 {
-                    let id = mappingCentroidToInteger(centroid: vertex1, dim: self.size, voxelResolution: self.resolution).index(base: self.size)
-                    let distance = (vertex1 - self.centroids[id]).length()
-                    self.voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
-                }
-            }
-            thread2.async {
-                let depth = vertex2.z
-                if depth != 0.0 {
-                    let id = mappingCentroidToInteger(centroid: vertex2, dim: self.size, voxelResolution: self.resolution).index(base: self.size)
-                    let distance = (vertex2 - self.centroids[id]).length()
-                    self.voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
-                }
-            }
-            thread3.async {
-                let depth = vertex3.z
-                if depth != 0.0 {
-                    let id = mappingCentroidToInteger(centroid: vertex3, dim: self.size, voxelResolution: self.resolution).index(base: self.size)
-                    let distance = (vertex3 - self.centroids[id]).length()
-                    self.voxels[id].update(sdfUpdate: distance, weightUpdate: 1)
-                }
-            }
-        }
-        DispatchQueue.main.sync {
-            print("Done")
-        }
-        */
-        //operationQueue.addOperations(operation1, waitUntilFinished: false)
-        //}
-        /*
-        DispatchQueue.main.async {
-            print("Integrate done")
-        }
-         */
     }
 }
