@@ -47,10 +47,6 @@ class Volume {
         return allocator
     }
     
-    func isComplete() -> Bool {
-        return true
-    }
-    
     func initialize() {
         /* Sequence - serial */
         let count = numberOfVoxels()
@@ -64,6 +60,7 @@ class Volume {
         bridge_initializeCentroids(points, Int32(size), resolution)
         let buffer = UnsafeBufferPointer(start: points, count: count)
         centroids = Array(buffer)
+        points.deallocate()
     }
     
     func numberOfVoxels() -> Int {

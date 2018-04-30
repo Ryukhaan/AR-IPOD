@@ -19,5 +19,133 @@
             landmarkType = "14">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/mesh/Meshing.swift"
+            timestampString = "546786968.3451639"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "extractMesh(volume:isolevel:)"
+            landmarkType = "9">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AR_IPOD.extractMesh(volume: AR_IPOD.Volume, isolevel: Swift.Float) -&gt; Swift.Array&lt;simd.float3&gt;"
+                  moduleName = "AR-IPOD"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Remi/Documents/Adagio/AR-IPOD/AR-IPOD/src/mesh/Meshing.swift"
+                  timestampString = "546783381.742957"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "52"
+                  endingLineNumber = "52"
+                  offsetFromSymbolStart = "560">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Array&lt;Swift.Int32&gt;) -&gt; Swift.Array&lt;Swift.Int32&gt; in AR_IPOD.extractMesh(volume: AR_IPOD.Volume, isolevel: Swift.Float) -&gt; Swift.Array&lt;simd.float3&gt;"
+                  moduleName = "AR-IPOD"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Remi/Documents/Adagio/AR-IPOD/AR-IPOD/src/mesh/Meshing.swift"
+                  timestampString = "546783381.748014"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "52"
+                  endingLineNumber = "52"
+                  offsetFromSymbolStart = "8">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/mesh/Meshing.swift"
+            timestampString = "546786968.34553"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
+            landmarkName = "extractMesh(volume:isolevel:)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/mesh/Meshing.swift"
+            timestampString = "546786968.345782"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "55"
+            endingLineNumber = "55"
+            landmarkName = "extractMesh(volume:isolevel:)"
+            landmarkType = "9">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AR_IPOD.extractMesh(volume: AR_IPOD.Volume, isolevel: Swift.Float) -&gt; Swift.Array&lt;simd.float3&gt;"
+                  moduleName = "AR-IPOD"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Remi/Documents/Adagio/AR-IPOD/AR-IPOD/src/mesh/Meshing.swift"
+                  timestampString = "546784138.51917"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51"
+                  offsetFromSymbolStart = "332">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (AR_IPOD.Voxel) -&gt; Swift.Float in AR_IPOD.extractMesh(volume: AR_IPOD.Volume, isolevel: Swift.Float) -&gt; Swift.Array&lt;simd.float3&gt;"
+                  moduleName = "AR-IPOD"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Remi/Documents/Adagio/AR-IPOD/AR-IPOD/src/mesh/Meshing.swift"
+                  timestampString = "546784138.52327"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51"
+                  offsetFromSymbolStart = "24">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/ViewController.swift"
+            timestampString = "546786968.346024"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
+            landmarkName = "viewWillAppear(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

@@ -10,7 +10,8 @@ import Foundation
 import ARKit
 
 func extractMesh(volume: Volume, isolevel: Float) -> [Vector] {
-    /*
+    /* Old algorithme
+     * Look at Parallelism.cpp now
     var triangles = [Vector]()
     let n = volume.size
     for i in 0..<(n-1) {
@@ -45,8 +46,12 @@ func extractMesh(volume: Volume, isolevel: Float) -> [Vector] {
     */
     let count = volume.numberOfVoxels()
     let stride = MemoryLayout<Vector>.stride
-    let byteCount = 5 * 3 * count * stride
+    // Why i can't allocate more than around "count" bytes ?
+    let byteCount = stride * count
     let triangles = UnsafeMutablePointer<Vector>.allocate(capacity: byteCount)
+    defer {
+        triangles.deallocate()
+    }
     var sdfs = volume.voxels.map { $0.sdf }
     var tempTri = Tables.triTable.flatMap { $0 }
     let numberOfTriangles = bridge_extractMesh( triangles,

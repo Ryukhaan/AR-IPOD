@@ -12,14 +12,21 @@ import ARKit
 func importPointCloud(fromFile: String) -> PointCloud {
     var text: String = ""
     let pc = PointCloud()
-    print("Starter Import")
+    /*
     do {
         try text = String(contentsOfFile: fromFile, encoding: .utf8)
     }
     catch {}
-    print("Document Loaded")
+     */
+    if let path = Bundle.main.path(forAuxiliaryExecutable: "pointCloudTest.sdp") {
+        do {
+            try text = String(contentsOfFile: path, encoding: .utf8)
+        }
+        catch {
+            print("Sorry could not load file pointCloudTest.sdp !")
+        }
+    }
     let rows = text.components(separatedBy: .newlines)
-    print("Rows splitted")
     for row in rows {
         let temp = row.components(separatedBy: " ")
         if temp.count < 1 { continue }

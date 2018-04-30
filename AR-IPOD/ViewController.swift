@@ -61,26 +61,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
          */
         
-        let thread1 = DispatchQueue(label: "Thread1", attributes: .concurrent)
-        let thread2 = DispatchQueue(label: "Thread2", attributes: .concurrent)
-        let group = DispatchGroup()
-        var pointCloud = PointCloud()
         /* SERIAL */
-        /*
-        print("Initialize...")
-        group.enter()
-        thread1.async {
-            self.myVolume.initialize()
-            group.leave()
-        }
-        group.enter()
-        thread2.async {
-            pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
-            group.leave()
-        }
-        group.wait()
-        */
-        print("Init...")
+        var tritri = [Vector]()
+        let start   = CFAbsoluteTimeGetCurrent()
+        
+        self.myVolume.initialize()
+        self.myVolume.cuboid(at: Point3D(1,1,1))
+        tritri = extractMesh(volume: self.myVolume, isolevel: 20)
+
+        let end    = CFAbsoluteTimeGetCurrent()
+        let elapsedTime = Double(end) - Double(start)
+        print("Time : \(elapsedTime)")
+        //print("Init...")
+        
         /*
         myVolume.initialize()
         pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
@@ -90,14 +83,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         self.myVolume.cuboid(at: Point3D(2,2,2))
         print("Extract...")
         */
-        let start   = CFAbsoluteTimeGetCurrent()
         
-        myVolume.initialize()
-        //tritri = extractMesh(volume: self.myVolume, isolevel: 20)
-        
-        let end    = CFAbsoluteTimeGetCurrent()
-        let elapsedTime = Double(end) - Double(start)
-        print("Time : \(elapsedTime)")
         /*
         print("Export...")
         exportToPLY(triangles: tritri, fileName: "mesh_\(self.myVolume.size).ply")
@@ -107,7 +93,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if let frame = self.sceneView.session.currentFrame {
             self.myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
             self.myCamera.update(position: frame.camera.transform)
-            self.myVolume.initialize()
         }
         else {
             assertionFailure("Camera has not been initialized ! ")

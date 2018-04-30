@@ -16,6 +16,7 @@
 		A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */; };
 		A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4E2091E00700BA5BDC /* TriTableContents */; };
 		A52C3D652093185000BA5BDC /* parallelism.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D632093185000BA5BDC /* parallelism.cpp */; };
+		A53453162097452B00BD8E76 /* pointCloudTest.sdp in Resources */ = {isa = PBXBuildFile; fileRef = A53453152097452A00BD8E76 /* pointCloudTest.sdp */; };
 		A5494B0A2089E43A007EA2FB /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B092089E43A007EA2FB /* Box.swift */; };
 		A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0D2089E63D007EA2FB /* Plane.swift */; };
 		A5494B102089E644007EA2FB /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0F2089E644007EA2FB /* Frustrum.swift */; };
@@ -66,6 +67,7 @@
 		A52C3D622093185000BA5BDC /* AR-IPOD-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AR-IPOD-Bridging-Header.h"; sourceTree = "<group>"; };
 		A52C3D632093185000BA5BDC /* parallelism.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = parallelism.cpp; sourceTree = "<group>"; };
 		A52C3D642093185000BA5BDC /* parallelism.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parallelism.hpp; sourceTree = "<group>"; };
+		A53453152097452A00BD8E76 /* pointCloudTest.sdp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = pointCloudTest.sdp; path = ../../../datas/pointCloudTest.sdp; sourceTree = "<group>"; };
 		A5494B092089E43A007EA2FB /* Box.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		A5494B0D2089E63D007EA2FB /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		A5494B0F2089E644007EA2FB /* Frustrum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustrum.swift; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 				A58DCDED2088895500280CD2 /* Info.plist */,
 				A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */,
 				A52C3D4E2091E00700BA5BDC /* TriTableContents */,
+				A53453152097452A00BD8E76 /* pointCloudTest.sdp */,
 				A52C3D632093185000BA5BDC /* parallelism.cpp */,
 				A52C3D642093185000BA5BDC /* parallelism.hpp */,
 				A52C3D622093185000BA5BDC /* AR-IPOD-Bridging-Header.h */,
@@ -359,6 +362,7 @@
 				A58DCDE22088895500280CD2 /* art.scnassets in Resources */,
 				A58DCDEC2088895500280CD2 /* LaunchScreen.storyboard in Resources */,
 				A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */,
+				A53453162097452B00BD8E76 /* pointCloudTest.sdp in Resources */,
 				A58DCDE92088895500280CD2 /* Assets.xcassets in Resources */,
 				A58DCDE72088895500280CD2 /* Main.storyboard in Resources */,
 				A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */,
