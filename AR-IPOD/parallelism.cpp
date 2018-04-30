@@ -107,9 +107,12 @@ std::vector<simd::float3> polygonise(simd::float3 points[8], float values[8], fl
  * GLOBAL FUNCTION (hpp)
  */
 void bridge_initializeCentroids(void* centroids, int size, float resolution) {
+//    int this_thread = omp_get_thread_num();
+//    int num_threads = omp_get_num_threads();
     int count = size * size * size;
     int square = size * size;
-#pragma omp parallel num_threads(2) for
+//    printf("Num threads : %d", num_threads);
+//#pragma omp parallel for shared(centroids) num_threads(num_threads)
     for(int i = 0; i<count; i++) {
         float x = i / square;
         float remainder = i % square;
@@ -130,6 +133,8 @@ unsigned long bridge_extractMesh(void* triangles,
                             float isolevel) {
     unsigned long index = 0;
     int n2 = n * n;
+//    int num_threads = omp_get_num_threads();
+//#pragma omp parallel for shared(index) collapse(3) num_threads(num_threads)
     for (int i = 0; i<n-1; i++) {
         for (int j = 0; j<n-1; j++) {
             for (int k = 0; k<n-1; k++) {
@@ -167,6 +172,7 @@ unsigned long bridge_extractMesh(void* triangles,
                     ((simd::float3*) triangles)[index][0] = triangle[0];
                     ((simd::float3*) triangles)[index][1] = triangle[1];
                     ((simd::float3*) triangles)[index][2] = triangle[2];
+//#pragma omp atomic
                     index++;
                 }
             }
