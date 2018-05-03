@@ -18,12 +18,12 @@ import AVFoundation
  * See ARCamera for more information and details, since Camera is an summary of ARCamera.
  */
 struct Camera {
-    var height:     UInt16  = 0     // Camera height
-    var width:      UInt16  = 0     // Camera width
+    var height:     UInt16  = 480     // Camera height
+    var width:      UInt16  = 640     // Camera width
     var zFar:       Float   = 0.0   // Nearest point seen by camera
     var zNear:      Float   = 0.0   // Farther point ssen by camera
     
-    let intrinsics: matrix_float3x3 // Matrix K (state-of-the-art). Converts 3D point to 2D
+    var intrinsics: matrix_float3x3 // Matrix K (state-of-the-art). Converts 3D point to 2D
     var extrinsics: matrix_float4x4 // Extrinsics camera : rotation and camera's position
    
     /**
@@ -47,11 +47,14 @@ struct Camera {
         extrinsics  = matrix_float4x4()
     }
     
+    mutating func update(intrinsics: matrix_float3x3) {
+        self.intrinsics = intrinsics
+    }
     /**
      * Updates extrinsics matrix (rotation and camera's position).
      */
-    mutating func update(position: matrix_float4x4) {
-        extrinsics = position
+    mutating func update(extrinsics: matrix_float4x4) {
+        self.extrinsics = extrinsics
     }
     
     /**

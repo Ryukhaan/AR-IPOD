@@ -16,6 +16,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var myVolume: Volume = Volume.sharedInstance
     var depthImage: DepthImage = DepthImage()
     var myCamera: Camera = Camera()
+    var increments: Int = 1
+    var timer = Double(CFAbsoluteTimeGetCurrent())
     
     @IBOutlet weak var depthView: UIImageView!
     var myDepthStrings = [String]()
@@ -62,16 +64,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
          */
         
         /* SERIAL */
-        var tritri = [Vector]()
+        /*
         let start   = CFAbsoluteTimeGetCurrent()
-        
-        self.myVolume.initialize()
-        self.myVolume.cuboid(at: Point3D(1,1,1))
-        tritri = extractMesh(volume: self.myVolume, isolevel: 20)
 
         let end    = CFAbsoluteTimeGetCurrent()
         let elapsedTime = Double(end) - Double(start)
         print("Time : \(elapsedTime)")
+         */
         //print("Init...")
         
         /*
@@ -90,6 +89,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         exportToPLY(volume: self.myVolume, fileName: "volume_\(self.myVolume.size).ply")
         print("Done !")
         */
+        /*
         if let frame = self.sceneView.session.currentFrame {
             self.myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
             self.myCamera.update(position: frame.camera.transform)
@@ -97,6 +97,42 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         else {
             assertionFailure("Camera has not been initialized ! ")
         }
+        */
+        
+        // Version with dataset
+        let starter = Double(CFAbsoluteTimeGetCurrent())
+        let threads = [DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent),
+                       DispatchQueue(label: "thread2", qos: .userInteractive, attributes: .concurrent),
+                       DispatchQueue(label: "thread3", qos: .userInteractive, attributes: .concurrent),
+                       DispatchQueue(label: "thread4", qos: .userInteractive, attributes: .concurrent)
+        ]
+        let group = DispatchGroup()
+        group.enter()
+        threads[0].async {
+            let intrinsics = importCameraIntrinsics(from: "depthIntrinsics")
+            self.myCamera.update(intrinsics: intrinsics)
+            group.leave()
+        }
+        group.enter()
+        threads[1].async {
+            self.myVolume.initialize()
+            group.leave()
+        }
+        group.enter()
+        threads[2].async {
+            let extrinsics = importCameraPose(from: "frame-000000.pose")
+            self.myCamera.update(extrinsics: extrinsics)
+            group.leave()
+        }
+        group.enter()
+        threads[3].async {
+            let depthMap = importDepthMapFromTXT(from: "frame-0.depth")
+            self.depthImage.update(_data: depthMap)
+            group.leave()
+        }
+        group.wait()
+        let elapsed = Double(CFAbsoluteTimeGetCurrent()) - starter
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -122,6 +158,58 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
 */
     
+    func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
+        // Bad version but who cares ?
+
+        /*
+        let thread1 = DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent)
+        let thread2 = DispatchQueue(label: "thread2", qos: .userInteractive, attributes: .concurrent)
+        let group = DispatchGroup()
+        var extrinsics = matrix_float4x4()
+        var depthmap = [Float]()
+        group.enter()
+        thread1.async {
+            extrinsics = importCameraPose(from: "frame-\(self.increments).pose")
+            group.leave()
+        }
+        group.enter()
+        thread2.async {
+            depthmap = importDepthMapFromTXT(from: "frame-\(self.increments).depth")
+            group.leave()
+        }
+        group.wait()
+            */
+        for i in 1..<249 {
+            let extrinsics = importCameraPose(from: "frame-\(i).pose")
+            let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
+            self.myVolume.integrateDepthMap(image: self.depthImage, camera: self.myCamera)
+            self.myCamera.update(extrinsics: extrinsics)
+            self.depthImage.update(_data: depthmap)
+        }
+        let points = extractMesh(volume: myVolume, isolevel: 20)
+        exportToPLY(triangles: points, fileName: "mesh_\(self.myVolume.size).ply")
+        exportToPLY(volume: self.myVolume, fileName: "volume_\(self.myVolume.size).ply")
+        exit(0)
+        
+        /*
+        let thread1 = DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent)
+        let workIntegrate = DispatchWorkItem {
+            self.myVolume.integrateDepthMap(image: self.depthImage, camera: self.myCamera)
+        }
+        
+        
+        DispatchQueue.main.sync(execute: workIntegrate)
+        
+        workIntegrate.notify(queue: thread1) {
+            let extrinsics = importCameraPose(from: "frame-\(formati).pose")
+            let depthMap = importDepthMapFromTXT(from: "frame-\(self.increments).depth")
+            self.myCamera.update(extrinsics: extrinsics)
+            self.depthImage.update(_data: depthMap)
+            self.increments += 1
+        }
+        */
+    }
+    
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
         
@@ -139,6 +227,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
+        let extrinsics = importCameraPose(from: "frame-\(increments).pose")
+        let depthMap = importDepthMapFromTXT(from: "frame-\(increments).depth")
+        increments += 1
+        myCamera.update(extrinsics: extrinsics)
+        depthImage.update(_data: depthMap)
+        myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
+        /*
         if frame.capturedDepthData != nil {
             myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
             myDepthDataRaw =  frame.capturedDepthData
@@ -156,5 +251,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
         myCamera.update(position: frame.camera.transform)
         myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
+         */
     }
 }

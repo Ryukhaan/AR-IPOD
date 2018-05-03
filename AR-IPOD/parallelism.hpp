@@ -21,4 +21,13 @@ unsigned long bridge_extractMesh(void* triangles,
                             int triTable[4096],
                             int n,
                             float isolevel);
+
+int bridge_integrateDepthMap(const float* depthmap,
+                              const void* centroids,
+                              const void* camera_pose,
+                              const void* intrisics,
+                              void* voxels,
+                              const int width,
+                              const int height);
+
 #endif /* volumeInit_hpp */

@@ -14,10 +14,18 @@ extern "C" {
 #include <simd/vector_types.h>
 #include <simd/vector_make.h>
 #include <simd/vector.h>
+#include <simd/conversion.h>
+#include <simd/matrix.h>
 #include <vector>
 //#include <omp.h>
 
 using namespace std;
+
+typedef struct Voxel {
+    float sdf;
+    unsigned char weight;
+};
+
 /*
  * LOCAL FUNCTIONS
  */
@@ -102,17 +110,50 @@ std::vector<simd::float3> polygonise(simd::float3 points[8], float values[8], fl
     }
     return triangles;
 }
+
+
+
+inline void updateVoxel(Voxel* voxels, const float sdf, const int weight, const int index) {
+    float oldSDF      = voxels[index].sdf;
+    float oldWeight   = voxels[index].weight;
+    float newWeight   = oldWeight + weight;
+    float oldProduct  = oldWeight * oldSDF;
+    float newProduct  = sdf * weight;
+    float newSDF      = (newProduct + oldProduct ) / newWeight;
     
+    voxels[index].sdf     = newSDF;
+    voxels[index].weight  = simd_min(newWeight, 255);
+}
+
+
+/*
+inline void carveVoxel(float* sdfs, unsigned char* weight, const int index) {
+    updateVoxel(sdfs, weight, 0.0, 1, index);
+}
+*/
+
+inline simd_int2 project(simd::float3 vector, simd_float3x3 K) {
+    simd::float3 temp = simd_make_float3(vector.x / vector.z, vector.y / vector.z, 1);
+    simd::float3 all  = simd_mul(K, temp);
+    return simd_make_int2((int)all.x, (int)all.y);
+}
+
+inline simd_float3 unproject(simd_int2 pixel, float depth, simd_float3x3 K) {
+    simd_float3 temp = simd_make_float3(pixel.x, pixel.y, 1);
+    simd_float3 all = simd_mul(K, temp);
+    return simd_make_float3(all.x * depth, all.y * depth, depth);
+}
+
 /*
  * GLOBAL FUNCTION (hpp)
  */
 void bridge_initializeCentroids(void* centroids, int size, float resolution) {
-//    int this_thread = omp_get_thread_num();
-//    int num_threads = omp_get_num_threads();
+    //int this_thread = omp_get_thread_num();
+    //int num_threads = omp_get_num_threads();
     int count = size * size * size;
     int square = size * size;
 //    printf("Num threads : %d", num_threads);
-//#pragma omp parallel for shared(centroids) num_threads(num_threads)
+#pragma omp parallel for shared(centroids) num_threads(num_threads)
     for(int i = 0; i<count; i++) {
         float x = i / square;
         float remainder = i % square;
@@ -179,4 +220,42 @@ unsigned long bridge_extractMesh(void* triangles,
         }
     }
     return index;
+}
+
+int bridge_integrateDepthMap(const float* depthmap,
+                              const void* centroids,
+                              const void* camera_pose,
+                              const void* intrisics,
+                              void* voxels,
+                              const int width,
+                              const int height) {
+    int number_of_changes = 0;
+    //float tau_min = 0.4;
+    int count = width * height;
+    // Convertion error !
+    simd_float3x3 K = ((simd_float3x3 *) intrisics)[0];
+    simd_float4x4 camera = ((simd_float4x4 *) camera_pose)[0];
+    float diag = 2.0 * sqrt(3.0) * 1.0; // Resolution
+    for (int i = 0; i<count; i++) {
+        simd::float3 centroid = ((simd::float3 *) centroids)[i];
+        simd::float3 position_camera = simd_make_float3(camera.columns[3][0], camera.columns[3][1], camera.columns[3][2]);
+        //simd_float4x3 temp = simd_transpose(simd_matrix(camera.columns[0], camera.columns[1], camera.columns[2]));
+        //simd_float3x3 Rt = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
+        //simd::float3 local = simd_mul(simd_transpose(Rt), centroid - position_camera);
+        float z = (centroid - position_camera).z;
+        if (z < 0) continue;
+        simd_int2 uv = project(centroid - position_camera, K);
+        if (uv.x > height || uv.x < 0) continue;
+        if (uv.y > width || uv.y < 0) continue;
+        float depth = depthmap[uv.x * width + uv.y];
+        if (depth == 0.0) continue;
+
+        float truncation = 0.4; // truncation distance
+        float distance = depth - z;
+        if (fabs(distance) < truncation + diag)
+        {
+            updateVoxel((Voxel *)voxels, distance, 1, i);
+        }
+    }
+    return number_of_changes;
 }

@@ -36,7 +36,7 @@ class Volume {
     */
     
     private init() {
-        size        = 256
+        size        = 128
         resolution  = 1.0
     }
     
@@ -72,6 +72,7 @@ class Volume {
         return 1
     }
     
+    /*
     func integrateDepthMap(image: DepthImage, camera: Camera) {
         // Get nearest and farthest depth
         let (minimumDepth, maximumDepth, _) = image.getStats()
@@ -103,6 +104,8 @@ class Volume {
             let positionCamera = camera.extrinsics.columns.3
             let distance = (centroid - Vector(positionCamera.x, positionCamera.y, positionCamera.z)).length()
             let uv      = camera.project(vector: centroid)
+            if (uv.x > Float(image.heigth) || uv.x < 0) { continue }
+            if (uv.y > Float(image.width) || uv.y < 0) { continue }
             let depth   = image.at(row: Int(uv.x), column: Int(uv.y))
             if depth.isNaN { continue }
             if depth == 0.0 { continue }
@@ -121,6 +124,15 @@ class Volume {
             //print("\( Double(CFAbsoluteTimeGetCurrent()) - start )")
         }
         //voxelGroup.wait()
+    }
+    */
+    func integrateDepthMap(image: DepthImage, camera: Camera) {
+        let width = image.width
+        let height = image.height
+        var K = camera.intrinsics
+        var Rt = camera.extrinsics
+        let dethmap = image.data
+        let numberOfChange = bridge_integrateDepthMap(dethmap, centroids, &Rt, &K, &voxels, Int32(width), Int32(height))
     }
     
     func randomSDF() {

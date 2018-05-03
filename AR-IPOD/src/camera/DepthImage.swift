@@ -14,12 +14,12 @@ import AVFoundation
  * DepthImage stores all information relative to depth map.
  */
 struct DepthImage {    
-    let width:  UInt16         = 360 // Image width  (IPhoneX : 360 pixel)
-    let heigth: UInt16         = 640 // Image height (IPhoneX : 480 pixel)
+    let width:  UInt16         = 640 // Image width  (IPhoneX : 360 pixel)
+    let height: UInt16         = 480 // Image height (IPhoneX : 480 pixel)
     var data:   [Float]              // Stores all depths in an array
     
     init() {
-        data = Array<Float>(repeating: 0, count: Int(width)*Int(heigth))
+        data = Array<Float>(repeating: 0, count: Int(width)*Int(height))
     }
     
     /**
@@ -34,18 +34,32 @@ struct DepthImage {
      */
     func numberOfPixels() -> Int {
         // Need to convert width and height to Int otherwise overflow then segment fault (or something like that)
-        return Int(width) * Int(heigth)
+        return Int(width) * Int(height)
     }
     
     /**
      * Updates depths values stored in data.
      */
     mutating func update(_data: UnsafeMutablePointer<Float>) {
-        let countH = Int(heigth)
+        let countH = Int(height)
         let countW = Int(width)
         for i in 0..<countH {
             for j in 0..<countW {
                 data[i*countW+j] = _data[i*countW+j]
+            }
+        }
+    }
+    
+    /**
+     * Updates depths values stored in UInt8 Array.
+     */
+    mutating func update(_data: [UInt8]) {
+        data = [Float](repeating: 0, count: numberOfPixels())
+        let countH = Int(height)
+        let countW = Int(width)
+        for i in 0..<countH {
+            for j in 0..<countW {
+                data[i*countW+j] = Float(_data[(i*countW+j) % _data.count])
             }
         }
     }
@@ -55,13 +69,15 @@ struct DepthImage {
      */
     mutating func update(_data: [Float]) {
         assert(data.count == _data.count, "Dimension are not equals ! \(data.count) vs \(_data.count)")
-        let countH = Int(heigth)
+        /*let countH = Int(height)
         let countW = Int(width)
         for i in 0..<countH {
             for j in 0..<countW {
                 data[i*countW+j] = _data[i*countW+j]
             }
         }
+        */
+        data = _data
     }
  
     

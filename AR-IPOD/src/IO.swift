@@ -18,13 +18,16 @@ func importPointCloud(fromFile: String) -> PointCloud {
     }
     catch {}
      */
-    if let path = Bundle.main.path(forAuxiliaryExecutable: "pointCloudTest.sdp") {
+    if let path = Bundle.main.path(forResource: "pointCloudTest", ofType: "sdp") {
         do {
             try text = String(contentsOfFile: path, encoding: .utf8)
         }
         catch {
             print("Sorry could not load file pointCloudTest.sdp !")
         }
+    }
+    else {
+        print("Point cloud file not found !")
     }
     let rows = text.components(separatedBy: .newlines)
     for row in rows {
@@ -34,6 +37,7 @@ func importPointCloud(fromFile: String) -> PointCloud {
     }
     return pc
 }
+
 func importDepthMap(fromFile: String) -> [Float] {
     var text: String = ""
     var outArray = [Float]()
@@ -48,6 +52,68 @@ func importDepthMap(fromFile: String) -> [Float] {
         outArray.append(Float(temp[2])! + 0.5)
     }
     return outArray
+}
+
+func importDepthMapFromTXT(from: String) -> [Float] {
+    let relativPath = "/chair0/\(from)"
+    var text: String = ""
+    if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
+        do {
+            text = try String(contentsOfFile: path)
+        }
+        catch { print(error) }
+        var rows = text.components(separatedBy: .newlines)
+        let a = rows.removeLast()
+        if a != "" {
+            rows.append(a)
+        }
+        return rows.map {
+            $0.components(separatedBy: ",").map { Float($0)! / 1e3 }
+            }.flatMap { $0 }
+    }
+    return [Float]()
+}
+
+func importCameraPose(from: String) -> matrix_float4x4 {
+    let relativPath = "/chair0/\(from)"
+    if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
+        do {
+            let text = try String(contentsOfFile: path)
+            let rows = text.components(separatedBy: .newlines)
+            let row1 = rows[0].components(separatedBy: .whitespaces)
+            let row2 = rows[2].components(separatedBy: .whitespaces)
+            let row3 = rows[4].components(separatedBy: .whitespaces)
+            let row4 = rows[6].components(separatedBy: .whitespaces)
+            return matrix_float4x4(rows: [
+                float4(row1.map { Float($0)! } ),
+                float4(row2.map { Float($0)! } ),
+                float4(row3.map { Float($0)! } ),
+                float4(row4.map { Float($0)! } )
+                ])
+        }
+        catch { print(error) }
+    }
+    return matrix_float4x4()
+}
+
+func importCameraIntrinsics(from: String) -> matrix_float3x3 {
+    let relativPath = "/chair0/\(from)"
+    if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
+        do {
+            let text = try String(contentsOfFile: path)
+            let rows = text.components(separatedBy: .newlines)
+            let row1 = rows[0].components(separatedBy: .whitespaces)
+            let row2 = rows[2].components(separatedBy: .whitespaces)
+            let row3 = rows[4].components(separatedBy: .whitespaces)
+            return matrix_float3x3(rows: [
+                float3(Float(row1[0])!, Float(row1[1])!, Float(row1[2])!),
+                float3(Float(row2[0])!, Float(row2[1])!, Float(row2[2])!),
+                float3(Float(row3[0])!, Float(row3[1])!, Float(row3[2])!)
+                ])
+        }
+        catch { print(error) }
+    }
+    return matrix_float3x3()
 }
 
 func exportToPLY(volume: Volume, fileName: String) {
@@ -90,35 +156,34 @@ func exportToPLY(volume: Volume, fileName: String) {
         */
         for i in 0..<number {
             let c = volume.centroids[i]
-            let v = 255 - min(Int(volume.voxels[i].sdf), 255)
+            let v = Int(volume.voxels[i].sdf)
             text += "\(c.x) \(c.y) \(c.z) \(v) 54 13\n"
         }
         do {
             try text.write(to: fileURL, atomically: false, encoding: .utf8)
         }
         catch {}
+        print(text)
     }
 }
 
 func exportToPLY(triangles: [Vector], fileName: String) {
-    let numberOfVertices = 3 * triangles.count
-    var text: String = ""
+    let numberOfTriangles = triangles.count / 3
+    var text: String
     let header = "ply \n"
     let formatHeader = "format ascii 1.0 \n"
-    let vertexCount = "element vertex \(numberOfVertices) \n"
+    let vertexCount = "element vertex \(triangles.count) \n"
     let propertyX   = "property float x \n"
     let propertyY   = "property float y \n"
     let propertyZ   = "property float z \n"
-    let faceCount   = "element face \(triangles.count) \n"
+    let faceCount   = "element face \(numberOfTriangles) \n"
     let faceListProperty = "property list uchar int vertex_index \n"
     let endHeader = "end_header \n"
     
-    print("Start Writing ! \n")
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         let fileURL = dir.appendingPathComponent(fileName)
-        print(fileURL)
         // Writing Header
-        text += "\(header)\(formatHeader)\(vertexCount)\(propertyX)\(propertyY)\(propertyZ)\(faceCount)\(faceListProperty)\(endHeader)"
+        text = "\(header)\(formatHeader)\(vertexCount)\(propertyX)\(propertyY)\(propertyZ)\(faceCount)\(faceListProperty)\(endHeader)"
         
         // Writing vertex
         //let number = triangles.count
@@ -126,7 +191,7 @@ func exportToPLY(triangles: [Vector], fileName: String) {
             text += "\(triangle.x) \(triangle.y) \(triangle.z)\n"
         }
         // Writing faces
-        for i in 0..<triangles.count {
+        for i in 0..<numberOfTriangles {
             text += "3 \(3*i) \(3*i+1) \(3*i+2)\n"
         }
         
@@ -134,5 +199,6 @@ func exportToPLY(triangles: [Vector], fileName: String) {
             try text.write(to: fileURL, atomically: false, encoding: .utf8)
         }
         catch {}
+        print(text)
     }
 }
