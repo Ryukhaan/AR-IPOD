@@ -240,6 +240,7 @@ int bridge_integrateDepthMap(const float* depthmap,
         simd_float4x3 temp = simd_transpose(simd_matrix(camera.columns[0], camera.columns[1], camera.columns[2]));
         simd_float3x3 R = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
         simd::float3 local = simd_mul(simd_transpose(R), centroid - position_camera);
+        //simd::float3 local = simd_mul(R, centroid - position_camera);
         float z = local.z;
         //if (z < 0) continue;
         simd_int2 uv = project(local, K);
@@ -249,10 +250,10 @@ int bridge_integrateDepthMap(const float* depthmap,
         if (depth == 0.0) continue;
 
         float truncation = 2.0; // truncation distance
-        float distance = depth - z;
-        if (fabs(distance) < truncation + diag)
+        float distance = z - depth;
+        if (fabs(distance) < truncation)
             updateVoxel((Voxel *)voxels, distance, 1, i);
-        else if (distance >= truncation + diag)
+        else if (distance >= truncation)
             updateVoxel((Voxel *)voxels, delta, 1, i);
         else
             updateVoxel((Voxel *)voxels, -delta, 1, i);
