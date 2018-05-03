@@ -132,7 +132,7 @@ class Volume {
         var K = camera.intrinsics
         var Rt = camera.extrinsics
         let dethmap = image.data
-        let numberOfChange = bridge_integrateDepthMap(dethmap, centroids, &Rt, &K, &voxels, Int32(width), Int32(height))
+        _ = bridge_integrateDepthMap(dethmap, centroids, &Rt, &K, &voxels, Int32(width), Int32(height))
     }
     
     func randomSDF() {

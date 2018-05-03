@@ -24,7 +24,7 @@ using namespace std;
 typedef struct Voxel {
     float sdf;
     unsigned char weight;
-};
+} Voxel;
 
 /*
  * LOCAL FUNCTIONS
@@ -110,8 +110,6 @@ std::vector<simd::float3> polygonise(simd::float3 points[8], float values[8], fl
     }
     return triangles;
 }
-
-
 
 inline void updateVoxel(Voxel* voxels, const float sdf, const int weight, const int index) {
     float oldSDF      = voxels[index].sdf;
@@ -230,7 +228,7 @@ int bridge_integrateDepthMap(const float* depthmap,
                               const int width,
                               const int height) {
     int number_of_changes = 0;
-    //float tau_min = 0.4;
+    float delta = 0.2;
     int count = width * height;
     // Convertion error !
     simd_float3x3 K = ((simd_float3x3 *) intrisics)[0];
@@ -239,23 +237,25 @@ int bridge_integrateDepthMap(const float* depthmap,
     for (int i = 0; i<count; i++) {
         simd::float3 centroid = ((simd::float3 *) centroids)[i];
         simd::float3 position_camera = simd_make_float3(camera.columns[3][0], camera.columns[3][1], camera.columns[3][2]);
-        //simd_float4x3 temp = simd_transpose(simd_matrix(camera.columns[0], camera.columns[1], camera.columns[2]));
-        //simd_float3x3 Rt = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
-        //simd::float3 local = simd_mul(simd_transpose(Rt), centroid - position_camera);
-        float z = (centroid - position_camera).z;
-        if (z < 0) continue;
-        simd_int2 uv = project(centroid - position_camera, K);
+        simd_float4x3 temp = simd_transpose(simd_matrix(camera.columns[0], camera.columns[1], camera.columns[2]));
+        simd_float3x3 R = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
+        simd::float3 local = simd_mul(simd_transpose(R), centroid - position_camera);
+        float z = local.z;
+        //if (z < 0) continue;
+        simd_int2 uv = project(local, K);
         if (uv.x > height || uv.x < 0) continue;
         if (uv.y > width || uv.y < 0) continue;
         float depth = depthmap[uv.x * width + uv.y];
         if (depth == 0.0) continue;
 
-        float truncation = 0.4; // truncation distance
+        float truncation = 2.0; // truncation distance
         float distance = depth - z;
         if (fabs(distance) < truncation + diag)
-        {
             updateVoxel((Voxel *)voxels, distance, 1, i);
-        }
+        else if (distance >= truncation + diag)
+            updateVoxel((Voxel *)voxels, delta, 1, i);
+        else
+            updateVoxel((Voxel *)voxels, -delta, 1, i);
     }
     return number_of_changes;
 }
