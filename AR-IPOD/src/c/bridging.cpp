@@ -7,7 +7,7 @@
 //
 
 extern "C" {
-    #include "parallelism.hpp"
+    #include "bridging.hpp"
 }
 
 #include <simd/common.h>
@@ -190,9 +190,15 @@ int bridge_integrateDepthMap(const float* depthmap,
     return number_of_changes;
 }
 
-void bridge_exportToPLY(const void* vectors,
+void bridge_exportMeshToPLY(const void* vectors,
                         const char* file_name,
                         int n) {
-    simd::float3* points = (simd::float3 *) vectors;
-    save_meshing_ply_format(points, file_name, n);
+    save_meshing_ply_format((simd::float3 *) vectors, file_name, n);
+}
+
+void bridge_exportVolumeToPLY(const void* centroids,
+                        const float* sdfs,
+                        const char* file_name,
+                        int size) {
+    save_volume_ply_format((simd::float3 *) centroids, sdfs, file_name, size);
 }

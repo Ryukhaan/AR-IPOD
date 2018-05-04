@@ -16,12 +16,12 @@ void bridge_initializeCentroids(void* centroids,
                                 float resolution);
 
 unsigned long bridge_extractMesh(void* triangles,
-                            const float* voxels,
-                            const void* centroids,
-                            int edgeTable[256],
-                            int triTable[4096],
-                            int n,
-                            float isolevel);
+                                 const float* voxels,
+                                 const void* centroids,
+                                 int edgeTable[256],
+                                 int triTable[4096],
+                                 int n,
+                                 float isolevel);
 
 int bridge_integrateDepthMap(const float* depthmap,
                              const void* centroids,
@@ -33,8 +33,12 @@ int bridge_integrateDepthMap(const float* depthmap,
                              const int dimension,
                              const float resolution[3]);
 
-void bridge_exportToPLY(const void* vectors,
-                        const char* file_name,
-                        int n);
+void bridge_exportMeshToPLY(const void* vectors,
+                            const char* file_name,
+                            int n);
 
+void bridge_exportVolumeToPLY(const void* centroids,
+                              const float* sdfs,
+                              const char* file_name,
+                              int size);
 #endif /* volumeInit_hpp */

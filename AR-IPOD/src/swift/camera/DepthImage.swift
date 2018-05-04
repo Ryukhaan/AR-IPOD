@@ -69,14 +69,6 @@ struct DepthImage {
      */
     mutating func update(_data: [Float]) {
         assert(data.count == _data.count, "Dimension are not equals ! \(data.count) vs \(_data.count)")
-        /*let countH = Int(height)
-        let countW = Int(width)
-        for i in 0..<countH {
-            for j in 0..<countW {
-                data[i*countW+j] = _data[i*countW+j]
-            }
-        }
-        */
         data = _data
     }
  

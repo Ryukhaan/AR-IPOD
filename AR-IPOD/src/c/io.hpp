@@ -16,5 +16,6 @@
 #include <simd/vector.h>
 
 void save_meshing_ply_format(const simd::float3* points, const char* file_name, int number_of_triangles);
+void save_volume_ply_format(const simd::float3* centroids, const float* sdfs, const char* file_name, int size);
 
 #endif /* io_hpp */

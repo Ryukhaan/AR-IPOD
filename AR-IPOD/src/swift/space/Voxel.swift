@@ -20,25 +20,4 @@ struct Voxel {
         sdf     = Voxel.UNDEFINED_SDF
         weight  = 0
     }
-    
-    mutating func reset() {
-        sdf     = Voxel.UNDEFINED_SDF
-        weight  = 0
-    }
-    
-    mutating func update(sdfUpdate: Float, weightUpdate: UInt8) {
-        let oldSDF      = sdf
-        let oldWeight   = weight
-        let newWeight   = oldWeight + weightUpdate
-        let oldProduct  = Float(oldWeight) * oldSDF
-        let newProduct  = sdfUpdate * Float(weightUpdate)
-        let newSDF      = (newProduct + oldProduct ) / Float(newWeight)
-        
-        sdf     = newSDF
-        weight  = newWeight < 100 ? newWeight : 100
-    }
-    
-    mutating func carve() {
-        update(sdfUpdate: 0.0, weightUpdate: 1)
-    }
 }

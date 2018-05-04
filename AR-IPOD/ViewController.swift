@@ -159,59 +159,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 */
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
-        // Bad version but who cares ?
-
-        /*
-        let thread1 = DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent)
-        let thread2 = DispatchQueue(label: "thread2", qos: .userInteractive, attributes: .concurrent)
-        let group = DispatchGroup()
-        var extrinsics = matrix_float4x4()
-        var depthmap = [Float]()
-        group.enter()
-        thread1.async {
-            extrinsics = importCameraPose(from: "frame-\(self.increments).pose")
-            group.leave()
-        }
-        group.enter()
-        thread2.async {
-            depthmap = importDepthMapFromTXT(from: "frame-\(self.increments).depth")
-            group.leave()
-        }
-        group.wait()
-            */
-        let start   = CFAbsoluteTimeGetCurrent()
-        for i in 1..<50 {
+        for i in 0..<250 {
             let extrinsics = importCameraPose(from: "frame-\(i).pose")
             let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
-            self.myVolume.integrateDepthMap(image: self.depthImage, camera: self.myCamera)
+            self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera)
             self.myCamera.update(extrinsics: extrinsics)
             self.depthImage.update(_data: depthmap)
         }
-        let end    = CFAbsoluteTimeGetCurrent()
-        let elapsedTime = Double(end) - Double(start)
-        print("Time : \(elapsedTime)")
-        let points = extractMesh(volume: myVolume, isolevel: 1)
-        exportToPLY(triangles: points, fileName: "mesh_\(self.myVolume.size).ply")
-        //exportToPLY(volume: self.myVolume, fileName: "volume_\(self.myVolume.size).ply")
+        let points = extractMesh(volume: myVolume, isolevel: 1e-3)
+        
+        exportToPLY(mesh: points, at: "mesh_\(self.myVolume.size).ply")
+        //exportToPLY(volume: self.myVolume, at: "volume_\(self.myVolume.size).ply")
+        
         exit(0)
-        
-        /*
-        let thread1 = DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent)
-        let workIntegrate = DispatchWorkItem {
-            self.myVolume.integrateDepthMap(image: self.depthImage, camera: self.myCamera)
-        }
-        
-        
-        DispatchQueue.main.sync(execute: workIntegrate)
-        
-        workIntegrate.notify(queue: thread1) {
-            let extrinsics = importCameraPose(from: "frame-\(formati).pose")
-            let depthMap = importDepthMapFromTXT(from: "frame-\(self.increments).depth")
-            self.myCamera.update(extrinsics: extrinsics)
-            self.depthImage.update(_data: depthMap)
-            self.increments += 1
-        }
-        */
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
@@ -236,7 +196,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         increments += 1
         myCamera.update(extrinsics: extrinsics)
         depthImage.update(_data: depthMap)
-        myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
+        myVolume.integrateDepthMap(image: depthImage, camera: &myCamera)
         /*
         if frame.capturedDepthData != nil {
             myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)

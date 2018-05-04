@@ -56,25 +56,4 @@ struct Camera {
     mutating func update(extrinsics: matrix_float4x4) {
         self.extrinsics = extrinsics
     }
-    
-    /**
-     * See Geometry.project
-     */
-    func project(vector: Vector) -> Pixel {
-        return AR_IPOD.project(vector: vector, K: intrinsics)
-    }
-    
-    /**
-     * See Geometry.unproject
-     */
-    func unproject(i: Int, j: Int, depth: Float) -> Vector {
-        return AR_IPOD.unproject(vector: Vector(Float(i), Float(j), depth), K: intrinsics)
-    }
-    
-    /**
-     * See Geometry.unproject
-     */
-    func unproject(pixel: Pixel, depth: Float) -> Vector {
-        return AR_IPOD.unproject(pixel: pixel, depth: depth, K: intrinsics)
-    }
 }
