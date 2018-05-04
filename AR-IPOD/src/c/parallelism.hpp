@@ -9,6 +9,7 @@
 #ifndef volumeInit_hpp
 #define volumeInit_hpp
 #include <stdio.h>
+#include <string.h>
 
 void bridge_initializeCentroids(void* centroids,
                                 int size,
@@ -23,11 +24,17 @@ unsigned long bridge_extractMesh(void* triangles,
                             float isolevel);
 
 int bridge_integrateDepthMap(const float* depthmap,
-                              const void* centroids,
-                              const void* camera_pose,
-                              const void* intrisics,
-                              void* voxels,
-                              const int width,
-                              const int height);
+                             const void* centroids,
+                             const void* camera_pose,
+                             const void* intrisics,
+                             void* voxels,
+                             const int width,
+                             const int height,
+                             const int dimension,
+                             const float resolution[3]);
+
+void bridge_exportToPLY(const void* vectors,
+                        const char* file_name,
+                        int n);
 
 #endif /* volumeInit_hpp */

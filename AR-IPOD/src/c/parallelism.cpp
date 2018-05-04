@@ -21,6 +21,7 @@ extern "C" {
 
 #include "linear_algebra.hpp"
 #include "marching_cube.hpp"
+#include "io.hpp"
 
 using namespace std;
 
@@ -54,30 +55,6 @@ inline void carveVoxel(float* sdfs, unsigned char* weight, const int index) {
     updateVoxel(sdfs, weight, 0.0, 1, index);
 }
 */
-
-/**
- * Determined all global 3D point observed by the camera (Rt and K).
- */
-simd::float3* estimate_observed_voxels(const float* depthmap,
-                            simd_float4x4 Rt,
-                            simd_float3x3 K,
-                            const int width,
-                            const int height) {
-    simd::float3 observed[width*height];
-    simd_float3x3 Kinv = simd_inverse(K);
-    for (int i = 0; i<height; i++) {
-        for (int j = 0; j<width; j++) {
-            float z = depthmap[i*width + j];
-            simd::float3 translation = simd_make_float3(Rt.columns[3][0], Rt.columns[3][1], Rt.columns[3][2]);
-            simd_float4x3 temp = simd_transpose(simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]));
-            simd_float3x3 rotation = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
-            simd_float3 local = unproject(simd_make_int2(i, j), z, Kinv);
-            simd_float3 global = simd_mul(rotation, local + translation);
-            observed[i*width + height] = global;
-        }
-    }
-    return observed;
-}
                                           
 /*
  * GLOBAL FUNCTION (hpp)
@@ -132,14 +109,14 @@ unsigned long bridge_extractMesh(void* triangles,
                     ((simd::float3*) centroids)[i7]
                 };
                 float values[8] = {
-                    voxels[i0],
-                    voxels[i1],
-                    voxels[i2],
-                    voxels[i3],
-                    voxels[i4],
-                    voxels[i5],
-                    voxels[i6],
-                    voxels[i7]
+                    fabs(voxels[i0]),
+                    fabs(voxels[i1]),
+                    fabs(voxels[i2]),
+                    fabs(voxels[i3]),
+                    fabs(voxels[i4]),
+                    fabs(voxels[i5]),
+                    fabs(voxels[i6]),
+                    fabs(voxels[i7])
                 };
                 std::vector<simd::float3> temp = polygonise(points, values, isolevel, edgeTable, triTable);
                 if (temp.size() == 0) continue;
@@ -162,46 +139,60 @@ int bridge_integrateDepthMap(const float* depthmap,
                               const void* intrisics,
                               void* voxels,
                               const int width,
-                              const int height) {
+                              const int height,
+                             const int dimension,
+                             const float resolution[3]) {
     // Instanciate all local variables
     int number_of_changes = 0;
-    float delta = 0.2;
+    float delta = 0.3;
     int count = width * height;
     simd_float3x3 K = ((simd_float3x3 *) intrisics)[0];
     simd_float4x4 Rt = ((simd_float4x4 *) camera_pose)[0];
-    
+    simd_float3x3 Kinv = simd_inverse(K);
+    simd::float3 translation = simd_make_float3(Rt.columns[3][0], Rt.columns[3][1], Rt.columns[3][2]);
+    simd_float4x3 temp = simd_transpose(simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]));
+    simd_float3x3 rotation = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
+    simd_float3 resolve = simd_make_float3(resolution[0], resolution[1], resolution[2]);
     // Compute observed voxels
-    simd_float3* observed = estimate_observed_voxels(depthmap, Rt, K, width, height);
+    //simd_float3* observed = estimate_observed_voxels(depthmap, Rt, K, width, height);
     
     // Update each voxels
     for (int i = 0; i<count; i++) {
+        float depth = depthmap[i];
+        if (depth == 0.0) continue;
+        
         // Transfer global 3D into local camera coordinate
-        simd::float3 global = observed[i];
-        simd::float3 translation = simd_make_float3(Rt.columns[3][0], Rt.columns[3][1], Rt.columns[3][2]);
-        simd_float4x3 temp = simd_transpose(simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]));
-        simd_float3x3 rotation = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
-        simd::float3 local = simd_mul(simd_transpose(rotation),  global - translation);
+        simd_float3 local = unproject(simd_make_int2(i / width, i % width), depth, Kinv);
+        simd_float3 global = simd_mul(rotation, local + translation);
+        local = simd_mul(simd_transpose(rotation),  global - translation);
         float z = local.z;
         
         // Calculate which voxel will be updated
-        simd::float3 ijk = simd::float3();
+        simd::float3 ijk = trilinear_interpolation(mapping_global_to_voxel(global, dimension, resolve));
+        int index = hash_function(ijk, dimension);
+        if (index < 0) continue;
         
         // Project that local 3D point
         simd_int2 uv = project(local, K);
         if (uv.x > height || uv.x < 0) continue;
         if (uv.y > width || uv.y < 0) continue;
         
-        float depth = depthmap[uv.x * width + uv.y];
-        if (depth == 0.0) continue;
-
-        float truncation = 2.0; // truncation distance
-        float distance = z - depth;
-        if (fabs(distance) < truncation)
-            update_voxel((Voxel *)voxels, distance, 1, i);
-        else if (distance >= truncation)
-            update_voxel((Voxel *)voxels, delta, 1, i);
+        float real_depth = depthmap[uv.x * width + uv.y];
+        //float truncation = 2.0; // truncation distance
+        float distance = z - real_depth;
+        if (fabs(distance) < delta)
+            update_voxel((Voxel *)voxels, distance, 1, index);
+        else if (distance >= delta)
+            update_voxel((Voxel *)voxels, delta, 1, index);
         else
-            update_voxel((Voxel *)voxels, -delta, 1, i);
+            update_voxel((Voxel *)voxels, -delta, 1, index);
     }
     return number_of_changes;
+}
+
+void bridge_exportToPLY(const void* vectors,
+                        const char* file_name,
+                        int n) {
+    simd::float3* points = (simd::float3 *) vectors;
+    save_meshing_ply_format(points, file_name, n);
 }

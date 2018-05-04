@@ -131,7 +131,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             group.leave()
         }
         group.wait()
-        let elapsed = Double(CFAbsoluteTimeGetCurrent()) - starter
+        _ = Double(CFAbsoluteTimeGetCurrent()) - starter
         
     }
     
@@ -179,16 +179,20 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
         group.wait()
             */
-        for i in 1..<249 {
+        let start   = CFAbsoluteTimeGetCurrent()
+        for i in 1..<50 {
             let extrinsics = importCameraPose(from: "frame-\(i).pose")
             let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
             self.myVolume.integrateDepthMap(image: self.depthImage, camera: self.myCamera)
             self.myCamera.update(extrinsics: extrinsics)
             self.depthImage.update(_data: depthmap)
         }
-        let points = extractMesh(volume: myVolume, isolevel: 20)
+        let end    = CFAbsoluteTimeGetCurrent()
+        let elapsedTime = Double(end) - Double(start)
+        print("Time : \(elapsedTime)")
+        let points = extractMesh(volume: myVolume, isolevel: 1)
         exportToPLY(triangles: points, fileName: "mesh_\(self.myVolume.size).ply")
-        exportToPLY(volume: self.myVolume, fileName: "volume_\(self.myVolume.size).ply")
+        //exportToPLY(volume: self.myVolume, fileName: "volume_\(self.myVolume.size).ply")
         exit(0)
         
         /*

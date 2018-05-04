@@ -36,7 +36,7 @@ class Volume {
     */
     
     private init() {
-        size        = 128
+        size        = 256
         resolution  = 1.0
     }
     
@@ -132,7 +132,8 @@ class Volume {
         var K = camera.intrinsics
         var Rt = camera.extrinsics
         let dethmap = image.data
-        _ = bridge_integrateDepthMap(dethmap, centroids, &Rt, &K, &voxels, Int32(width), Int32(height))
+        let resolve = [resolution, resolution, resolution]
+        _ = bridge_integrateDepthMap(dethmap, centroids, &Rt, &K, &voxels, Int32(width), Int32(height), Int32(size), resolve)
     }
     
     func randomSDF() {

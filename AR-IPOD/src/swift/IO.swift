@@ -168,6 +168,7 @@ func exportToPLY(volume: Volume, fileName: String) {
 }
 
 func exportToPLY(triangles: [Vector], fileName: String) {
+    /*
     let numberOfTriangles = triangles.count / 3
     var text: String
     let header = "ply \n"
@@ -182,23 +183,40 @@ func exportToPLY(triangles: [Vector], fileName: String) {
     
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         let fileURL = dir.appendingPathComponent(fileName)
-        // Writing Header
-        text = "\(header)\(formatHeader)\(vertexCount)\(propertyX)\(propertyY)\(propertyZ)\(faceCount)\(faceListProperty)\(endHeader)"
-        
-        // Writing vertex
-        //let number = triangles.count
-        for triangle in triangles {
-            text += "\(triangle.x) \(triangle.y) \(triangle.z)\n"
-        }
-        // Writing faces
-        for i in 0..<numberOfTriangles {
-            text += "3 \(3*i) \(3*i+1) \(3*i+2)\n"
-        }
-        
+        // Open a fileHandle
         do {
-            try text.write(to: fileURL, atomically: false, encoding: .utf8)
+            let fileHandle = try FileHandle(forWritingTo: fileURL)
+            // Writing Header
+            text = "\(header)\(formatHeader)\(vertexCount)\(propertyX)\(propertyY)\(propertyZ)\(faceCount)\(faceListProperty)\(endHeader)"
+            // Writing vertex
+            for i in 0..<numberOfTriangles {
+                let t1 = triangles[3*i]
+                let t2 = triangles[3*i+1]
+                let t3 = triangles[3*i+2]
+                text += "\(t1.x) \(t1.y) \(t1.z)\n\(t2.x) \(t2.y) \(t2.z)\n\(t3.x) \(t3.y) \(t3.z)\n"
+            }
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(text.data(using: .utf8)!)
+            // Writing faces
+            
+            text = ""
+            for i in 0..<numberOfTriangles {
+                text += "3 \(3*i) \(3*i+1) \(3*i+2)\n"
+            }
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(text.data(using: .utf8)!)
+            fileHandle.closeFile()
         }
         catch {}
-        print(text)
+    }
+    */
+    let numberOfTriangles = triangles.count / 3
+    let cFile = fileName.cString(using: .utf8)
+    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        let fileURL = dir.appendingPathComponent(fileName)
+        let fullName = fileURL.absoluteString
+        let cFile = fullName.cString(using: .utf8)
+        bridge_exportToPLY(triangles, cFile, Int32(numberOfTriangles))
+        
     }
 }
