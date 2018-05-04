@@ -19,6 +19,9 @@ extern "C" {
 #include <vector>
 //#include <omp.h>
 
+#include "linear_algebra.hpp"
+#include "marching_cube.hpp"
+
 using namespace std;
 
 typedef struct Voxel {
@@ -29,98 +32,20 @@ typedef struct Voxel {
 /*
  * LOCAL FUNCTIONS
  */
-inline float integerToCenter(float point, int dim, float resolution) {
-    return (resolution / (float) dim) * (0.5 + point);
-}
 
-simd::float3 interpolateVertex(float isolevel, simd::float3 a, simd::float3 b, float alpha, float beta) {
-    if (abs(isolevel-alpha) < 0.00001)  { return a; }
-    if (abs(isolevel-beta) < 0.00001)   { return b; }
-    if (abs(alpha-beta) < 0.00001)      { return a; }
-    float mu = (isolevel - alpha) / (beta - alpha);
-    return a + mu * (b - a);
-    }
-
-std::vector<simd::float3> polygonise(simd::float3 points[8], float values[8], float isolevel, int* edgeTable, int* triTable) {
-    std::vector<simd::float3> triangles;
-    int ntriangle = 0;
-    int cubeindex = 0;
-    simd::float3 vertexlist[12];
+/**
+ * Update voxel sdf and weight.
+ */
+inline void update_voxel(Voxel* voxels, const float sdf, const int weight, const int index) {
+    float old_sdf      = voxels[index].sdf;
+    float old_weight   = voxels[index].weight;
+    float new_weight   = old_weight + weight;
+    float old_product  = old_weight * old_sdf;
+    float new_product  = sdf * weight;
+    float new_sdf      = (new_product + old_product ) / new_weight;
     
-    if (values[0] < isolevel) cubeindex |= 1;
-    if (values[1] < isolevel) cubeindex |= 2;
-    if (values[2] < isolevel) cubeindex |= 4;
-    if (values[3] < isolevel) cubeindex |= 8;
-    if (values[4] < isolevel) cubeindex |= 16;
-    if (values[5] < isolevel) cubeindex |= 32;
-    if (values[6] < isolevel) cubeindex |= 64;
-    if (values[7] < isolevel) cubeindex |= 128;
-    /* Cube is entirely in/out of the surface */
-    if (edgeTable[cubeindex] == 0) return triangles;
-    
-    /* Find the vertices where the surface intersects the cube */
-    if (edgeTable[cubeindex] & 1) {
-        vertexlist[0] = interpolateVertex(isolevel , points[0], points[1], values[0], values[1]);
-    }
-    if (edgeTable[cubeindex] & 2) {
-        vertexlist[1] = interpolateVertex(isolevel, points[1], points[2], values[1], values[2]);
-    }
-    if (edgeTable[cubeindex] & 4) {
-        vertexlist[2] = interpolateVertex( isolevel, points[2], points[3], values[2], values[3]);
-    }
-    if (edgeTable[cubeindex] & 8) {
-        vertexlist[3] = interpolateVertex(isolevel, points[3], points[0], values[3], values[0]);
-    }
-    if (edgeTable[cubeindex] & 16) {
-        vertexlist[4] = interpolateVertex(isolevel, points[4], points[5], values[4], values[5]);
-    }
-    if (edgeTable[cubeindex] & 32) {
-        vertexlist[5] = interpolateVertex(isolevel, points[5], points[6], values[5], values[6]);
-    }
-    if (edgeTable[cubeindex] & 64) {
-        vertexlist[6] = interpolateVertex(isolevel, points[6], points[7], values[6], values[7]);
-    }
-    if (edgeTable[cubeindex] & 128) {
-        vertexlist[7] = interpolateVertex(isolevel, points[7], points[4], values[7], values[4]);
-    }
-    if (edgeTable[cubeindex] & 256) {
-        vertexlist[8] = interpolateVertex(isolevel, points[0], points[4], values[0], values[4]);
-    }
-    if (edgeTable[cubeindex] & 512) {
-        vertexlist[9] = interpolateVertex(isolevel, points[1], points[5], values[1], values[5]);
-    }
-    if (edgeTable[cubeindex] & 1024) {
-        vertexlist[10] = interpolateVertex(isolevel, points[2], points[6], values[2], values[6]);
-    }
-    if (edgeTable[cubeindex] & 2048) {
-        vertexlist[11] = interpolateVertex(isolevel, points[3], points[7], values[3], values[7]);
-    }
-    
-    int i = 0;
-    while (triTable[cubeindex*16+i] != -1) {
-        simd::float3 triangle;
-        triangle = vertexlist[triTable[cubeindex*16+i+0]];
-        triangles.push_back(triangle);
-        triangle = vertexlist[triTable[cubeindex*16+i+1]];
-        triangles.push_back(triangle);
-        triangle = vertexlist[triTable[cubeindex*16+i+2]];
-        triangles.push_back(triangle);
-        ntriangle += 1;
-        i += 3;
-    }
-    return triangles;
-}
-
-inline void updateVoxel(Voxel* voxels, const float sdf, const int weight, const int index) {
-    float oldSDF      = voxels[index].sdf;
-    float oldWeight   = voxels[index].weight;
-    float newWeight   = oldWeight + weight;
-    float oldProduct  = oldWeight * oldSDF;
-    float newProduct  = sdf * weight;
-    float newSDF      = (newProduct + oldProduct ) / newWeight;
-    
-    voxels[index].sdf     = newSDF;
-    voxels[index].weight  = simd_min(newWeight, 255);
+    voxels[index].sdf     = new_sdf;
+    voxels[index].weight  = simd_min(new_weight, 255);
 }
 
 
@@ -130,18 +55,30 @@ inline void carveVoxel(float* sdfs, unsigned char* weight, const int index) {
 }
 */
 
-inline simd_int2 project(simd::float3 vector, simd_float3x3 K) {
-    simd::float3 temp = simd_make_float3(vector.x / vector.z, vector.y / vector.z, 1);
-    simd::float3 all  = simd_mul(K, temp);
-    return simd_make_int2((int)all.x, (int)all.y);
+/**
+ * Determined all global 3D point observed by the camera (Rt and K).
+ */
+simd::float3* estimate_observed_voxels(const float* depthmap,
+                            simd_float4x4 Rt,
+                            simd_float3x3 K,
+                            const int width,
+                            const int height) {
+    simd::float3 observed[width*height];
+    simd_float3x3 Kinv = simd_inverse(K);
+    for (int i = 0; i<height; i++) {
+        for (int j = 0; j<width; j++) {
+            float z = depthmap[i*width + j];
+            simd::float3 translation = simd_make_float3(Rt.columns[3][0], Rt.columns[3][1], Rt.columns[3][2]);
+            simd_float4x3 temp = simd_transpose(simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]));
+            simd_float3x3 rotation = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
+            simd_float3 local = unproject(simd_make_int2(i, j), z, Kinv);
+            simd_float3 global = simd_mul(rotation, local + translation);
+            observed[i*width + height] = global;
+        }
+    }
+    return observed;
 }
-
-inline simd_float3 unproject(simd_int2 pixel, float depth, simd_float3x3 K) {
-    simd_float3 temp = simd_make_float3(pixel.x, pixel.y, 1);
-    simd_float3 all = simd_mul(K, temp);
-    return simd_make_float3(all.x * depth, all.y * depth, depth);
-}
-
+                                          
 /*
  * GLOBAL FUNCTION (hpp)
  */
@@ -150,16 +87,15 @@ void bridge_initializeCentroids(void* centroids, int size, float resolution) {
     //int num_threads = omp_get_num_threads();
     int count = size * size * size;
     int square = size * size;
-//    printf("Num threads : %d", num_threads);
 #pragma omp parallel for shared(centroids) num_threads(num_threads)
     for(int i = 0; i<count; i++) {
         float x = i / square;
         float remainder = i % square;
         float y = remainder / size;
         float z = (float)(((int) remainder) % size);
-        ((simd::float3*) centroids)[i][0] = integerToCenter(x, size, resolution);
-        ((simd::float3*) centroids)[i][1] = integerToCenter(y, size, resolution);
-        ((simd::float3*) centroids)[i][2] = integerToCenter(z, size, resolution);
+        ((simd::float3*) centroids)[i][0] = integer_to_global(x, size, resolution);
+        ((simd::float3*) centroids)[i][1] = integer_to_global(y, size, resolution);
+        ((simd::float3*) centroids)[i][2] = integer_to_global(z, size, resolution);
     }
 }
 
@@ -172,7 +108,7 @@ unsigned long bridge_extractMesh(void* triangles,
                             float isolevel) {
     unsigned long index = 0;
     int n2 = n * n;
-//    int num_threads = omp_get_num_threads();
+//  int num_threads = omp_get_num_threads();
 //#pragma omp parallel for shared(index) collapse(3) num_threads(num_threads)
     for (int i = 0; i<n-1; i++) {
         for (int j = 0; j<n-1; j++) {
@@ -227,36 +163,45 @@ int bridge_integrateDepthMap(const float* depthmap,
                               void* voxels,
                               const int width,
                               const int height) {
+    // Instanciate all local variables
     int number_of_changes = 0;
     float delta = 0.2;
     int count = width * height;
-    // Convertion error !
     simd_float3x3 K = ((simd_float3x3 *) intrisics)[0];
-    simd_float4x4 camera = ((simd_float4x4 *) camera_pose)[0];
-    float diag = 2.0 * sqrt(3.0) * 1.0; // Resolution
+    simd_float4x4 Rt = ((simd_float4x4 *) camera_pose)[0];
+    
+    // Compute observed voxels
+    simd_float3* observed = estimate_observed_voxels(depthmap, Rt, K, width, height);
+    
+    // Update each voxels
     for (int i = 0; i<count; i++) {
-        simd::float3 centroid = ((simd::float3 *) centroids)[i];
-        simd::float3 position_camera = simd_make_float3(camera.columns[3][0], camera.columns[3][1], camera.columns[3][2]);
-        simd_float4x3 temp = simd_transpose(simd_matrix(camera.columns[0], camera.columns[1], camera.columns[2]));
-        simd_float3x3 R = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
-        simd::float3 local = simd_mul(simd_transpose(R), centroid - position_camera);
-        //simd::float3 local = simd_mul(R, centroid - position_camera);
+        // Transfer global 3D into local camera coordinate
+        simd::float3 global = observed[i];
+        simd::float3 translation = simd_make_float3(Rt.columns[3][0], Rt.columns[3][1], Rt.columns[3][2]);
+        simd_float4x3 temp = simd_transpose(simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]));
+        simd_float3x3 rotation = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
+        simd::float3 local = simd_mul(simd_transpose(rotation),  global - translation);
         float z = local.z;
-        //if (z < 0) continue;
+        
+        // Calculate which voxel will be updated
+        simd::float3 ijk = simd::float3();
+        
+        // Project that local 3D point
         simd_int2 uv = project(local, K);
         if (uv.x > height || uv.x < 0) continue;
         if (uv.y > width || uv.y < 0) continue;
+        
         float depth = depthmap[uv.x * width + uv.y];
         if (depth == 0.0) continue;
 
         float truncation = 2.0; // truncation distance
         float distance = z - depth;
         if (fabs(distance) < truncation)
-            updateVoxel((Voxel *)voxels, distance, 1, i);
+            update_voxel((Voxel *)voxels, distance, 1, i);
         else if (distance >= truncation)
-            updateVoxel((Voxel *)voxels, delta, 1, i);
+            update_voxel((Voxel *)voxels, delta, 1, i);
         else
-            updateVoxel((Voxel *)voxels, -delta, 1, i);
+            update_voxel((Voxel *)voxels, -delta, 1, i);
     }
     return number_of_changes;
 }

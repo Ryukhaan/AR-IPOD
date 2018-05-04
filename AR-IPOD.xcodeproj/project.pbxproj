@@ -37,6 +37,7 @@
 		A58DCE1B2088BF5C00280CD2 /* Volume.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* Volume.swift */; };
 		A5F478C12099E33900CAAEC0 /* pointCloudTest.sdp in Resources */ = {isa = PBXBuildFile; fileRef = A5F478C02099E10100CAAEC0 /* pointCloudTest.sdp */; };
 		A5F478C22099E33C00CAAEC0 /* chair0 in Resources */ = {isa = PBXBuildFile; fileRef = A5F478BE2099DF6000CAAEC0 /* chair0 */; };
+		A5F478E3209C485200CAAEC0 /* marching_cube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5F478E1209C485200CAAEC0 /* marching_cube.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +97,9 @@
 		A58DCE1A2088BF5C00280CD2 /* Volume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Volume.swift; sourceTree = "<group>"; };
 		A5F478BE2099DF6000CAAEC0 /* chair0 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = chair0; path = ../../../../../Downloads/chair0; sourceTree = "<group>"; };
 		A5F478C02099E10100CAAEC0 /* pointCloudTest.sdp */ = {isa = PBXFileReference; lastKnownFileType = text; path = pointCloudTest.sdp; sourceTree = "<group>"; };
+		A5F478E1209C485200CAAEC0 /* marching_cube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = marching_cube.cpp; sourceTree = "<group>"; };
+		A5F478E2209C485200CAAEC0 /* marching_cube.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = marching_cube.hpp; sourceTree = "<group>"; };
+		A5F478E5209C498700CAAEC0 /* linear_algebra.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = linear_algebra.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,9 +216,12 @@
 				A58DCDEA2088895500280CD2 /* LaunchScreen.storyboard */,
 				A58DCDED2088895500280CD2 /* Info.plist */,
 				A53453152097452A00BD8E76 /* pointCloudTest.sdp */,
+				A5F478E1209C485200CAAEC0 /* marching_cube.cpp */,
+				A5F478E2209C485200CAAEC0 /* marching_cube.hpp */,
 				A52C3D632093185000BA5BDC /* parallelism.cpp */,
 				A52C3D642093185000BA5BDC /* parallelism.hpp */,
 				A52C3D622093185000BA5BDC /* AR-IPOD-Bridging-Header.h */,
+				A5F478E5209C498700CAAEC0 /* linear_algebra.hpp */,
 			);
 			path = "AR-IPOD";
 			sourceTree = "<group>";
@@ -407,6 +414,7 @@
 				A5494B102089E644007EA2FB /* Frustrum.swift in Sources */,
 				A5494B122089E657007EA2FB /* Geometry.swift in Sources */,
 				A5494B1C208A2768007EA2FB /* Types.swift in Sources */,
+				A5F478E3209C485200CAAEC0 /* marching_cube.cpp in Sources */,
 				A52C3D652093185000BA5BDC /* parallelism.cpp in Sources */,
 				A52C3D452091CE4B00BA5BDC /* Meshing.swift in Sources */,
 				A52C3D472091CE5C00BA5BDC /* Triangle.swift in Sources */,
