@@ -50,7 +50,7 @@ void save_meshing_ply_format(const simd::float3* points, const char* file_name, 
 }
 
 void save_volume_ply_format(const simd::float3* centroids, const float* sdfs, const char* file_name, int size) {
-    std::fstream file;
+    std::ofstream file;
     file.open(file_name + 7, std::ofstream::trunc);
     if ( ! file.is_open() ) return;
     // Write PLY Header
@@ -69,8 +69,9 @@ void save_volume_ply_format(const simd::float3* centroids, const float* sdfs, co
     for(int i = 0; i<size; i++) {
         simd::float3 centroid = centroids[i];
         float sdf = sdfs[i];
+        int sdf_red = (int)(sdf * 255);
         file << centroid.x << " " << centroid.y << " " << centroid.z << " ";
-        file << sdf << " 54 13" << endl;
+        file << sdf_red << " 54 14" << endl;
     }
     file.flush();
     file.close();

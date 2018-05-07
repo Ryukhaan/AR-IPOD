@@ -26,7 +26,7 @@ class Volume {
     lazy var centroids: [Vector]    = self.allocate()
     
     private init() {
-        size        = 256
+        size        = 64
         resolution  = 1.0
     }
     
@@ -53,6 +53,11 @@ class Volume {
         points.deallocate()
     }
     
+    func initialize(with: Int) {
+        size = with
+        initialize()
+    }
+    
     func numberOfVoxels() -> Int {
         return size * size * size
     }
@@ -63,5 +68,8 @@ class Volume {
         let dethmap = image.data
         let resolve = [resolution, resolution, resolution]
         _ = bridge_integrateDepthMap(dethmap, centroids, &camera.extrinsics, &camera.intrinsics, &voxels, Int32(width), Int32(height), Int32(size), resolve)
+        let voxel2 = voxels[size].sdf
+        
+        
     }
 }

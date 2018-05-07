@@ -46,6 +46,12 @@ inline simd_int2 project(simd::float3 vector, simd_float3x3 K) {
     return simd_make_int2((int)all.x, (int)all.y);
 }
 
+inline simd::float3 projectWithZ(simd::float3 vector, simd_float3x3 K) {
+    simd::float3 temp = simd_make_float3(vector.x / vector.z, vector.y / vector.z, 1);
+    simd::float3 all  = simd_mul(K, temp);
+    return simd_make_float3(all.x, all.y, all.z);
+}
+
 /**
  * Unproject. A pixel correspond to a 3D point
  */

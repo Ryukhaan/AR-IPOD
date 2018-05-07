@@ -49,7 +49,7 @@ func importDepthMap(fromFile: String) -> [Float] {
 }
 
 func importDepthMapFromTXT(from: String) -> [Float] {
-    let relativPath = "/chair0/\(from)"
+    let relativPath = "/ikea-table/\(from)"
     var text: String = ""
     if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
         do {
@@ -62,7 +62,7 @@ func importDepthMapFromTXT(from: String) -> [Float] {
             rows.append(a)
         }
         let depths = rows.map {
-            $0.components(separatedBy: ",").map { Float($0)! }
+            $0.components(separatedBy: " ").map { Float($0)! }
             }.flatMap { $0 }
         let mins = depths.min()!
         let maxs = depths.max()!
@@ -72,7 +72,7 @@ func importDepthMapFromTXT(from: String) -> [Float] {
 }
 
 func importCameraPose(from: String) -> matrix_float4x4 {
-    let relativPath = "/chair0/\(from)"
+    let relativPath = "/ikea-table/\(from)"
     if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
         do {
             let text = try String(contentsOfFile: path)
@@ -94,7 +94,7 @@ func importCameraPose(from: String) -> matrix_float4x4 {
 }
 
 func importCameraIntrinsics(from: String) -> matrix_float3x3 {
-    let relativPath = "/chair0/\(from)"
+    let relativPath = "/ikea-table/\(from)"
     if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
         do {
             let text = try String(contentsOfFile: path)
@@ -114,8 +114,11 @@ func importCameraIntrinsics(from: String) -> matrix_float3x3 {
 }
 
 func exportToPLY(volume: Volume, at: String) {
-    let size = volume.size
-    let sdfs = volume.voxels.map { $0.sdf }
+    let size = volume.size * volume.size * volume.size
+    var sdfs = volume.voxels.map { $0.sdf }
+    let mini = sdfs.min()!
+    let maxi = sdfs.max()!
+    sdfs = sdfs.map { ($0 - mini) / (maxi - mini)}
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         let cFileName = dir.appendingPathComponent(at).absoluteString.cString(using: .utf8)
         bridge_exportVolumeToPLY(volume.centroids, sdfs, cFileName, Int32(size))

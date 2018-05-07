@@ -49,6 +49,13 @@ inline void update_voxel(Voxel* voxels, const float sdf, const int weight, const
     voxels[index].weight  = simd_min(new_weight, 100);
 }
 
+/**
+ * Reset voxel
+ */
+inline void reset_voxel(Voxel * voxels, const int i) {
+    voxels[i].sdf = 9999;
+    voxels[i].weight = 0;
+}
 
 /*
 inline void carveVoxel(float* sdfs, unsigned char* weight, const int index) {
@@ -144,8 +151,12 @@ int bridge_integrateDepthMap(const float* depthmap,
                              const float resolution[3]) {
     // Instanciate all local variables
     int number_of_changes = 0;
-    float delta = 0.2;
+    float delta = 0.3;
+    float truncation = 0.3;
+    float diag = 2.0 * sqrt(3.0) * resolution[0];
+    float carving_distance = 0.5;
     int count = width * height;
+    //int count = dimension * dimension * dimension;
     simd_float3x3 K = ((simd_float3x3 *) intrisics)[0];
     simd_float4x4 Rt = ((simd_float4x4 *) camera_pose)[0];
     simd_float3x3 Kinv = simd_inverse(K);
@@ -158,6 +169,7 @@ int bridge_integrateDepthMap(const float* depthmap,
     
     // Update each voxels
     for (int i = 0; i<count; i++) {
+        /** Process by depthmap */
         float depth = depthmap[i];
         // Depth are in mm. Imo, having a 1nm threshhold as error is due to float conversion
         if (depth < 0.000001) continue;
@@ -187,6 +199,25 @@ int bridge_integrateDepthMap(const float* depthmap,
             update_voxel((Voxel *)voxels, delta, 1, index);
         else
             update_voxel((Voxel *)voxels, -delta, 1, index);
+        /*
+        simd::float3 centroid = ((simd::float3 *) centroids)[i];
+        simd::float3 voxel_center = simd_mul(simd_transpose(rotation), centroid - translation);
+        simd::float3 uvz = projectWithZ(voxel_center, K);
+        
+        if (uvz.x > height || uvz.x < 0) continue;
+        if (uvz.y > width || uvz.y < 0) continue;
+        if (uvz.z == 0) continue;
+        
+        float pixel_depth = uvz.z;
+        float depth = depthmap[(int)uvz.x * width + (int)uvz.y];
+        if (depth < 0.00001) continue;
+        
+        float distance = depth - pixel_depth;
+        if (fabs(distance) < delta)
+            update_voxel((Voxel *)voxels, distance, 1, i);
+        else
+            reset_voxel((Voxel *)voxels, i);
+        */
     }
     return number_of_changes;
 }

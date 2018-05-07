@@ -20,6 +20,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var increments: Int = 1
     var timer = Double(CFAbsoluteTimeGetCurrent())
     
+    @IBOutlet var volumeSize: UILabel!
+    @IBOutlet var stepperSize: UIStepper!
+    
     @IBOutlet weak var depthView: UIImageView!
     var myDepthStrings = [String]()
     var myDepthImage: UIImage?
@@ -31,7 +34,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     @IBOutlet var isolevelLabel: UILabel!
     @IBOutlet var isoSlider: UISlider!
-    @IBOutlet var datasetProgress: UIProgressView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,7 +45,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.showsStatistics = true
         
         // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+        let scene = SCNScene()
         
         // Set the scene to the view
         sceneView.scene = scene
@@ -103,7 +105,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             assertionFailure("Camera has not been initialized ! ")
         }
         */
-        datasetProgress.isHidden = true
         
         // Version with dataset
         let starter = Double(CFAbsoluteTimeGetCurrent())
@@ -184,12 +185,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
-        let extrinsics = importCameraPose(from: "frame-\(increments).pose")
-        let depthMap = importDepthMapFromTXT(from: "frame-\(increments).depth")
-        increments += 1
-        myCamera.update(extrinsics: extrinsics)
-        depthImage.update(_data: depthMap)
-        myVolume.integrateDepthMap(image: depthImage, camera: &myCamera)
         /*
         if frame.capturedDepthData != nil {
             myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
@@ -213,21 +208,41 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     
     @IBAction func startCompute(_ sender: Any) {
-        for i in 0..<100 {
-            let extrinsics = importCameraPose(from: "frame-\(i).pose")
-            let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
+        for i in 0..<10 {
+            //let extrinsics = importCameraPose(from: "frame-\(i).pose")
+            //let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
+            let extrinsics = importCameraPose(from: "frame-1.pose")
+            let depthmap = importDepthMapFromTXT(from: "frame-1.depth")
             self.myCamera.update(extrinsics: extrinsics)
             self.depthImage.update(_data: depthmap)
             self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera)
         }
     }
     
+    @IBAction func increaseVolume(_ sender: Any) {
+        let quantity = pow(2.0, stepperSize.value)
+        self.myVolume.initialize(with: Int(quantity))
+        volumeSize.text = "Volume Size : \(quantity)"
+    }
+    
     @IBAction func updateIsolevel(_ sender: Any) {
         self.isolevelLabel.text = "Isolevel : \(String(self.isoSlider.value))"
     }
     @IBAction func exportVolume(_ sender: Any) {
+        guard let currentFrame = sceneView.session.currentFrame
+            else { return }
         let points = extractMesh(volume: myVolume, isolevel: isoSlider.value)
-        exportToPLY(mesh: points, at: "mesh_\(self.myVolume.size).ply")
+        let pointNode = createSimpleNode(points: points)
+        pointNode.position = SCNVector3(0, 0, -0.2)
+
+        let scene = SCNScene()
+        scene.rootNode.addChildNode(pointNode)
+        
+        // Set the scene to the view
+        sceneView.scene = scene
+        
+        //sceneView.scene.rootNode.addChildNode(pointNode)
+        //exportToPLY(mesh: points, at: "mesh_\(self.myVolume.size).ply")
         //exportToPLY(volume: self.myVolume, at: "volume_\(self.myVolume.size).ply")
     }
 }

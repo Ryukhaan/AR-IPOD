@@ -21,8 +21,8 @@
                             <arscnView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tcz-BM-wqc">
                                 <rect key="frame" x="0.0" y="0.0" width="1112" height="834"/>
                             </arscnView>
-                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="0.001" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xWy-iV-Ajb">
-                                <rect key="frame" x="18" y="784" width="343" height="31"/>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="100" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xWy-iV-Ajb">
+                                <rect key="frame" x="18" y="784" width="1076" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="updateIsolevel:" destination="BV1-FR-VrT" eventType="valueChanged" id="0p9-Px-wKx"/>
@@ -51,10 +51,20 @@
                                     <action selector="startCompute:" destination="BV1-FR-VrT" eventType="touchUpInside" id="hLl-BR-gYv"/>
                                 </connections>
                             </button>
-                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lzH-KR-ItO">
-                                <rect key="frame" x="20" y="626" width="339" height="2"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Volume Size:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heQ-ae-Ugk">
+                                <rect key="frame" x="20" y="651" width="237" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </progressView>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="6" maximumValue="8" translatesAutoresizingMaskIntoConstraints="NO" id="gxn-8q-CXD">
+                                <rect key="frame" x="265" y="651" width="94" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="increaseVolume:" destination="BV1-FR-VrT" eventType="valueChanged" id="Arm-yo-sqQ"/>
+                                </connections>
+                            </stepper>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -66,10 +76,11 @@
                         <viewLayoutGuide key="safeArea" id="SvY-0D-dDP"/>
                     </view>
                     <connections>
-                        <outlet property="datasetProgress" destination="lzH-KR-ItO" id="doq-9e-8Lc"/>
                         <outlet property="isoSlider" destination="xWy-iV-Ajb" id="CVo-N8-b74"/>
                         <outlet property="isolevelLabel" destination="nDE-z5-0Dt" id="YkW-pP-4KX"/>
                         <outlet property="sceneView" destination="tcz-BM-wqc" id="3cR-sM-uGk"/>
+                        <outlet property="stepperSize" destination="gxn-8q-CXD" id="k3D-Wi-7v4"/>
+                        <outlet property="volumeSize" destination="heQ-ae-Ugk" id="7kC-o3-GmH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
