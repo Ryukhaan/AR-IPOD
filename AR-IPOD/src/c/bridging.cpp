@@ -46,7 +46,7 @@ inline void update_voxel(Voxel* voxels, const float sdf, const int weight, const
     float new_sdf      = (new_product + old_product ) / new_weight;
     
     voxels[index].sdf     = new_sdf;
-    voxels[index].weight  = simd_min(new_weight, 255);
+    voxels[index].weight  = simd_min(new_weight, 100);
 }
 
 
@@ -144,7 +144,7 @@ int bridge_integrateDepthMap(const float* depthmap,
                              const float resolution[3]) {
     // Instanciate all local variables
     int number_of_changes = 0;
-    float delta = 0.3;
+    float delta = 0.2;
     int count = width * height;
     simd_float3x3 K = ((simd_float3x3 *) intrisics)[0];
     simd_float4x4 Rt = ((simd_float4x4 *) camera_pose)[0];
@@ -159,7 +159,8 @@ int bridge_integrateDepthMap(const float* depthmap,
     // Update each voxels
     for (int i = 0; i<count; i++) {
         float depth = depthmap[i];
-        if (depth == 0.0) continue;
+        // Depth are in mm. Imo, having a 1nm threshhold as error is due to float conversion
+        if (depth < 0.000001) continue;
         
         // Transfer global 3D into local camera coordinate
         simd_float3 local = unproject(simd_make_int2(i / width, i % width), depth, Kinv);

@@ -42,7 +42,7 @@ class Volume {
         let count = numberOfVoxels()
         //let square = size * size
         voxels = [Voxel](repeating: Voxel(), count: count)
-        centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
+        //centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
         
         let stride = MemoryLayout<Point3D>.stride
         let byteCount = stride * count

@@ -61,9 +61,12 @@ func importDepthMapFromTXT(from: String) -> [Float] {
         if a != "" {
             rows.append(a)
         }
-        return rows.map {
-            $0.components(separatedBy: ",").map { Float($0)! / 1e3 }
+        let depths = rows.map {
+            $0.components(separatedBy: ",").map { Float($0)! }
             }.flatMap { $0 }
+        let mins = depths.min()!
+        let maxs = depths.max()!
+        return depths.map { ($0 - mins) / (maxs - mins) }
     }
     return [Float]()
 }

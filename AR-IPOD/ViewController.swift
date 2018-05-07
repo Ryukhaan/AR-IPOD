@@ -11,8 +11,9 @@ import SceneKit
 import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
-
+    
     @IBOutlet var sceneView: ARSCNView!
+
     var myVolume: Volume = Volume.sharedInstance
     var depthImage: DepthImage = DepthImage()
     var myCamera: Camera = Camera()
@@ -27,6 +28,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var myDepthData: AVDepthData?
     var myDepthDataRaw: AVDepthData?
     var myCIImage: CIImage?
+    
+    @IBOutlet var isolevelLabel: UILabel!
+    @IBOutlet var isoSlider: UISlider!
+    @IBOutlet var datasetProgress: UIProgressView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -98,6 +103,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             assertionFailure("Camera has not been initialized ! ")
         }
         */
+        datasetProgress.isHidden = true
         
         // Version with dataset
         let starter = Double(CFAbsoluteTimeGetCurrent())
@@ -159,19 +165,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 */
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
-        for i in 0..<250 {
-            let extrinsics = importCameraPose(from: "frame-\(i).pose")
-            let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
-            self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera)
-            self.myCamera.update(extrinsics: extrinsics)
-            self.depthImage.update(_data: depthmap)
-        }
-        let points = extractMesh(volume: myVolume, isolevel: 1e-3)
-        
-        exportToPLY(mesh: points, at: "mesh_\(self.myVolume.size).ply")
-        //exportToPLY(volume: self.myVolume, at: "volume_\(self.myVolume.size).ply")
-        
-        exit(0)
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
@@ -216,5 +209,25 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         myCamera.update(position: frame.camera.transform)
         myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
          */
+    }
+    
+    
+    @IBAction func startCompute(_ sender: Any) {
+        for i in 0..<100 {
+            let extrinsics = importCameraPose(from: "frame-\(i).pose")
+            let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
+            self.myCamera.update(extrinsics: extrinsics)
+            self.depthImage.update(_data: depthmap)
+            self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera)
+        }
+    }
+    
+    @IBAction func updateIsolevel(_ sender: Any) {
+        self.isolevelLabel.text = "Isolevel : \(String(self.isoSlider.value))"
+    }
+    @IBAction func exportVolume(_ sender: Any) {
+        let points = extractMesh(volume: myVolume, isolevel: isoSlider.value)
+        exportToPLY(mesh: points, at: "mesh_\(self.myVolume.size).ply")
+        //exportToPLY(volume: self.myVolume, at: "volume_\(self.myVolume.size).ply")
     }
 }

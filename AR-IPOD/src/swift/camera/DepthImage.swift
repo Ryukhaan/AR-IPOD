@@ -76,6 +76,7 @@ struct DepthImage {
     /**
      * Collects some statistics about the image (minimum, maximum and mean values).
      */
+    /*
     func getStats() -> (Float, Float, Float) {
         var minimum: Float = 9999.0
         var maximum: Float = -9999.0
@@ -89,5 +90,6 @@ struct DepthImage {
         mean /= Float(self.numberOfPixels())
         return (minimum, maximum, mean)
     }
+    */
 }
 
