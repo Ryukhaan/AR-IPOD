@@ -127,3 +127,18 @@ func exportToPLY(mesh: [Vector], at: String) {
         bridge_exportMeshToPLY(mesh, cFileName, Int32(numberOfTriangles))
     }
 }
+
+func exportCameraPose(at: String, dataset: String) {
+    var text: String = ""
+    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        let cFileName = dir.appendingPathComponent(at)
+        for i in 0..<250 {
+            let extrinsics = importCameraPose(from: "frame-\(i).pose", at: dataset)
+            text = "\(text)\(extrinsics.columns.3.x) \(extrinsics.columns.3.y) \(extrinsics.columns.3.z)\n"
+        }
+        do {
+            try text.write(to: cFileName, atomically: false, encoding: .utf8)
+        }
+        catch {}
+    }
+}

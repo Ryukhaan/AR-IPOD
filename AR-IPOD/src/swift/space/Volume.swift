@@ -25,7 +25,7 @@ class Volume {
     
     private init() {
         size        = 64
-        resolution  = 1.0
+        resolution  = 0.02
     }
     
     func allocate<T>() -> [T] {

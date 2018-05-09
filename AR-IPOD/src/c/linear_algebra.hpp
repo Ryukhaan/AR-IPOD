@@ -23,6 +23,7 @@
  */
 inline float integer_to_global(float point, int dim, float resolution) {
     return (resolution / dim) * (point - 0.5);
+    //return point * resolution;
 }
 
 /**
