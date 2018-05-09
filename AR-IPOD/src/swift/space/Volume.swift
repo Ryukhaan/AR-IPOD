@@ -24,6 +24,7 @@ class Volume {
     //lazy var centroids:  [Int: Vector]  = self.allocate()
     lazy var voxels:    [Voxel]     = self.allocate()
     lazy var centroids: [Vector]    = self.allocate()
+    //lazy var centroids: [Int: Vector] = [Int: Vector]()
     
     private init() {
         size        = 64

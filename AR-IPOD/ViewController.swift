@@ -33,7 +33,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var myCIImage: CIImage?
     
     @IBOutlet var isolevelLabel: UILabel!
-    @IBOutlet var isoSlider: UISlider!
+    @IBOutlet var isolevelStepper: UIStepper!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -208,15 +209,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     
     @IBAction func startCompute(_ sender: Any) {
-        for i in 0..<10 {
-            //let extrinsics = importCameraPose(from: "frame-\(i).pose")
-            //let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
-            let extrinsics = importCameraPose(from: "frame-1.pose")
-            let depthmap = importDepthMapFromTXT(from: "frame-1.depth")
+        for i in 0..<11 {
+            let extrinsics = importCameraPose(from: "frame-\(i).pose")
+            let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
             self.myCamera.update(extrinsics: extrinsics)
             self.depthImage.update(_data: depthmap)
             self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera)
         }
+        
     }
     
     @IBAction func increaseVolume(_ sender: Any) {
@@ -225,13 +225,31 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         volumeSize.text = "Volume Size : \(quantity)"
     }
     
+
     @IBAction func updateIsolevel(_ sender: Any) {
-        self.isolevelLabel.text = "Isolevel : \(String(self.isoSlider.value))"
+        let power = (isolevelStepper.value - 6)
+        let newLevel = pow(10.0, power)
+        if isolevelStepper.value == 0 {
+            isolevelLabel.text = "Isolevel: 0"
+        }
+        else {
+           isolevelLabel.text = "Isolevel: \(newLevel)"
+        }
     }
+    
+    
     @IBAction func exportVolume(_ sender: Any) {
         guard let currentFrame = sceneView.session.currentFrame
             else { return }
-        let points = extractMesh(volume: myVolume, isolevel: isoSlider.value)
+        var isolevel: Float
+        if isolevelStepper.value == 0 {
+            isolevel = 0
+        }
+        else {
+            isolevel = Float(pow(10.0, isolevelStepper.value - 6))
+        }
+        let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
+        /*
         let pointNode = createSimpleNode(points: points)
         pointNode.position = SCNVector3(0, 0, -0.2)
 
@@ -240,9 +258,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Set the scene to the view
         sceneView.scene = scene
-        
+        */
         //sceneView.scene.rootNode.addChildNode(pointNode)
-        //exportToPLY(mesh: points, at: "mesh_\(self.myVolume.size).ply")
-        //exportToPLY(volume: self.myVolume, at: "volume_\(self.myVolume.size).ply")
+        exportToPLY(mesh: points, at: "mesh_\(self.myVolume.size).ply")
+        exportToPLY(volume: self.myVolume, at: "volume_\(self.myVolume.size).ply")
     }
 }

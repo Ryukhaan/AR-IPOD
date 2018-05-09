@@ -61,12 +61,9 @@ func importDepthMapFromTXT(from: String) -> [Float] {
         if a != "" {
             rows.append(a)
         }
-        let depths = rows.map {
-            $0.components(separatedBy: " ").map { Float($0)! }
+        return rows.map {
+            $0.components(separatedBy: " ").map { Float($0)! * 1e-3 }
             }.flatMap { $0 }
-        let mins = depths.min()!
-        let maxs = depths.max()!
-        return depths.map { ($0 - mins) / (maxs - mins) }
     }
     return [Float]()
 }
@@ -115,10 +112,7 @@ func importCameraIntrinsics(from: String) -> matrix_float3x3 {
 
 func exportToPLY(volume: Volume, at: String) {
     let size = volume.size * volume.size * volume.size
-    var sdfs = volume.voxels.map { $0.sdf }
-    let mini = sdfs.min()!
-    let maxi = sdfs.max()!
-    sdfs = sdfs.map { ($0 - mini) / (maxi - mini)}
+    let sdfs = volume.voxels.map { $0.sdf }
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         let cFileName = dir.appendingPathComponent(at).absoluteString.cString(using: .utf8)
         bridge_exportVolumeToPLY(volume.centroids, sdfs, cFileName, Int32(size))

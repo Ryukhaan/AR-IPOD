@@ -97,6 +97,7 @@
 		A5F478E8209C657500CAAEC0 /* io.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = io.hpp; sourceTree = "<group>"; };
 		A5F478EC20A0700500CAAEC0 /* ikea-table */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "ikea-table"; sourceTree = "<group>"; };
 		A5F478EE20A096C900CAAEC0 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
+		A5F478F120A2D18200CAAEC0 /* TSDF.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TSDF.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -279,6 +280,7 @@
 				A5F478E5209C498700CAAEC0 /* linear_algebra.hpp */,
 				A5F478E7209C657500CAAEC0 /* io.cpp */,
 				A5F478E8209C657500CAAEC0 /* io.hpp */,
+				A5F478F120A2D18200CAAEC0 /* TSDF.hpp */,
 			);
 			path = c;
 			sourceTree = "<group>";

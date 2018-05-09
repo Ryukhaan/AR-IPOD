@@ -69,9 +69,8 @@ void save_volume_ply_format(const simd::float3* centroids, const float* sdfs, co
     for(int i = 0; i<size; i++) {
         simd::float3 centroid = centroids[i];
         float sdf = sdfs[i];
-        int sdf_red = (int)(sdf * 255);
         file << centroid.x << " " << centroid.y << " " << centroid.z << " ";
-        file << sdf_red << " 54 14" << endl;
+        file << sdf << " 54 14" << endl;
     }
     file.flush();
     file.close();

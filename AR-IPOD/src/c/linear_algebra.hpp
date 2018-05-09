@@ -47,9 +47,9 @@ inline simd_int2 project(simd::float3 vector, simd_float3x3 K) {
 }
 
 inline simd::float3 projectWithZ(simd::float3 vector, simd_float3x3 K) {
-    simd::float3 temp = simd_make_float3(vector.x / vector.z, vector.y / vector.z, 1);
+    simd::float3 temp = simd_make_float3(vector.x, vector.y , vector.z);
     simd::float3 all  = simd_mul(K, temp);
-    return simd_make_float3(all.x, all.y, all.z);
+    return simd_make_float3(all.x / all.z , all.y / all.z, all.z);
 }
 
 /**
