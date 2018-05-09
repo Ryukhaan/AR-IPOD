@@ -32,12 +32,14 @@ inline void update_voxel(Voxel* voxels, const float sdf, const int weight, const
     float new_sdf      = (new_product + old_product ) / new_weight;
     
     voxels[index].sdf     = new_sdf;
-    voxels[index].weight  = simd_min(new_weight, 100);
+    voxels[index].weight  = simd_min(new_weight, 200);
 };
 
-inline void reset_voxel(Voxel * voxels, const int i) {
-    voxels[i].sdf = 9999;
-    voxels[i].weight = 0;
+inline void carving_voxel(Voxel * voxels, const int i) {
+    if (voxels[i].sdf <= 0.0) {
+        voxels[i].sdf = 9999;
+        voxels[i].weight = 0;
+    }
 };
 
 #endif /* TSDF_hpp */

@@ -48,8 +48,8 @@ func importDepthMap(fromFile: String) -> [Float] {
     return outArray
 }
 
-func importDepthMapFromTXT(from: String) -> [Float] {
-    let relativPath = "/ikea-table/\(from)"
+func importDepthMapFromTXT(from: String, at: String) -> [Float] {
+    let relativPath = "/\(at)/\(from)"
     var text: String = ""
     if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
         do {
@@ -61,6 +61,7 @@ func importDepthMapFromTXT(from: String) -> [Float] {
         if a != "" {
             rows.append(a)
         }
+        
         return rows.map {
             $0.components(separatedBy: " ").map { Float($0)! * 1e-3 }
             }.flatMap { $0 }
@@ -68,8 +69,8 @@ func importDepthMapFromTXT(from: String) -> [Float] {
     return [Float]()
 }
 
-func importCameraPose(from: String) -> matrix_float4x4 {
-    let relativPath = "/ikea-table/\(from)"
+func importCameraPose(from: String, at: String) -> matrix_float4x4 {
+    let relativPath = "/\(at)/\(from)"
     if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
         do {
             let text = try String(contentsOfFile: path)
@@ -90,8 +91,8 @@ func importCameraPose(from: String) -> matrix_float4x4 {
     return matrix_float4x4()
 }
 
-func importCameraIntrinsics(from: String) -> matrix_float3x3 {
-    let relativPath = "/ikea-table/\(from)"
+func importCameraIntrinsics(from: String, at: String) -> matrix_float3x3 {
+    let relativPath = "/\(at)/\(from)"
     if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
         do {
             let text = try String(contentsOfFile: path)

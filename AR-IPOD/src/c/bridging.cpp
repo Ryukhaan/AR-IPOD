@@ -17,6 +17,7 @@ extern "C" {
 #include <simd/conversion.h>
 #include <simd/matrix.h>
 #include <vector>
+#include <unordered_map>
 //#include <omp.h>
 
 #include "linear_algebra.hpp"
@@ -104,98 +105,60 @@ unsigned long bridge_extractMesh(void* triangles,
 }
 
 int bridge_integrateDepthMap(const float* depthmap,
-                              const void* centroids,
-                              const void* camera_pose,
-                              const void* intrisics,
-                              void* voxels,
-                              const int width,
-                              const int height,
+                             const void* centroids,
+                             const void* camera_pose,
+                             const void* intrisics,
+                             void* voxels,
+                             const int width,
+                             const int height,
                              const int dimension,
-                             const float resolution[3]) {
+                             const float resolution[3],
+                             const float delta,
+                             const float epsilon) {
     // Instanciate all local variables
     int number_of_changes = 0;
-    float delta = 0.3;
+    //float delta = 0.3;
+    //float epsilon = 0.15;
     int count = width * height;
-    //int count = dimension * dimension * dimension;
+    int size = pow(dimension, 3.0);
+    
+    // Relative camera variables
     simd_float3x3 K = ((simd_float3x3 *) intrisics)[0];
     simd_float4x4 Rt = ((simd_float4x4 *) camera_pose)[0];
     simd_float3x3 Kinv = simd_inverse(K);
+    /*
     simd::float3 translation = simd_make_float3(Rt.columns[3][0], Rt.columns[3][1], Rt.columns[3][2]);
     simd_float4x3 temp = simd_transpose(simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]));
     simd_float3x3 rotation = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
+    */
+    simd_float4x4 tRt = simd_transpose(Rt);
+    simd_float4x3 Rtc = simd_matrix_from_rows(tRt.columns[0], tRt.columns[1], tRt.columns[2]);
+    simd_float3x3 rotation = simd_matrix(Rtc.columns[0], Rtc.columns[1], Rtc.columns[2]);
+    simd_float3 translation = simd_make_float3(Rtc.columns[3][0],Rtc.columns[3][1],Rtc.columns[3][2]);
     simd_float3 resolve = simd_make_float3(resolution[0], resolution[1], resolution[2]);
-    // Compute observed voxels
-    //simd_float3* observed = estimate_observed_voxels(depthmap, Rt, K, width, height);
     
-    // Update each voxels
-    for (int i = 0; i<count; i++) {
-        /** Process by depthmap
-         */
+    for (int i = 0; i < count; i++) {
         float depth = depthmap[i];
-        // Depth are in mm. Imo, having a 1nm threshhold as error is due to float conversion
         if (depth < 0.000001) continue;
         
-        // Transfer global 3D into local camera coordinate
-        simd::float3 local = unproject(simd_make_int2(i / width, i % width), depth, Kinv);
-        simd::float3 global = simd_mul(rotation, local + translation);
+        // Retrieve world coordinate point
+        simd::float3 uv = simd_make_float3(i / width, i % width, 1);
+        simd::float3 world_point = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
         
-        //simd::float3 temp = simd_mul(simd_transpose(rotation),  global - translation);
-        //simd::float3 uvz = projectWithZ(temp, K);
-        
-        // Calculate which voxel will be updated
-        simd::float3 temp = mapping_global_to_voxel(global, dimension, resolve);
-        simd::float3 ijk = simd_make_float3(floor(temp.x), floor(temp.y), floor(global.z));
+        simd::float3 ijk = mapping_global_to_voxel(world_point, dimension, resolve);
+        //simd::float3 nearest_centroid = trilinear_interpolation(ijk);
         int index = hash_function(ijk, dimension);
-        if (index < 0 || index > pow(dimension, 3.0)) continue;
+        if (index < 0 || index > size) continue;
         
-        // Project that local 3D point
-        /*
-        simd_int2 uv = project(local, K);
-        if (uvz.x > height || uvz.x < 0) continue;
-        if (uvz.y > width || uvz.y < 0) continue;
-        */
+        simd::float3 nearest_centroid = ((simd::float3 *) centroids)[index];
+        float distance = depth - nearest_centroid.z;
         
-        //depth = depthmap[(int)uvz.x * width + (int)uvz.y];
-        //float truncation = 2.0; // truncation distance
-        float distance = depth - global.z;
-        //float distance = depth - simd_length(global);
-        
-        if (fabs(distance) < delta)
+        if (distance >= delta + epsilon && distance < nearest_centroid.z) {
+            carving_voxel((Voxel *)voxels, index);
+        }
+        if (fabs(distance) <= delta) {
             update_voxel((Voxel *)voxels, distance, 1, index);
-        else if (distance >= delta)
-            update_voxel((Voxel *)voxels, delta, 1, index);
-        else
-            update_voxel((Voxel *)voxels, -delta, 1, index);
-        
-        /* Update all voxels
-        simd::float3 centroid = ((simd::float3 *) centroids)[i];
-        
-        simd::float3 effective_voxel = simd_mul(simd_transpose(rotation), centroid - translation);
-        simd::float3 uvz = projectWithZ(effective_voxel, K);
-        simd::float3 p = unproject(simd_make_int2((int)uvz.x, (int)uvz.y), uvz.z, Kinv);
-        float range = simd_length(p);
-        float distance = simd_length(effective_voxel);
-        if (uvz.x > height || uvz.x < 0) continue;
-        if (uvz.y > width || uvz.y < 0) continue;
-        if (uvz.z == 0) continue;
-        
-        if (distance >=  && distance < range - delta) {
-            update_voxel((Voxel *)voxels, delta, 2, i);
         }
-        else if (distance >= range - delta && distance <= range - delta) {
-            update_voxel((Voxel *)voxels, uvz.x, 1, i);
-        }
-        float pixel_depth = uvz.z;
-        int d = (int)uvz.x * width + (int)uvz.y;
-        float depth = depthmap[d];
-        
-        float distance = depth - pixel_depth;
-        
-        if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, 1, i);
-        else if (distance >= delta) update_voxel((Voxel *)voxels, delta, 1, i);
-        else                        update_voxel((Voxel *)voxels, -delta, 1, i);
-        */
-        
     }
     return number_of_changes;
 }

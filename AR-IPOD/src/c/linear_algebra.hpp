@@ -22,7 +22,7 @@
  * Mapping between integer to centroid coordinate.
  */
 inline float integer_to_global(float point, int dim, float resolution) {
-    return (resolution / (float) dim) * (0.5 + point);
+    return (resolution / dim) * (point - 0.5);
 }
 
 /**

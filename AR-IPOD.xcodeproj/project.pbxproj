@@ -36,6 +36,7 @@
 		A5F478E9209C657500CAAEC0 /* io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5F478E7209C657500CAAEC0 /* io.cpp */; };
 		A5F478ED20A0700500CAAEC0 /* ikea-table in Resources */ = {isa = PBXBuildFile; fileRef = A5F478EC20A0700500CAAEC0 /* ikea-table */; };
 		A5F478EF20A096C900CAAEC0 /* UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F478EE20A096C900CAAEC0 /* UI.swift */; };
+		A5F47AF220A301EA00CAAEC0 /* chair in Resources */ = {isa = PBXBuildFile; fileRef = A5F47AF120A301EA00CAAEC0 /* chair */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 		A5F478EC20A0700500CAAEC0 /* ikea-table */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "ikea-table"; sourceTree = "<group>"; };
 		A5F478EE20A096C900CAAEC0 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
 		A5F478F120A2D18200CAAEC0 /* TSDF.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TSDF.hpp; sourceTree = "<group>"; };
+		A5F47AF120A301EA00CAAEC0 /* chair */ = {isa = PBXFileReference; lastKnownFileType = folder; name = chair; path = ../../../../../Downloads/chair; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -246,6 +248,7 @@
 		A5F478BD2099DF5400CAAEC0 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				A5F47AF120A301EA00CAAEC0 /* chair */,
 				A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */,
 				A52C3D4E2091E00700BA5BDC /* TriTableContents */,
 				A5F478C02099E10100CAAEC0 /* pointCloudTest.sdp */,
@@ -396,6 +399,7 @@
 				A58DCDE22088895500280CD2 /* art.scnassets in Resources */,
 				A5F478ED20A0700500CAAEC0 /* ikea-table in Resources */,
 				A58DCDEC2088895500280CD2 /* LaunchScreen.storyboard in Resources */,
+				A5F47AF220A301EA00CAAEC0 /* chair in Resources */,
 				A58DCDE92088895500280CD2 /* Assets.xcassets in Resources */,
 				A58DCDE72088895500280CD2 /* Main.storyboard in Resources */,
 				A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */,

@@ -14,6 +14,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
 
+    var dataset: String = "chair"
     var myVolume: Volume = Volume.sharedInstance
     var depthImage: DepthImage = DepthImage()
     var myCamera: Camera = Camera()
@@ -32,9 +33,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var myDepthDataRaw: AVDepthData?
     var myCIImage: CIImage?
     
+    // Isolevel parameters UI
     @IBOutlet var isolevelLabel: UILabel!
     @IBOutlet var isolevelStepper: UIStepper!
+    // Delta parameters UI
+    @IBOutlet var deltaStepper: UIStepper!
+    @IBOutlet var deltaLabel: UILabel!
+    // Epsilon parameters UI
+    @IBOutlet var epsilonStepper: UIStepper!
+    @IBOutlet var epsilonLabel: UILabel!
     
+    @IBOutlet var datasetChoice: UISegmentedControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -110,14 +119,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Version with dataset
         let starter = Double(CFAbsoluteTimeGetCurrent())
         let threads = [DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent),
-                       DispatchQueue(label: "thread2", qos: .userInteractive, attributes: .concurrent),
-                       DispatchQueue(label: "thread3", qos: .userInteractive, attributes: .concurrent),
-                       DispatchQueue(label: "thread4", qos: .userInteractive, attributes: .concurrent)
+                       DispatchQueue(label: "thread2", qos: .userInteractive, attributes: .concurrent)
         ]
         let group = DispatchGroup()
         group.enter()
         threads[0].async {
-            let intrinsics = importCameraIntrinsics(from: "depthIntrinsics")
+            let intrinsics = importCameraIntrinsics(from: "depthIntrinsics", at: self.dataset)
             self.myCamera.update(intrinsics: intrinsics)
             group.leave()
         }
@@ -126,19 +133,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             self.myVolume.initialize()
             group.leave()
         }
-        group.enter()
-        threads[2].async {
-            let extrinsics = importCameraPose(from: "frame-000000.pose")
-            self.myCamera.update(extrinsics: extrinsics)
-            group.leave()
-        }
-        group.enter()
-        threads[3].async {
-            let depthMap = importDepthMapFromTXT(from: "frame-0.depth")
-            self.depthImage.update(_data: depthMap)
-            group.leave()
-        }
-        group.wait()
         _ = Double(CFAbsoluteTimeGetCurrent()) - starter
         
     }
@@ -209,14 +203,26 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     
     @IBAction func startCompute(_ sender: Any) {
-        for i in 0..<11 {
-            let extrinsics = importCameraPose(from: "frame-\(i).pose")
-            let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth")
+        for i in 0..<100 {
+            let epsilon = epsilonStepper.value * 0.05
+            let delta = deltaStepper.value * 0.05
+            let extrinsics = importCameraPose(from: "frame-\(i).pose", at: dataset)
+            let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: dataset)
             self.myCamera.update(extrinsics: extrinsics)
             self.depthImage.update(_data: depthmap)
-            self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera)
+            self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
         }
         
+    }
+    
+    @IBAction func updateEpsilon(_ sender: Any) {
+        let quantity = epsilonStepper.value * 0.05
+        epsilonLabel.text = "Epsilon: \(quantity)"
+    }
+
+    @IBAction func updateDelta(_ sender: Any) {
+        let quantity = deltaStepper.value * 0.05
+        deltaLabel.text = "Delta: \(quantity)"
     }
     
     @IBAction func increaseVolume(_ sender: Any) {
@@ -225,7 +231,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         volumeSize.text = "Volume Size : \(quantity)"
     }
     
-
     @IBAction func updateIsolevel(_ sender: Any) {
         let power = (isolevelStepper.value - 6)
         let newLevel = pow(10.0, power)
@@ -237,6 +242,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
+    @IBAction func changeDataset(_ sender: Any) {
+        switch datasetChoice.selectedSegmentIndex {
+        case 0:
+            dataset = "chair"
+        case 1:
+            dataset = "ikea-table"
+        default:
+            dataset = "chair"
+        }
+    }
     
     @IBAction func exportVolume(_ sender: Any) {
         guard let currentFrame = sceneView.session.currentFrame
@@ -249,18 +264,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             isolevel = Float(pow(10.0, isolevelStepper.value - 6))
         }
         let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
-        /*
-        let pointNode = createSimpleNode(points: points)
-        pointNode.position = SCNVector3(0, 0, -0.2)
-
-        let scene = SCNScene()
-        scene.rootNode.addChildNode(pointNode)
-        
-        // Set the scene to the view
-        sceneView.scene = scene
-        */
         //sceneView.scene.rootNode.addChildNode(pointNode)
-        exportToPLY(mesh: points, at: "mesh_\(self.myVolume.size).ply")
-        exportToPLY(volume: self.myVolume, at: "volume_\(self.myVolume.size).ply")
+        exportToPLY(mesh: points, at: "mesh_\(dataset)_\(self.myVolume.size).ply")
+        exportToPLY(volume: self.myVolume, at: "volume_\(dataset)_\(self.myVolume.size).ply")
     }
 }

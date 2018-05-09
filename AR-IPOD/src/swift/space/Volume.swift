@@ -24,7 +24,7 @@ class Volume {
     //lazy var centroids:  [Int: Vector]  = self.allocate()
     lazy var voxels:    [Voxel]     = self.allocate()
     lazy var centroids: [Vector]    = self.allocate()
-    //lazy var centroids: [Int: Vector] = [Int: Vector]()
+    //lazy var centroids: [Id3: Vector] = [Int: Vector]()
     
     private init() {
         size        = 64
@@ -63,12 +63,12 @@ class Volume {
         return size * size * size
     }
     
-    func integrateDepthMap(image: DepthImage, camera: inout Camera) {
+    func integrateDepthMap(image: DepthImage, camera: inout Camera, parameters: [Float]) {
         let width = image.width
         let height = image.height
         let dethmap = image.data
         let resolve = [resolution, resolution, resolution]
-        _ = bridge_integrateDepthMap(dethmap, centroids, &camera.extrinsics, &camera.intrinsics, &voxels, Int32(width), Int32(height), Int32(size), resolve)
+        _ = bridge_integrateDepthMap(dethmap, centroids, &camera.extrinsics, &camera.intrinsics, &voxels, Int32(width), Int32(height), Int32(size), resolve, parameters[0], parameters[1]);
         let voxel2 = voxels[size].sdf
         
         
