@@ -35,15 +35,17 @@ void bridge_initializeCentroids(void* centroids, int size, float resolution) {
     //int num_threads = omp_get_num_threads();
     int count = size * size * size;
     int square = size * size;
+    float offset = 0.5 - ( resolution / size );
 #pragma omp parallel for shared(centroids) num_threads(num_threads)
     for(int i = 0; i<count; i++) {
-        float x = i / square;
-        float remainder = i % square;
-        float y = remainder / size;
-        float z = (float)(((int) remainder) % size);
-        ((simd::float3*) centroids)[i][0] = integer_to_global(x, size, resolution);
-        ((simd::float3*) centroids)[i][1] = integer_to_global(y, size, resolution);
-        ((simd::float3*) centroids)[i][2] = integer_to_global(z, size, resolution);
+        int x = i / square;
+        int remainder = i % square;
+        int y = remainder / size;
+        int z = (((int) remainder) % size);
+        
+        ((simd::float3*) centroids)[i][0] = integer_to_global(x, size, resolution) - offset;
+        ((simd::float3*) centroids)[i][1] = integer_to_global(y, size, resolution) - offset;
+        ((simd::float3*) centroids)[i][2] = integer_to_global(z, size, resolution) - offset;
     }
 }
 
@@ -137,6 +139,7 @@ int bridge_integrateDepthMap(const float* depthmap,
     simd_float3 translation = simd_make_float3(Rtc.columns[3][0],Rtc.columns[3][1],Rtc.columns[3][2]);
     simd_float3 resolve = simd_make_float3(resolution[0], resolution[1], resolution[2]);
     
+    /*
     for (int i = 0; i < count; i++) {
         float depth = depthmap[i];
         if (depth < 0.000001) continue;
@@ -159,6 +162,38 @@ int bridge_integrateDepthMap(const float* depthmap,
         if (fabs(distance) <= delta) {
             update_voxel((Voxel *)voxels, distance, 1, index);
         }
+    }
+    */
+    for (int i = 0; i<size; i++) {
+        simd::float3 centroid = ((simd::float3 *) centroids)[i];
+        simd::float3 uvz = simd_mul(K, simd_mul(rotation, centroid + translation));
+        int u = (int) (uvz.x / uvz.z);
+        int v = (int) (uvz.y / uvz.z);
+        
+        if (u < 0 || u > height) continue;
+        if (v < 0 || v > width) continue;
+        
+        float depth = depthmap[u * width + v];
+        if (depth < 0.000001) continue;
+        
+        float distance = (depth - centroid.z);
+        update_voxel((Voxel *)voxels, distance, 1, i);
+        /*
+        if (fabs(distance) >= delta + epsilon) {
+            carving_voxel((Voxel *)voxels, i);
+        }
+        */
+        /*
+        if (fabs(distance) <= delta) {
+            update_voxel((Voxel *)voxels, distance, 1, i);
+        }
+        else if (distance > delta) {
+            update_voxel((Voxel *)voxels, delta, 1, i);
+        }
+        else {
+            update_voxel((Voxel *)voxels, -delta, 1, i);
+        }
+        */
     }
     return number_of_changes;
 }

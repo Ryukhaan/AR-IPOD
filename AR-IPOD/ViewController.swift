@@ -203,15 +203,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     
     @IBAction func startCompute(_ sender: Any) {
-        for i in 0..<100 {
-            let epsilon = epsilonStepper.value * 0.05
-            let delta = deltaStepper.value * 0.05
+        let epsilon = epsilonStepper.value * 0.05
+        let delta = deltaStepper.value * 0.05
+        var text = ""
+        for i in 0..<250 {
             let extrinsics = importCameraPose(from: "frame-\(i).pose", at: dataset)
             let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: dataset)
-            self.myCamera.update(extrinsics: extrinsics)
-            self.depthImage.update(_data: depthmap)
-            self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
+            //self.myCamera.update(extrinsics: extrinsics)
+            //self.depthImage.update(_data: depthmap)
+            //self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
+            text += "\(extrinsics.columns.3)\n"
         }
+      print("Hello")
         
     }
     

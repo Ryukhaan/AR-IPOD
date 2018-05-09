@@ -20,11 +20,8 @@ class Volume {
     var size:   Int
     
     // Since i now the hash function, is adictionary still necessary ?
-    //lazy var voxels:     [Int: Voxel]   = self.allocate()
-    //lazy var centroids:  [Int: Vector]  = self.allocate()
     lazy var voxels:    [Voxel]     = self.allocate()
     lazy var centroids: [Vector]    = self.allocate()
-    //lazy var centroids: [Id3: Vector] = [Int: Vector]()
     
     private init() {
         size        = 64
@@ -57,6 +54,10 @@ class Volume {
     func initialize(with: Int) {
         size = with
         initialize()
+    }
+    
+    func initialize(camera: Camera) {
+        
     }
     
     func numberOfVoxels() -> Int {
