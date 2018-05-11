@@ -33,17 +33,18 @@ using namespace std;
 void bridge_initializeCentroids(void* centroids, int size, float resolution) {
     //int this_thread = omp_get_thread_num();
     //int num_threads = omp_get_num_threads();
-    int count = size * size * size;
-    int square = size * size;
+    int count = pow(size, 3.0);
+    int square = pow(size, 2.0);
+    float offset = (resolution * 0.5);
 #pragma omp parallel for shared(centroids) num_threads(num_threads)
     for(int i = 0; i<count; i++) {
-        float x = i / square;
-        float remainder = i % square;
-        float y = remainder / size;
-        float z = (float)(((int) remainder) % size);
-        ((simd::float3*) centroids)[i][0] = integer_to_global(x, size, resolution);
-        ((simd::float3*) centroids)[i][1] = integer_to_global(y, size, resolution);
-        ((simd::float3*) centroids)[i][2] = integer_to_global(z, size, resolution);
+        int x = i / square;
+        int remainder = i % square;
+        int y = remainder / size;
+        int z = (float)(((int) remainder) % size);
+        ((simd::float3*) centroids)[i][0] = integer_to_global(x, size, resolution) - offset;
+        ((simd::float3*) centroids)[i][1] = integer_to_global(y, size, resolution) - offset;
+        ((simd::float3*) centroids)[i][2] = integer_to_global(z, size, resolution) - offset;
     }
 }
 
@@ -88,6 +89,16 @@ unsigned long bridge_extractMesh(void* triangles,
                     fabs(voxels[i5]),
                     fabs(voxels[i6]),
                     fabs(voxels[i7])
+                    /*
+                    (voxels[i0]),
+                    (voxels[i1]),
+                    (voxels[i2]),
+                    (voxels[i3]),
+                    (voxels[i4]),
+                    (voxels[i5]),
+                    (voxels[i6]),
+                    (voxels[i7])
+                     */
                 };
                 std::vector<simd::float3> temp = polygonise(points, values, isolevel, edgeTable, triTable);
                 if (temp.size() == 0) continue;
@@ -117,8 +128,7 @@ int bridge_integrateDepthMap(const float* depthmap,
                              const float epsilon) {
     // Instanciate all local variables
     int number_of_changes = 0;
-    //float delta = 0.3;
-    //float epsilon = 0.15;
+    float diag = 2.0 * sqrt(3.0f) * (resolution[0] / dimension);
     int count = width * height;
     int size = pow(dimension, 3.0);
     
@@ -137,6 +147,7 @@ int bridge_integrateDepthMap(const float* depthmap,
     simd_float3 translation = simd_make_float3(Rtc.columns[3][0],Rtc.columns[3][1],Rtc.columns[3][2]);
     simd_float3 resolve = simd_make_float3(resolution[0], resolution[1], resolution[2]);
     
+    /*
     for (int i = 0; i < count; i++) {
         float depth = depthmap[i];
         if (depth < 0.000001) continue;
@@ -153,12 +164,40 @@ int bridge_integrateDepthMap(const float* depthmap,
         simd::float3 nearest_centroid = ((simd::float3 *) centroids)[index];
         float distance = depth - nearest_centroid.z;
         
-        if (distance >= delta + epsilon && distance < nearest_centroid.z) {
-            carving_voxel((Voxel *)voxels, index);
-        }
-        if (fabs(distance) <= delta) {
-            update_voxel((Voxel *)voxels, distance, 1, index);
-        }
+        //if (distance >= delta + epsilon && distance < nearest_centroid.z) carving_voxel((Voxel *)voxels, index);
+        if (fabs(distance) <= delta) update_voxel((Voxel *)voxels, distance, 1, index);
+    }
+    */
+    
+    for (int i = 0; i<size; i++) {
+        simd::float3 centroid = ((simd::float3 *) centroids)[i];
+        simd::float3 local = simd_mul(rotation, centroid + translation);
+        
+        simd::float3 temp = simd_mul(K, local / local.z);
+        simd::float3 project = simd_make_float3(temp.x, temp.y, local.z);
+        int u = (int) project.x;
+        int v = (int) project.y;
+        if (local.z < 0)            continue;
+        if (u < 0 || u >= height)   continue;
+        if (v < 0 || v >= width)    continue;
+        
+        float z = local.z; //simd_length(local) ou local.z
+        float zp = depthmap[u * width + v];
+        
+        // Depth invalid
+        if (zp < 0.000001) continue;
+        float distance = zp - z;
+        if (fabs(distance) < delta)
+            update_voxel((Voxel *)voxels, distance, 1, i);
+        else if (fabs(distance) >= delta + epsilon)
+           carving_voxel((Voxel *)voxels, i);
+        /*
+        else if (distance > delta)
+            update_voxel((Voxel *)voxels, delta, 1, i);
+        else
+            update_voxel((Voxel *)voxels, -delta, 1, i);
+        */
+        
     }
     return number_of_changes;
 }

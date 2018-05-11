@@ -20,6 +20,7 @@
 typedef struct Voxel {
     float sdf;
     unsigned char weight;
+    //unsigned char time;
 } Voxel;
 
 
@@ -33,6 +34,7 @@ inline void update_voxel(Voxel* voxels, const float sdf, const int weight, const
     
     voxels[index].sdf     = new_sdf;
     voxels[index].weight  = simd_min(new_weight, 200);
+    //voxels[index].time    = 0;
 };
 
 inline void carving_voxel(Voxel * voxels, const int i) {
@@ -42,4 +44,10 @@ inline void carving_voxel(Voxel * voxels, const int i) {
     }
 };
 
+/*
+inline void olding_voxel(Voxel * voxels, const int i, const unsigned char time_constant) {
+    if (voxels[i].time >= time_constant) carving_voxel(voxels, i);
+    else voxels[i].time ++;
+}
+*/
 #endif /* TSDF_hpp */

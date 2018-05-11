@@ -13,6 +13,7 @@
 		A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */; };
 		A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4E2091E00700BA5BDC /* TriTableContents */; };
 		A52C3D652093185000BA5BDC /* bridging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D632093185000BA5BDC /* bridging.cpp */; };
+		A544222120A5A39D00AE55C7 /* SceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A544222020A5A39D00AE55C7 /* SceneViewController.swift */; };
 		A5494B0A2089E43A007EA2FB /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B092089E43A007EA2FB /* Box.swift */; };
 		A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0D2089E63D007EA2FB /* Plane.swift */; };
 		A5494B102089E644007EA2FB /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0F2089E644007EA2FB /* Frustrum.swift */; };
@@ -66,6 +67,7 @@
 		A52C3D632093185000BA5BDC /* bridging.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bridging.cpp; sourceTree = "<group>"; };
 		A52C3D642093185000BA5BDC /* bridging.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bridging.hpp; sourceTree = "<group>"; };
 		A53453152097452A00BD8E76 /* pointCloudTest.sdp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = pointCloudTest.sdp; path = ../../../datas/pointCloudTest.sdp; sourceTree = "<group>"; };
+		A544222020A5A39D00AE55C7 /* SceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneViewController.swift; sourceTree = "<group>"; };
 		A5494B092089E43A007EA2FB /* Box.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		A5494B0D2089E63D007EA2FB /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		A5494B0F2089E644007EA2FB /* Frustrum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustrum.swift; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 				A58DCDEA2088895500280CD2 /* LaunchScreen.storyboard */,
 				A58DCDED2088895500280CD2 /* Info.plist */,
 				A53453152097452A00BD8E76 /* pointCloudTest.sdp */,
+				A544222020A5A39D00AE55C7 /* SceneViewController.swift */,
 			);
 			path = "AR-IPOD";
 			sourceTree = "<group>";
@@ -434,6 +437,7 @@
 				A5494B1C208A2768007EA2FB /* Types.swift in Sources */,
 				A5F478E3209C485200CAAEC0 /* marching_cube.cpp in Sources */,
 				A52C3D652093185000BA5BDC /* bridging.cpp in Sources */,
+				A544222120A5A39D00AE55C7 /* SceneViewController.swift in Sources */,
 				A52C3D452091CE4B00BA5BDC /* Meshing.swift in Sources */,
 				A58DCE172088B85300280CD2 /* Voxel.swift in Sources */,
 				A58DCE1B2088BF5C00280CD2 /* Volume.swift in Sources */,

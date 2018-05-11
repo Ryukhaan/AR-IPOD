@@ -60,9 +60,9 @@ void save_volume_ply_format(const simd::float3* centroids, const float* sdfs, co
     file << "property float x" << endl;
     file << "property float y" << endl;
     file << "property float z" << endl;
-    file << "property uchar red" << endl;
-    file << "property uchar green" << endl;
-    file << "property uchar blue" << endl;
+    file << "property float red" << endl;
+    file << "property float green" << endl;
+    file << "property float blue" << endl;
     file << "end_header" << endl;
     
     // Write Vertex

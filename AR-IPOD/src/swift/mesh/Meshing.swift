@@ -10,7 +10,7 @@ import Foundation
 import ARKit
 
 func extractMesh(volume: Volume, isolevel: Float) -> [Vector] {
-    let count = volume.numberOfVoxels()
+    let count = volume.totalOfVoxels()
     let stride = MemoryLayout<Vector>.stride
     // Why i can't allocate more than around "count" bytes ?
     let byteCount = stride * count
@@ -25,7 +25,7 @@ func extractMesh(volume: Volume, isolevel: Float) -> [Vector] {
                        &volume.centroids,
                        &Tables.edgeTable,
                        &tempTri,
-                       Int32(volume.size),
+                       Int32(volume.numberOfVoxels),
                        isolevel)
     let buffer = UnsafeBufferPointer(start: triangles, count: Int(numberOfTriangles))
     return Array(buffer)

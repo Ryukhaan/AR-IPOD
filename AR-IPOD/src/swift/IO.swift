@@ -112,7 +112,7 @@ func importCameraIntrinsics(from: String, at: String) -> matrix_float3x3 {
 }
 
 func exportToPLY(volume: Volume, at: String) {
-    let size = volume.size * volume.size * volume.size
+    let size = volume.numberOfVoxels * volume.numberOfVoxels * volume.numberOfVoxels
     let sdfs = volume.voxels.map { $0.sdf }
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         let cFileName = dir.appendingPathComponent(at).absoluteString.cString(using: .utf8)
@@ -125,5 +125,20 @@ func exportToPLY(mesh: [Vector], at: String) {
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         let cFileName = dir.appendingPathComponent(at).absoluteString.cString(using: .utf8)
         bridge_exportMeshToPLY(mesh, cFileName, Int32(numberOfTriangles))
+    }
+}
+
+func exportPointCloud(points: [Vector], at: String) {
+    var text: String = ""
+    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        let cFileName = dir.appendingPathComponent(at)
+        for i in 0..<points.count {
+            let point = points[i]
+            text = "\(text)\(point.x) \(point.y) \(point.z)\n"
+        }
+        do {
+            try text.write(to: cFileName, atomically: false, encoding: .utf8)
+        }
+        catch {}
     }
 }

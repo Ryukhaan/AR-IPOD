@@ -14,6 +14,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
 
+    var sizeOfDataset: Int = 1
     var dataset: String = "chair"
     var myVolume: Volume = Volume.sharedInstance
     var depthImage: DepthImage = DepthImage()
@@ -44,6 +45,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var epsilonLabel: UILabel!
     
     @IBOutlet var datasetChoice: UISegmentedControl!
+    @IBOutlet var datasetSize: UISegmentedControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,50 +73,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
         // Run the view's session
         sceneView.session.run(configuration)
-        
-        // Initialize Volume
-        /*
-        print("Initialize...")
-        self.myVolume.initialize()
-        print("Import...")
-        let pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
-         */
-        
-        /* SERIAL */
-        /*
-        let start   = CFAbsoluteTimeGetCurrent()
-
-        let end    = CFAbsoluteTimeGetCurrent()
-        let elapsedTime = Double(end) - Double(start)
-        print("Time : \(elapsedTime)")
-         */
-        //print("Init...")
-        
-        /*
-        myVolume.initialize()
-        pointCloud = importPointCloud(fromFile: "/Users/Remi/Documents/datas/resize_result1.sdp")
-        var tritri = [Vector]()
-        print("Integrate...")
-        //self.myVolume.falseIntegration(pointCloud: pointCloud)
-        self.myVolume.cuboid(at: Point3D(2,2,2))
-        print("Extract...")
-        */
-        
-        /*
-        print("Export...")
-        exportToPLY(triangles: tritri, fileName: "mesh_\(self.myVolume.size).ply")
-        exportToPLY(volume: self.myVolume, fileName: "volume_\(self.myVolume.size).ply")
-        print("Done !")
-        */
-        /*
-        if let frame = self.sceneView.session.currentFrame {
-            self.myCamera = Camera(_intrinsics: frame.camera.intrinsics, dim: frame.camera.imageResolution)
-            self.myCamera.update(position: frame.camera.transform)
-        }
-        else {
-            assertionFailure("Camera has not been initialized ! ")
-        }
-        */
         
         // Version with dataset
         let starter = Double(CFAbsoluteTimeGetCurrent())
@@ -203,7 +161,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     
     @IBAction func startCompute(_ sender: Any) {
-        for i in 0..<100 {
+        for i in 0..<self.sizeOfDataset {
             let epsilon = epsilonStepper.value * 0.05
             let delta = deltaStepper.value * 0.05
             let extrinsics = importCameraPose(from: "frame-\(i).pose", at: dataset)
@@ -212,7 +170,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             self.depthImage.update(_data: depthmap)
             self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
         }
-        
     }
     
     @IBAction func updateEpsilon(_ sender: Any) {
@@ -252,6 +209,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             dataset = "chair"
         }
     }
+    @IBAction func changeDatasetSize(_ sender: Any) {
+        switch datasetSize.selectedSegmentIndex {
+        case 0:
+            sizeOfDataset = 1
+        case 1:
+            sizeOfDataset = 10
+        case 2:
+            sizeOfDataset = 100
+        default:
+            sizeOfDataset = 10
+        }
+    }
     
     @IBAction func exportVolume(_ sender: Any) {
         guard let currentFrame = sceneView.session.currentFrame
@@ -263,9 +232,24 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         else {
             isolevel = Float(pow(10.0, isolevelStepper.value - 6))
         }
-        let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
+        let delta = deltaStepper.value * 0.05
+        //let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
+        let points = extractMesh(volume: myVolume, isolevel: Float(delta))
         //sceneView.scene.rootNode.addChildNode(pointNode)
-        exportToPLY(mesh: points, at: "mesh_\(dataset)_\(self.myVolume.size).ply")
-        exportToPLY(volume: self.myVolume, at: "volume_\(dataset)_\(self.myVolume.size).ply")
+        exportToPLY(mesh: points, at: "mesh_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
+        //exportToPLY(volume: self.myVolume, at: "volume_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ScenePoints" {
+            if let destination = segue.destination as? SceneViewController {
+                //destination.volume = self.myVolume
+                destination.savedDatasetIndex       = datasetChoice.selectedSegmentIndex
+                destination.savedFramesIndex        = datasetSize.selectedSegmentIndex
+                destination.savedDeltaIndex         = deltaStepper.value
+                destination.savedEpsilonIndex       = epsilonStepper.value
+                destination.savedVolumeSizeIndex    = stepperSize.value
+            }
+        }
     }
 }
