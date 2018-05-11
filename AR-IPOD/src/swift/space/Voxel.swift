@@ -15,11 +15,9 @@ struct Voxel {
     
     var sdf:    Float
     var weight: UInt8
-    var time:   UInt8
     
     init() {
         sdf     = Voxel.UNDEFINED_SDF
         weight  = 0
-        time    = 0
     }
 }

@@ -187,17 +187,10 @@ int bridge_integrateDepthMap(const float* depthmap,
         // Depth invalid
         if (zp < 0.000001) continue;
         float distance = zp - z;
-        if (fabs(distance) < delta)
-            update_voxel((Voxel *)voxels, distance, 1, i);
-        else if (fabs(distance) >= delta + epsilon)
-           carving_voxel((Voxel *)voxels, i);
-        /*
-        else if (distance > delta)
-            update_voxel((Voxel *)voxels, delta, 1, i);
-        else
-            update_voxel((Voxel *)voxels, -delta, 1, i);
-        */
-        
+        if (distance >= delta + epsilon && distance <= zp) carving_voxel((Voxel *)voxels, i);
+        if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, 1, i);
+        //else if (distance > delta) update_voxel((Voxel *)voxels, delta, 1, i);
+        //else update_voxel((Voxel *)voxels, -delta, 1, i);
     }
     return number_of_changes;
 }

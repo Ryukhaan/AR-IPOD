@@ -27,7 +27,7 @@ class Volume {
     //lazy var centroids: [Id3: Vector] = [Int: Vector]()
     
     private init() {
-        numberOfVoxels      = 64
+        numberOfVoxels      = 256
         resolutionInMeter   = 4.0
     }
     

@@ -21,6 +21,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var myCamera: Camera = Camera()
     var increments: Int = 1
     var timer = Double(CFAbsoluteTimeGetCurrent())
+    var inRealTime : Bool = false
+    var startIntegrator: Bool = false
     
     @IBOutlet var volumeSize: UILabel!
     @IBOutlet var stepperSize: UIStepper!
@@ -40,9 +42,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // Delta parameters UI
     @IBOutlet var deltaStepper: UIStepper!
     @IBOutlet var deltaLabel: UILabel!
+    let deltaTick = 0.05
     // Epsilon parameters UI
     @IBOutlet var epsilonStepper: UIStepper!
     @IBOutlet var epsilonLabel: UILabel!
+    let epsilonTick = 0.02
     
     @IBOutlet var datasetChoice: UISegmentedControl!
     @IBOutlet var datasetSize: UISegmentedControl!
@@ -119,6 +123,29 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 */
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
+        guard let currentFrame = sceneView.session.currentFrame
+            else { return }
+        if startIntegrator {
+            if currentFrame.capturedDepthData != nil {
+                myDepthData = currentFrame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
+                myDepthDataRaw =  currentFrame.capturedDepthData
+                let depthDataMap = myDepthData?.depthDataMap
+                CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
+                let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
+                /*
+                 * Potential Pre-processing : Median Filter.
+                 * We have to convert depthDataMap into an UIImage to do this.
+                 compCIImage(depthDataMap: depthDataMap!)
+                 myDepthImage = UIImage(ciImage: myCIImage!)
+                 depthView.image = myDepthImage
+                 */
+                self.depthImage.update(_data: depthPointer)
+            }
+            let epsilon = epsilonStepper.value * epsilonTick
+            let delta = deltaStepper.value * deltaTick
+            myCamera.update(extrinsics: currentFrame.camera.transform)
+            myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
+        }
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
@@ -139,46 +166,60 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
         /*
-        if frame.capturedDepthData != nil {
-            myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
-            myDepthDataRaw =  frame.capturedDepthData
-            let depthDataMap = myDepthData?.depthDataMap
-            CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
-            let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
-            /*
-             * Potential Pre-processing : Median Filter.
-             * We have to convert depthDataMap into an UIImage to do this.
-            compCIImage(depthDataMap: depthDataMap!)
-            myDepthImage = UIImage(ciImage: myCIImage!)
-            depthView.image = myDepthImage
-            */
-            depthImage.update(_data: depthPointer)
+        if startIntegrator {
+            if frame.capturedDepthData != nil {
+                myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
+                myDepthDataRaw =  frame.capturedDepthData
+                let depthDataMap = myDepthData?.depthDataMap
+                CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
+                let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
+                /*
+                 * Potential Pre-processing : Median Filter.
+                 * We have to convert depthDataMap into an UIImage to do this. */
+                //compCIImage(depthDataMap: depthDataMap!)
+                //myDepthImage = UIImage(ciImage: myCIImage!)
+                //depthView.image = myDepthImage
+ 
+                self.depthImage.update(_data: depthPointer)
+            }
+            let epsilon = epsilonStepper.value * epsilonTick
+            let delta = deltaStepper.value * deltaTick
+            myCamera.update(extrinsics: frame.camera.transform)
+            myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
         }
-        myCamera.update(position: frame.camera.transform)
-        myVolume.integrateDepthMap(image: depthImage, camera: myCamera)
          */
     }
     
     
     @IBAction func startCompute(_ sender: Any) {
-        for i in 0..<self.sizeOfDataset {
-            let epsilon = epsilonStepper.value * 0.05
-            let delta = deltaStepper.value * 0.05
-            let extrinsics = importCameraPose(from: "frame-\(i).pose", at: dataset)
-            let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: dataset)
-            self.myCamera.update(extrinsics: extrinsics)
-            self.depthImage.update(_data: depthmap)
-            self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
+        if !inRealTime {
+            let epsilon = epsilonStepper.value * epsilonTick
+            let delta = deltaStepper.value * deltaTick
+            for i in 0..<self.sizeOfDataset {
+                let extrinsics = importCameraPose(from: "frame-\(i).pose", at: dataset)
+                let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: dataset)
+                self.myCamera.update(extrinsics: extrinsics)
+                self.depthImage.update(_data: depthmap)
+                self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
+            }
+        }
+        else {
+            let alert = UIAlertController(title: "Acquisition en temps réel", message: "Veuillez mettre la front-camera en face de l'objet à aquérir", preferredStyle: .alert)
+             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+                print("Début de l'acquisition")}
+            ))
+            self.present(alert, animated: true, completion: nil)
+            startIntegrator = true
         }
     }
     
     @IBAction func updateEpsilon(_ sender: Any) {
-        let quantity = epsilonStepper.value * 0.05
+        let quantity = epsilonStepper.value * epsilonTick
         epsilonLabel.text = "Epsilon: \(quantity)"
     }
 
     @IBAction func updateDelta(_ sender: Any) {
-        let quantity = deltaStepper.value * 0.05
+        let quantity = deltaStepper.value * deltaTick
         deltaLabel.text = "Delta: \(quantity)"
     }
     
@@ -205,8 +246,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             dataset = "chair"
         case 1:
             dataset = "ikea-table"
-        default:
-            dataset = "chair"
+        case 2:
+            inRealTime = true
+        default: break
         }
     }
     @IBAction func changeDatasetSize(_ sender: Any) {
@@ -217,8 +259,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             sizeOfDataset = 10
         case 2:
             sizeOfDataset = 100
-        default:
-            sizeOfDataset = 10
+        default: break
         }
     }
     
@@ -232,9 +273,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         else {
             isolevel = Float(pow(10.0, isolevelStepper.value - 6))
         }
-        let delta = deltaStepper.value * 0.05
-        //let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
-        let points = extractMesh(volume: myVolume, isolevel: Float(delta))
+        let delta = deltaStepper.value * deltaTick
+        let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
+        //let points = extractMesh(volume: myVolume, isolevel: Float(delta))
         //sceneView.scene.rootNode.addChildNode(pointNode)
         exportToPLY(mesh: points, at: "mesh_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
         //exportToPLY(volume: self.myVolume, at: "volume_\(dataset)_\(self.myVolume.numberOfVoxels).ply")

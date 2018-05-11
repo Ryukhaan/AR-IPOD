@@ -24,7 +24,7 @@ typedef struct Voxel {
 } Voxel;
 
 
-inline void update_voxel(Voxel* voxels, const float sdf, const int weight, const int index) {
+inline void update_voxel(Voxel* voxels, const float sdf, const char weight, const int index) {
     float old_sdf      = voxels[index].sdf;
     float old_weight   = voxels[index].weight;
     float new_weight   = old_weight + weight;
@@ -33,7 +33,7 @@ inline void update_voxel(Voxel* voxels, const float sdf, const int weight, const
     float new_sdf      = (new_product + old_product ) / new_weight;
     
     voxels[index].sdf     = new_sdf;
-    voxels[index].weight  = simd_min(new_weight, 200);
+    voxels[index].weight  = simd_min(new_weight, 249);
     //voxels[index].time    = 0;
 };
 
