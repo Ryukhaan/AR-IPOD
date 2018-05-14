@@ -76,8 +76,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         super.viewWillAppear(animated)
         
         // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
-        //let configuration = ARFaceTrackingConfiguration()
+        //let configuration = ARWorldTrackingConfiguration()
+        let configuration = ARFaceTrackingConfiguration()
 
         // Run the view's session
         sceneView.session.run(configuration)
@@ -128,9 +128,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
 */
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
-        guard let currentFrame = sceneView.session.currentFrame
-            else { return }
-        print()
+        //guard let currentFrame = sceneView.session.currentFrame
+        //    else { return }
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
@@ -150,6 +149,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
+        integrationProgress.progress = 0.0
+        integrationProgress.isHidden = false
         if startIntegrator {
             if frame.capturedDepthData != nil {
                 myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
@@ -172,15 +173,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 if self.increments < 120  {
                     self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
                     self.increments += 1
+                    DispatchQueue.main.async {
+                        self.integrationProgress.progress = Float(self.increments) / 120.0
+                    }
                 }
                 else {
-                    let alert = UIAlertController(title: "Fin de l'acquisition", message: "POur observer le résultat appuyer sur le bouton \"Show Vol.\"", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+                    self.displayAlertMessage(
+                        title: "Fin de l'acquisition",
+                        message: "Vous pouvez visualiser avec le bouton \"Show Vol.\"",
+                        handler: { _ in
                         self.increments = 0
                         self.inRealTime = false
                         self.startIntegrator = false
-                    }))
-                    self.present(alert, animated: true, completion: nil)
+                        self.integrationProgress.isHidden = true
+                        self.integrationProgress.progress = 0.0
+                    })
                 }
             }
         }
@@ -194,7 +201,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             let epsilon = epsilonStepper.value * epsilonTick
             let delta = deltaStepper.value * deltaTick
             for i in 0..<self.sizeOfDataset {
-                let d: Double = 1.0
+                let d: Double = 1.0 + Double(i)
                 DispatchQueue.global().asyncAfter(deadline: .now()+d) {
                     let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.dataset)
                     let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.dataset)
@@ -203,7 +210,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                     self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
                     DispatchQueue.main.async {
                         if i == self.sizeOfDataset - 1 {
-                            self.displayAlertMessage(title: "Fin Acquisition", message: "")
+                            self.displayAlertMessage(title: "Fin Acquisition", message: "", handler: {_ in })
                             self.integrationProgress.isHidden = true
                             self.integrationProgress.progress = 0.0
                         }
@@ -215,13 +222,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             }
         }
         else {
-            let alert = UIAlertController(title: "Acquisition en temps réel", message: "Veuillez mettre la front-camera en face de l'objet à aquérir", preferredStyle: .alert)
-             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
-                self.startIntegrator = true
-                AudioServicesPlaySystemSound (self.systemSoundID)
-                }
-            ))
-            self.present(alert, animated: true, completion: nil)
+            self.displayAlertMessage(
+                title: "Acquisition en temps réel",
+                message: "Veuillez mettre la front-caméra face de l'objet",
+                handler: { _ in
+                    self.startIntegrator = true
+                    AudioServicesPlaySystemSound (self.systemSoundID)
+                })
         }
     }
     
@@ -278,8 +285,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     @IBAction func exportVolume(_ sender: Any) {
+        /*
         guard let currentFrame = sceneView.session.currentFrame
             else { return }
+        */
         var isolevel: Float
         if isolevelStepper.value == 0 {
             isolevel = 0
@@ -287,7 +296,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         else {
             isolevel = Float(pow(10.0, isolevelStepper.value - 6))
         }
-        let delta = deltaStepper.value * deltaTick
+        //let delta = deltaStepper.value * deltaTick
         let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
         //let points = extractMesh(volume: myVolume, isolevel: Float(delta))
         //sceneView.scene.rootNode.addChildNode(pointNode)
@@ -308,12 +317,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         }
     }
     
-    func displayAlertMessage(title: String, message: String) {
+    func displayAlertMessage(title: String, message: String, handler: @escaping ((UIAlertAction) -> Void)) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
-            AudioServicesPlaySystemSound (self.systemSoundID)
-            }
-        ))
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: handler))
         self.present(alert, animated: true, completion: nil)
     }
 }
