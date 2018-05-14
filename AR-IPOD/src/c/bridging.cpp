@@ -44,13 +44,13 @@ void bridge_initializeCentroids(void* centroids, int size, float resolution) {
         int z = (float)(((int) remainder) % size);
         ((simd::float3*) centroids)[i][0] = integer_to_global(x, size, resolution) - offset;
         ((simd::float3*) centroids)[i][1] = integer_to_global(y, size, resolution) - offset;
-        ((simd::float3*) centroids)[i][2] = integer_to_global(z, size, resolution) - offset;
+        ((simd::float3*) centroids)[i][2] = integer_to_global(z, size, resolution); //- offset;
     }
 }
 
 unsigned long bridge_extractMesh(void* triangles,
                             const float* voxels,
-                            const void* centroids,
+                            //const void* centroids,
                             int edgeTable[256],
                             int triTable[4096],
                             int n,
@@ -70,6 +70,15 @@ unsigned long bridge_extractMesh(void* triangles,
                 int i5 = (i+1)*n2 + (j+1)*n + (k+1);
                 int i6 = (i+1)*n2 + (j+1)*n + k;
                 int i7 = i*n2 + (j+1)*n + k;
+                simd::float3 c0 = create_centroid(i0, n, 4.0, n2, 2.0);
+                simd::float3 c1 = create_centroid(i1, n, 4.0, n2, 2.0);
+                simd::float3 c2 = create_centroid(i2, n, 4.0, n2, 2.0);
+                simd::float3 c3 = create_centroid(i3, n, 4.0, n2, 2.0);
+                simd::float3 c4 = create_centroid(i4, n, 4.0, n2, 2.0);
+                simd::float3 c5 = create_centroid(i5, n, 4.0, n2, 2.0);
+                simd::float3 c6 = create_centroid(i6, n, 4.0, n2, 2.0);
+                simd::float3 c7 = create_centroid(i7, n, 4.0, n2, 2.0);
+                /*
                 simd::float3 points[8] = {
                     ((simd::float3*) centroids)[i0],
                     ((simd::float3*) centroids)[i1],
@@ -80,6 +89,8 @@ unsigned long bridge_extractMesh(void* triangles,
                     ((simd::float3*) centroids)[i6],
                     ((simd::float3*) centroids)[i7]
                 };
+                 */
+                simd::float3 points[8] = {c0, c1, c2, c3, c4, c5, c6, c7};
                 float values[8] = {
                     fabs(voxels[i0]),
                     fabs(voxels[i1]),
@@ -116,7 +127,7 @@ unsigned long bridge_extractMesh(void* triangles,
 }
 
 int bridge_integrateDepthMap(const float* depthmap,
-                             const void* centroids,
+                             //const void* centroids,
                              const void* camera_pose,
                              const void* intrisics,
                              void* voxels,
@@ -128,49 +139,41 @@ int bridge_integrateDepthMap(const float* depthmap,
                              const float epsilon) {
     // Instanciate all local variables
     int number_of_changes = 0;
-    float diag = 2.0 * sqrt(3.0f) * (resolution[0] / dimension);
-    int count = width * height;
-    int size = pow(dimension, 3.0);
+    //float diag = 2.0 * sqrt(3.0f) * (resolution[0] / dimension);
+    //int count = width * height;
+    //int size = pow(dimension, 3.0);
+    int square = pow(dimension, 2.0);
+    float offset = resolution[0] * 0.5;
     
     // Relative camera variables
     simd_float3x3 K = ((simd_float3x3 *) intrisics)[0];
     simd_float4x4 Rt = ((simd_float4x4 *) camera_pose)[0];
     simd_float3x3 Kinv = simd_inverse(K);
-    /*
-    simd::float3 translation = simd_make_float3(Rt.columns[3][0], Rt.columns[3][1], Rt.columns[3][2]);
-    simd_float4x3 temp = simd_transpose(simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]));
-    simd_float3x3 rotation = simd_matrix_from_rows(temp.columns[0], temp.columns[1], temp.columns[2]);
-    */
     simd_float4x4 tRt = simd_transpose(Rt);
     simd_float4x3 Rtc = simd_matrix_from_rows(tRt.columns[0], tRt.columns[1], tRt.columns[2]);
     simd_float3x3 rotation = simd_matrix(Rtc.columns[0], Rtc.columns[1], Rtc.columns[2]);
     simd_float3 translation = simd_make_float3(Rtc.columns[3][0],Rtc.columns[3][1],Rtc.columns[3][2]);
-    simd_float3 resolve = simd_make_float3(resolution[0], resolution[1], resolution[2]);
+    //simd_float3 resolve = simd_make_float3(resolution[0], resolution[1], resolution[2]);
     
-    /*
-    for (int i = 0; i < count; i++) {
-        float depth = depthmap[i];
-        if (depth < 0.000001) continue;
-        
-        // Retrieve world coordinate point
-        simd::float3 uv = simd_make_float3(i / width, i % width, 1);
-        simd::float3 world_point = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
-        
-        simd::float3 ijk = mapping_global_to_voxel(world_point, dimension, resolve);
-        //simd::float3 nearest_centroid = trilinear_interpolation(ijk);
-        int index = hash_function(ijk, dimension);
-        if (index < 0 || index > size) continue;
-        
-        simd::float3 nearest_centroid = ((simd::float3 *) centroids)[index];
-        float distance = depth - nearest_centroid.z;
-        
-        //if (distance >= delta + epsilon && distance < nearest_centroid.z) carving_voxel((Voxel *)voxels, index);
-        if (fabs(distance) <= delta) update_voxel((Voxel *)voxels, distance, 1, index);
-    }
-    */
-    
-    for (int i = 0; i<size; i++) {
-        simd::float3 centroid = ((simd::float3 *) centroids)[i];
+    // Determines bounding box of camera, O(n) where n is width*height of depthmap.
+    // It can reduce (always ?) next loop complexity.
+    simd_float2x3 box = cameraBoxing(depthmap, width, height, rotation, translation, Kinv);
+    simd_int3 point_min = simd_make_int3(global_to_integer(box.columns[0].x + offset, dimension, resolution[0]),
+                                         global_to_integer(box.columns[0].y + offset, dimension, resolution[1]),
+                                         global_to_integer(box.columns[0].z, dimension, resolution[2]));
+    simd_int3 point_max = simd_make_int3(global_to_integer(box.columns[1].x + offset, dimension, resolution[0]),
+                                         global_to_integer(box.columns[1].y + offset, dimension, resolution[1]),
+                                         global_to_integer(box.columns[1].z, dimension, resolution[2]));
+    int mini = hash_function(point_min, dimension);
+    int maxi = hash_function(point_max, dimension);
+
+    for( int i = mini; i<maxi; i++) {
+        //simd::float3 centroid = ((simd::float3 *) centroids)[i];
+        simd::float3 centroid = create_centroid(i,
+                                                dimension,
+                                                resolution[0],
+                                                square,
+                                                offset);
         simd::float3 local = simd_mul(rotation, centroid + translation);
         
         simd::float3 temp = simd_mul(K, local / local.z);

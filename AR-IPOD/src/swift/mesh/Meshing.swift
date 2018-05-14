@@ -13,7 +13,8 @@ func extractMesh(volume: Volume, isolevel: Float) -> [Vector] {
     let count = volume.totalOfVoxels()
     let stride = MemoryLayout<Vector>.stride
     // Why i can't allocate more than around "count" bytes ?
-    let byteCount = stride * count
+    //let byteCount = stride * count
+    let byteCount = stride * (volume.numberOfVoxels * volume.numberOfVoxels)
     let triangles = UnsafeMutablePointer<Vector>.allocate(capacity: byteCount)
     defer {
         triangles.deallocate()
@@ -22,7 +23,7 @@ func extractMesh(volume: Volume, isolevel: Float) -> [Vector] {
     var tempTri = Tables.triTable.flatMap { $0 }
     let numberOfTriangles = bridge_extractMesh( triangles,
                        &sdfs,
-                       &volume.centroids,
+                      //&volume.centroids,
                        &Tables.edgeTable,
                        &tempTri,
                        Int32(volume.numberOfVoxels),

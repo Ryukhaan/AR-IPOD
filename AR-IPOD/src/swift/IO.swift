@@ -116,7 +116,7 @@ func exportToPLY(volume: Volume, at: String) {
     let sdfs = volume.voxels.map { $0.sdf }
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         let cFileName = dir.appendingPathComponent(at).absoluteString.cString(using: .utf8)
-        bridge_exportVolumeToPLY(volume.centroids, sdfs, cFileName, Int32(size))
+        //bridge_exportVolumeToPLY(volume.centroids, sdfs, cFileName, Int32(size))
     }
 }
 

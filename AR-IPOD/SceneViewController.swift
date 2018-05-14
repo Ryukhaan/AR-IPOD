@@ -74,24 +74,26 @@ class SceneViewController: UIViewController {
     @IBAction func update(_ sender: Any) {
         let iso = Float(isolevel.text!)
         isoLabel.text = "Isolevel: \(String(describing: iso!))"
-        let points = extractMesh(volume: volume, isolevel: iso!)
-        //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
-        let pointCloudNode = createSimpleNode(from: points)
-        let scnView = view as! SCNView
-        if indexOfPointCloud > 0 {
-            scnView.scene?.rootNode.childNodes[indexOfPointCloud].removeFromParentNode()
+        DispatchQueue.global().async {
+            let points = extractMesh(volume: self.volume, isolevel: iso!)
+            //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
+            let pointCloudNode = self.self.createSimpleNode(from: points)
+            let scnView = self.view as! SCNView
+            if self.self.indexOfPointCloud > 0 {
+                scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
+            }
+            scnView.scene?.rootNode.addChildNode(pointCloudNode)
+            self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
         }
-        scnView.scene?.rootNode.addChildNode(pointCloudNode)
-        indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
         //scnView.backgroundColor = UIColor.black
     }
     
     func createSimpleNode(from: Volume, with: Float) -> SCNNode{
-        var points = [Vector]()
+        let points = [Vector]()
         let size = from.totalOfVoxels()
         for i in 0..<size {
             if (abs(from.voxels[i].sdf) <= with) {
-                points.append(from.centroids[i])
+                //points.append(from.centroids[i])
             }
         }
         let vertexData = NSData(bytes: points, length: MemoryLayout<Vector>.stride * points.count)
@@ -141,7 +143,7 @@ class SceneViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Main" {
             if let destination = segue.destination as? ViewController {
-                //destination.myVolume = self.volume
+                destination.myVolume = self.volume
                 destination.datasetChoice.selectedSegmentIndex  = savedDatasetIndex
                 destination.datasetSize.selectedSegmentIndex    = savedFramesIndex
                 destination.deltaStepper.value                  = savedDeltaIndex

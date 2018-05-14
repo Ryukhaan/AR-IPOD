@@ -23,7 +23,7 @@ class Volume {
     //lazy var voxels:     [Int: Voxel]   = self.allocate()
     //lazy var centroids:  [Int: Vector]  = self.allocate()
     lazy var voxels:    [Voxel]     = self.allocate()
-    lazy var centroids: [Vector]    = self.allocate()
+    //lazy var centroids: [Vector]    = self.allocate()
     //lazy var centroids: [Id3: Vector] = [Int: Vector]()
     
     private init() {
@@ -45,6 +45,7 @@ class Volume {
         voxels = [Voxel](repeating: Voxel(), count: count)
         //centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
         
+        /*
         let stride = MemoryLayout<Point3D>.stride
         let byteCount = stride * count
         let points = UnsafeMutablePointer<Point3D>.allocate(capacity: byteCount)
@@ -52,6 +53,7 @@ class Volume {
         let buffer = UnsafeBufferPointer(start: points, count: count)
         centroids = Array(buffer)
         points.deallocate()
+        */
     }
     
     func initialize(with: Int) {
@@ -68,7 +70,7 @@ class Volume {
         let height = image.height
         let dethmap = image.data
         let resolve = [resolutionInMeter, resolutionInMeter, resolutionInMeter]
-        _ = bridge_integrateDepthMap(dethmap, centroids, &camera.extrinsics, &camera.intrinsics, &voxels, Int32(width), Int32(height), Int32(numberOfVoxels), resolve, parameters[0], parameters[1]);
+        _ = bridge_integrateDepthMap(dethmap, /*centroids,*/ &camera.extrinsics, &camera.intrinsics, &voxels, Int32(width), Int32(height), Int32(numberOfVoxels), resolve, parameters[0], parameters[1]);
         //let voxel2 = voxels[numberOfVoxels].sdf
     }
 }

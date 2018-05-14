@@ -17,14 +17,14 @@ void bridge_initializeCentroids(void* centroids,
 
 unsigned long bridge_extractMesh(void* triangles,
                                  const float* voxels,
-                                 const void* centroids,
+                                 //const void* centroids,
                                  int edgeTable[256],
                                  int triTable[4096],
                                  int n,
                                  float isolevel);
 
 int bridge_integrateDepthMap(const float* depthmap,
-                             const void* centroids,
+                             //const void* centroids,
                              const void* camera_pose,
                              const void* intrisics,
                              void* voxels,

@@ -13,7 +13,7 @@ import ARKit
 class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
-
+    
     let systemSoundID: SystemSoundID = 1016
     var sizeOfDataset: Int = 1
     var dataset: String = "chair"
@@ -27,7 +27,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBOutlet var volumeSize: UILabel!
     @IBOutlet var stepperSize: UIStepper!
+    @IBOutlet var integrationProgress: UIProgressView!
     
+    
+
     @IBOutlet weak var depthView: UIImageView!
     var myDepthStrings = [String]()
     var myDepthImage: UIImage?
@@ -73,8 +76,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         super.viewWillAppear(animated)
         
         // Create a session configuration
-        //let configuration = ARWorldTrackingConfiguration()
-        let configuration = ARFaceTrackingConfiguration()
+        let configuration = ARWorldTrackingConfiguration()
+        //let configuration = ARFaceTrackingConfiguration()
 
         // Run the view's session
         sceneView.session.run(configuration)
@@ -185,15 +188,30 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     
     @IBAction func startCompute(_ sender: Any) {
+        integrationProgress.progress = 0.0
+        integrationProgress.isHidden = false
         if !inRealTime {
             let epsilon = epsilonStepper.value * epsilonTick
             let delta = deltaStepper.value * deltaTick
             for i in 0..<self.sizeOfDataset {
-                let extrinsics = importCameraPose(from: "frame-\(i).pose", at: dataset)
-                let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: dataset)
-                self.myCamera.update(extrinsics: extrinsics)
-                self.depthImage.update(_data: depthmap)
-                self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
+                let d: Double = 1.0
+                DispatchQueue.global().asyncAfter(deadline: .now()+d) {
+                    let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.dataset)
+                    let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.dataset)
+                    self.myCamera.update(extrinsics: extrinsics)
+                    self.depthImage.update(_data: depthmap)
+                    self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
+                    DispatchQueue.main.async {
+                        if i == self.sizeOfDataset - 1 {
+                            self.displayAlertMessage(title: "Fin Acquisition", message: "")
+                            self.integrationProgress.isHidden = true
+                            self.integrationProgress.progress = 0.0
+                        }
+                        else {
+                            self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
+                        }
+                    }
+                }
             }
         }
         else {
@@ -288,5 +306,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 destination.savedVolumeSizeIndex    = stepperSize.value
             }
         }
+    }
+    
+    func displayAlertMessage(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+            AudioServicesPlaySystemSound (self.systemSoundID)
+            }
+        ))
+        self.present(alert, animated: true, completion: nil)
     }
 }

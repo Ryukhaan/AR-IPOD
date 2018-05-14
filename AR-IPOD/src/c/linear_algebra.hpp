@@ -23,21 +23,27 @@
  */
 inline float integer_to_global(float point, int dim, float resolution) {
     return (resolution / dim) * (point + 0.5);
-    //return resolution * dim * (point + 0.5);
 }
 
-/**
- * Mapping between world and voxel coordinate
- * dimension = m (Bylow)
- * resolution = width x height x width
- */
-inline simd_float3 mapping_global_to_voxel(simd::float3 x, int dimension, simd::float3 resolution) {
-    return dimension * simd_make_float3(x.x / resolution.x + 0.5,
-                                        x.y / resolution.y + 0.5,
-                                        x.z / resolution.z + 0.5);
+inline int global_to_integer(float point, int dim, float resolution) {
+    return (int) (dim * point / resolution - 0.5);
 }
 
-
+inline simd_float3 create_centroid(const int i,
+                                   const int dimension,
+                                   const float resolution,
+                                   const int square,
+                                   const float offset) {
+    simd::float3 centroid;
+    int x = i / square;
+    int remainder = i % square;
+    int y = remainder / dimension;
+    int z = (float)(((int) remainder) % dimension);
+    centroid.x = integer_to_global(x, dimension, resolution) - offset;
+    centroid.y = integer_to_global(y, dimension, resolution) - offset;
+    centroid.z = integer_to_global(z, dimension, resolution);// - offset;
+    return centroid;
+}
 /**
  * Project. A 3D point is porjected into the image plane (2D)
  */
@@ -102,11 +108,27 @@ simd_float3 trilinear_interpolation(simd::float3 position) {
     return linear_interpolation(e, f, tz);
 }
 
-inline int hash_function(simd::float3 point, int base) {
-    int a = (int) point.x * (base * base);
-    int b = (int) point.y * base;
-    int c = (int) point.z;
+inline int hash_function(simd_int3 point, int base) {
+    int a = point.x * (base * base);
+    int b = point.y * base;
+    int c = point.z;
     return a + b + c;
 }
 
+simd_float2x3 cameraBoxing(const float* depthmap, const int width, const int height, const simd_float3x3 rot, const simd::float3 t, const simd_float3x3 Kinv) {
+    int size = width * height;
+    simd_float2x3 box = simd_matrix(simd_make_float3(9999, 9999, 9999), simd_make_float3(-9999, -9999, -9999));
+    for (int i=0; i<size; i++) {
+        float depth = depthmap[i];
+        simd::float3 uv = simd_make_float3(i / width, i % width, 1);
+        simd::float3 world_point = simd_mul(simd_transpose(rot), simd_mul(Kinv, depth * uv) - t);
+        box.columns[0].x = simd_min(box.columns[0].x, world_point.x);
+        box.columns[0].y = simd_min(box.columns[0].y, world_point.y);
+        box.columns[0].z = simd_min(box.columns[0].z, world_point.z);
+        box.columns[1].x = simd_max(box.columns[1].x, world_point.x);
+        box.columns[1].y = simd_max(box.columns[1].y, world_point.y);
+        box.columns[1].z = simd_max(box.columns[1].z, world_point.z);
+    }
+    return box;
+}
 #endif /* linear_algebra_hpp */
