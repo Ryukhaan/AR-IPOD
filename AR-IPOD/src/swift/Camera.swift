@@ -18,23 +18,25 @@ import AVFoundation
  * See ARCamera for more information and details, since Camera is an summary of ARCamera.
  */
 struct Camera {
-    var height:     UInt16  = 480     // Camera height
-    var width:      UInt16  = 640     // Camera width
+    var height:     UInt16     // Camera height - 480 IphoneX
+    var width:      UInt16     // Camera width  - 360 IphoneX
     var zFar:       Float   = 0.0   // Nearest point seen by camera
     var zNear:      Float   = 0.0   // Farther point ssen by camera
     
     var intrinsics: matrix_float3x3 // Matrix K (state-of-the-art). Converts 3D point to 2D
     var extrinsics: matrix_float4x4 // Extrinsics camera : rotation and camera's position
-   
-    /**
-     * Initializes both matrices as identity.
-     */
-    init() {
-        //intrinsics = matrix_float3x3(diagonal: Vector(1,1,1))
-        intrinsics =  matrix_float3x3(float3(4, 0, 645),
-                                      float3(0, 2.5, 31544),
-                                      float3(0, 0, 1))
-        extrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
+    
+    init(onRealTime: Bool) {
+        if onRealTime {
+            width = UInt16(Constant.IphoneWidth)
+            height = UInt16(Constant.IphoneHeight)
+        }
+        else {
+            width = UInt16(Constant.KinectWidth)
+            height = UInt16(Constant.KinectHeight)
+        }
+        intrinsics = matrix_float3x3()
+        extrinsics = matrix_float4x4()
     }
     
     /**
@@ -55,5 +57,16 @@ struct Camera {
      */
     mutating func update(extrinsics: matrix_float4x4) {
         self.extrinsics = extrinsics
+    }
+    
+    mutating func changeTo(realTime: Bool) {
+        if realTime {
+            width = UInt16(Constant.IphoneWidth)
+            height = UInt16(Constant.IphoneHeight)
+        }
+        else {
+            width = UInt16(Constant.KinectWidth)
+            height = UInt16(Constant.KinectHeight)
+        }
     }
 }

@@ -14,11 +14,19 @@ import AVFoundation
  * DepthImage stores all information relative to depth map.
  */
 struct DepthImage {    
-    let width:  UInt16         = 640 // Image width  (IPhoneX : 360 pixel)
-    let height: UInt16         = 480 // Image height (IPhoneX : 480 pixel)
-    var data:   [Float]              // Stores all depths in an array
+    var width:  UInt16          // Image width  (IPhoneX : 360 pixel)
+    var height: UInt16          // Image height (IPhoneX : 480 pixel)
+    var data:   [Float]         // Stores all depths in an array
     
-    init() {
+    init(onRealTime: Bool) {
+        if onRealTime {
+            width = UInt16(Constant.IphoneWidth)
+            height = UInt16(Constant.IphoneHeight)
+        }
+        else {
+            width = UInt16(Constant.KinectWidth)
+            height = UInt16(Constant.KinectHeight)
+        }
         data = Array<Float>(repeating: 0, count: Int(width)*Int(height))
     }
     
@@ -72,6 +80,17 @@ struct DepthImage {
         data = _data
     }
  
+    mutating func changeTo(realTime: Bool) {
+        if realTime {
+            width = UInt16(Constant.IphoneWidth)
+            height = UInt16(Constant.IphoneHeight)
+        }
+        else {
+            width = UInt16(Constant.KinectWidth)
+            height = UInt16(Constant.KinectHeight)
+        }
+        data = Array<Float>(repeating: 0, count: Int(width)*Int(height))
+    }
     
     /**
      * Collects some statistics about the image (minimum, maximum and mean values).

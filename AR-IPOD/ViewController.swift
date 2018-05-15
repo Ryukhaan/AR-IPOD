@@ -15,15 +15,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet var sceneView: ARSCNView!
     
     let systemSoundID: SystemSoundID = 1016
-    var sizeOfDataset: Int = 1
-    var dataset: String = "chair"
-    var myVolume: Volume = Volume.sharedInstance
-    var depthImage: DepthImage = DepthImage()
-    var myCamera: Camera = Camera()
-    var increments: Int = 0
-    var timer = Double(CFAbsoluteTimeGetCurrent())
-    var inRealTime : Bool = false
-    var startIntegrator: Bool = false
+    var myVolume: Volume            = Volume.sharedInstance
+    var myDepthImage: DepthImage    = DepthImage(onRealTime: false)
+    var myCamera: Camera            = Camera(onRealTime: false)
+    
+    var sizeOfDataset: Int          = 1
+    var nameOfDataset: String       = "chair"
+    var numberOfIterations: Int     = 0
+    var timer                       = Double(CFAbsoluteTimeGetCurrent())
+    var inRealTime: Bool            = false
+    var hasIntegratingStarted: Bool = false
     
     @IBOutlet var volumeSize: UILabel!
     @IBOutlet var stepperSize: UIStepper!
@@ -31,7 +32,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBOutlet weak var depthView: UIImageView!
     var myDepthStrings = [String]()
-    var myDepthImage: UIImage?
+    //var myDepthImage: UIImage?
     var myFocus: CGFloat = 0.5
     var mySlope: CGFloat = 4.0
     var myDepthData: AVDepthData?
@@ -90,7 +91,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         let group = DispatchGroup()
         group.enter()
         threads[0].async {
-            let intrinsics = importCameraIntrinsics(from: "depthIntrinsics", at: self.dataset)
+            let intrinsics = importCameraIntrinsics(from: "depthIntrinsics", at: self.nameOfDataset)
             self.myCamera.update(intrinsics: intrinsics)
             group.leave()
         }
@@ -133,24 +134,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
-        
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
         // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
     }
     
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
-        
     }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
-        if startIntegrator {
+        if hasIntegratingStarted {
             if frame.capturedDepthData != nil {
                 myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
                 myDepthDataRaw =  frame.capturedDepthData
@@ -158,23 +156,23 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
                 let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
                 /*
-                 * Potential Pre-processing : Median Filter.
-                 * We have to convert depthDataMap into an UIImage to do this. */
+                 * We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
+                 */
                 //compCIImage(depthDataMap: depthDataMap!)
                 //myDepthImage = UIImage(ciImage: myCIImage!)
                 //depthView.image = myDepthImage
-                self.depthImage.update(_data: depthPointer)
+                self.myDepthImage.update(_data: depthPointer)
                 self.myCamera.update(extrinsics: frame.camera.transform)
             }
             let epsilon = epsilonStepper.value * epsilonTick
             let delta = deltaStepper.value * deltaTick
             let lambda = lambdaStepper.value * lambdaTick
             DispatchQueue.global().async {
-                if self.increments < 120  {
-                    self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
-                    self.increments += 1
+                if self.numberOfIterations < 120  {
+                    self.myVolume.integrateDepthMap(image: self.myDepthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
+                    self.numberOfIterations += 1
                     DispatchQueue.main.async {
-                        self.integrationProgress.progress = Float(self.increments) / 120.0
+                        self.integrationProgress.progress = Float(self.numberOfIterations) / 120.0
                     }
                 }
                 else {
@@ -182,9 +180,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                         title: "Fin de l'acquisition",
                         message: "Vous pouvez visualiser avec le bouton \"Show Vol.\"",
                         handler: { _ in
-                        self.increments = 0
+                        self.numberOfIterations = 0
                         self.inRealTime = false
-                        self.startIntegrator = false
+                        self.hasIntegratingStarted = false
                         self.integrationProgress.isHidden = true
                         self.integrationProgress.progress = 0.0
                     })
@@ -204,11 +202,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             for i in 0..<self.sizeOfDataset {
                 let d: Double = 1.0 + Double(i)
                 DispatchQueue.global().asyncAfter(deadline: .now()+d) {
-                    let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.dataset)
-                    let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.dataset)
+                    let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
+                    let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.nameOfDataset)
                     self.myCamera.update(extrinsics: extrinsics)
-                    self.depthImage.update(_data: depthmap)
-                    self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
+                    self.myDepthImage.update(_data: depthmap)
+                    self.myVolume.integrateDepthMap(image: self.myDepthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
                     DispatchQueue.main.async {
                         if i == self.sizeOfDataset - 1 {
                             self.displayAlertMessage(title: "Fin Acquisition", message: "", handler: {_ in })
@@ -227,7 +225,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 title: "Acquisition en temps réel",
                 message: "Veuillez mettre la front-caméra face de l'objet",
                 handler: { _ in
-                    self.startIntegrator = true
+                    self.hasIntegratingStarted = true
                     AudioServicesPlaySystemSound (self.systemSoundID)
                 })
         }
@@ -255,28 +253,23 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     @IBAction func changeDataset(_ sender: Any) {
-        startIntegrator = false
+        hasIntegratingStarted = false
         inRealTime = false
         switch datasetChoice.selectedSegmentIndex {
         case 0:
-            dataset = "chair"
+            nameOfDataset = "chair"
         case 1:
-            dataset = "ikea-table"
+            nameOfDataset = "ikea-table"
         case 2:
             inRealTime = true
         default: break
         }
+        myDepthImage.changeTo(realTime: inRealTime)
+        myCamera.changeTo(realTime: inRealTime)
     }
+    
     @IBAction func changeDatasetSize(_ sender: Any) {
-        switch datasetSize.selectedSegmentIndex {
-        case 0:
-            sizeOfDataset = 1
-        case 1:
-            sizeOfDataset = 10
-        case 2:
-            sizeOfDataset = 100
-        default: break
-        }
+        sizeOfDataset = Int(pow(10.0, Float(datasetSize.selectedSegmentIndex)))
     }
     
     @IBAction func exportVolume(_ sender: Any) {

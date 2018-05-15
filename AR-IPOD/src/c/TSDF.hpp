@@ -25,9 +25,12 @@ typedef struct Voxel {
 } Voxel;
 
 inline float constant_weighting(const float distance, const float delta, const float lambda) {
+    /*
     if ( distance < lambda ) return 1.0;
     else if (distance > delta) return 0.0;
     else return (delta - distance) / (delta - lambda);
+    */
+    return 1.0;
 }
 inline void update_voxel(Voxel* voxels,
                          const float sdf,

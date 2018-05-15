@@ -191,6 +191,7 @@ int bridge_integrateDepthMap(float* depthmap,
         float zp = depthmap[u * width + v];
         // Depth invalid
         if (zp < 0.000001) continue;
+        if (zp > 1.0) continue;
         float distance = zp - z;
         // Calculate weight
         float w = constant_weighting(distance, delta, lambda);

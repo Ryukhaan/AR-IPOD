@@ -15,4 +15,10 @@ typealias Line      = int2
 typealias Id3       = int3
 typealias Pixel     = float2
 
-
+struct Constant {
+    static let KinectWidth = 640
+    static let KinectHeight = 480
+    
+    static let IphoneWidth = 360
+    static let IphoneHeight = 480
+}
