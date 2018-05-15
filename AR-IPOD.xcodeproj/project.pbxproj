@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		A52C3D392090630200BA5BDC /* IO.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D382090630200BA5BDC /* IO.swift */; };
 		A52C3D452091CE4B00BA5BDC /* Meshing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D442091CE4B00BA5BDC /* Meshing.swift */; };
-		A52C3D4B2091CE8200BA5BDC /* Tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D4A2091CE8200BA5BDC /* Tables.swift */; };
 		A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */; };
 		A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4E2091E00700BA5BDC /* TriTableContents */; };
 		A52C3D652093185000BA5BDC /* bridging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D632093185000BA5BDC /* bridging.cpp */; };
@@ -60,13 +59,11 @@
 /* Begin PBXFileReference section */
 		A52C3D382090630200BA5BDC /* IO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IO.swift; sourceTree = "<group>"; };
 		A52C3D442091CE4B00BA5BDC /* Meshing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meshing.swift; sourceTree = "<group>"; };
-		A52C3D4A2091CE8200BA5BDC /* Tables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tables.swift; sourceTree = "<group>"; };
 		A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */ = {isa = PBXFileReference; lastKnownFileType = text; path = EdgeTableContents; sourceTree = "<group>"; };
 		A52C3D4E2091E00700BA5BDC /* TriTableContents */ = {isa = PBXFileReference; lastKnownFileType = text; path = TriTableContents; sourceTree = "<group>"; };
 		A52C3D622093185000BA5BDC /* AR-IPOD-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AR-IPOD-Bridging-Header.h"; sourceTree = "<group>"; };
 		A52C3D632093185000BA5BDC /* bridging.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bridging.cpp; sourceTree = "<group>"; };
 		A52C3D642093185000BA5BDC /* bridging.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bridging.hpp; sourceTree = "<group>"; };
-		A53453152097452A00BD8E76 /* pointCloudTest.sdp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = pointCloudTest.sdp; path = ../../../datas/pointCloudTest.sdp; sourceTree = "<group>"; };
 		A544222020A5A39D00AE55C7 /* SceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneViewController.swift; sourceTree = "<group>"; };
 		A5494B092089E43A007EA2FB /* Box.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		A5494B0D2089E63D007EA2FB /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
@@ -129,56 +126,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A52C3D3C2091B79C00BA5BDC /* marching cube */ = {
-			isa = PBXGroup;
-			children = (
-				A52C3D4A2091CE8200BA5BDC /* Tables.swift */,
-			);
-			path = "marching cube";
-			sourceTree = "<group>";
-		};
-		A52C3D432091CE3E00BA5BDC /* mesh */ = {
-			isa = PBXGroup;
-			children = (
-				A52C3D442091CE4B00BA5BDC /* Meshing.swift */,
-			);
-			path = mesh;
-			sourceTree = "<group>";
-		};
 		A52C3D6620933EAC00BA5BDC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		A5494B082089E420007EA2FB /* geometry */ = {
-			isa = PBXGroup;
-			children = (
-				A5494B092089E43A007EA2FB /* Box.swift */,
-				A5494B0D2089E63D007EA2FB /* Plane.swift */,
-				A5494B0F2089E644007EA2FB /* Frustrum.swift */,
-			);
-			path = geometry;
-			sourceTree = "<group>";
-		};
-		A5494B13208A0BCA007EA2FB /* camera */ = {
-			isa = PBXGroup;
-			children = (
-				A58DCE1020888D1300280CD2 /* Camera.swift */,
-				A58DCE1220888F4A00280CD2 /* DepthImage.swift */,
-			);
-			path = camera;
-			sourceTree = "<group>";
-		};
-		A5494B21208DF6AB007EA2FB /* space */ = {
-			isa = PBXGroup;
-			children = (
-				A58DCE142088A18300280CD2 /* PointCloud.swift */,
-				A58DCE162088B85300280CD2 /* Voxel.swift */,
-				A58DCE1A2088BF5C00280CD2 /* Volume.swift */,
-			);
-			path = space;
 			sourceTree = "<group>";
 		};
 		A58DCDD32088895500280CD2 = {
@@ -210,13 +162,12 @@
 				A58DCDDF2088895500280CD2 /* AppDelegate.swift */,
 				A58DCDE12088895500280CD2 /* art.scnassets */,
 				A58DCDE32088895500280CD2 /* ViewController.swift */,
+				A544222020A5A39D00AE55C7 /* SceneViewController.swift */,
 				A52C3D622093185000BA5BDC /* AR-IPOD-Bridging-Header.h */,
 				A58DCDE52088895500280CD2 /* Main.storyboard */,
 				A58DCDE82088895500280CD2 /* Assets.xcassets */,
 				A58DCDEA2088895500280CD2 /* LaunchScreen.storyboard */,
 				A58DCDED2088895500280CD2 /* Info.plist */,
-				A53453152097452A00BD8E76 /* pointCloudTest.sdp */,
-				A544222020A5A39D00AE55C7 /* SceneViewController.swift */,
 			);
 			path = "AR-IPOD";
 			sourceTree = "<group>";
@@ -248,6 +199,18 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		A5C5899F20AAC226009BA18A /* deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				A5494B112089E657007EA2FB /* Geometry.swift */,
+				A5494B0D2089E63D007EA2FB /* Plane.swift */,
+				A5494B092089E43A007EA2FB /* Box.swift */,
+				A5494B0F2089E644007EA2FB /* Frustrum.swift */,
+				A58DCE142088A18300280CD2 /* PointCloud.swift */,
+			);
+			path = deprecated;
+			sourceTree = "<group>";
+		};
 		A5F478BD2099DF5400CAAEC0 /* resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -263,14 +226,14 @@
 		A5F478EA209C6D6800CAAEC0 /* swift */ = {
 			isa = PBXGroup;
 			children = (
+				A5C5899F20AAC226009BA18A /* deprecated */,
 				A52C3D382090630200BA5BDC /* IO.swift */,
 				A5494B1B208A2768007EA2FB /* Types.swift */,
-				A5494B112089E657007EA2FB /* Geometry.swift */,
-				A52C3D432091CE3E00BA5BDC /* mesh */,
-				A52C3D3C2091B79C00BA5BDC /* marching cube */,
-				A5494B13208A0BCA007EA2FB /* camera */,
-				A5494B082089E420007EA2FB /* geometry */,
-				A5494B21208DF6AB007EA2FB /* space */,
+				A52C3D442091CE4B00BA5BDC /* Meshing.swift */,
+				A58DCE162088B85300280CD2 /* Voxel.swift */,
+				A58DCE1A2088BF5C00280CD2 /* Volume.swift */,
+				A58DCE1020888D1300280CD2 /* Camera.swift */,
+				A58DCE1220888F4A00280CD2 /* DepthImage.swift */,
 				A5F478EE20A096C900CAAEC0 /* UI.swift */,
 			);
 			path = swift;
@@ -447,7 +410,6 @@
 				A52C3D392090630200BA5BDC /* IO.swift in Sources */,
 				A5F478E9209C657500CAAEC0 /* io.cpp in Sources */,
 				A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */,
-				A52C3D4B2091CE8200BA5BDC /* Tables.swift in Sources */,
 				A58DCE1120888D1300280CD2 /* Camera.swift in Sources */,
 				A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */,
 				A5F478EF20A096C900CAAEC0 /* UI.swift in Sources */,

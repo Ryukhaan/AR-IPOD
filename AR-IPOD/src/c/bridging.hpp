@@ -33,7 +33,8 @@ int bridge_integrateDepthMap(const float* depthmap,
                              const int dimension,
                              const float resolution[3],
                              const float delta,
-                             const float epsilon);
+                             const float epsilon,
+                             const float lambda);
 
 void bridge_exportMeshToPLY(const void* vectors,
                             const char* file_name,

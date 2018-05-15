@@ -29,8 +29,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet var stepperSize: UIStepper!
     @IBOutlet var integrationProgress: UIProgressView!
     
-    
-
     @IBOutlet weak var depthView: UIImageView!
     var myDepthStrings = [String]()
     var myDepthImage: UIImage?
@@ -41,8 +39,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var myCIImage: CIImage?
     
     // Isolevel parameters UI
-    @IBOutlet var isolevelLabel: UILabel!
-    @IBOutlet var isolevelStepper: UIStepper!
+    @IBOutlet var lambdaLabel: UILabel!
+    @IBOutlet var lambdaStepper: UIStepper!
+    let lambdaTick = 0.02
     // Delta parameters UI
     @IBOutlet var deltaStepper: UIStepper!
     @IBOutlet var deltaLabel: UILabel!
@@ -169,9 +168,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             }
             let epsilon = epsilonStepper.value * epsilonTick
             let delta = deltaStepper.value * deltaTick
+            let lambda = lambdaStepper.value * lambdaTick
             DispatchQueue.global().async {
                 if self.increments < 120  {
-                    self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
+                    self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
                     self.increments += 1
                     DispatchQueue.main.async {
                         self.integrationProgress.progress = Float(self.increments) / 120.0
@@ -200,6 +200,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         if !inRealTime {
             let epsilon = epsilonStepper.value * epsilonTick
             let delta = deltaStepper.value * deltaTick
+            let lambda = lambdaStepper.value * lambdaTick
             for i in 0..<self.sizeOfDataset {
                 let d: Double = 1.0 + Double(i)
                 DispatchQueue.global().asyncAfter(deadline: .now()+d) {
@@ -207,7 +208,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                     let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.dataset)
                     self.myCamera.update(extrinsics: extrinsics)
                     self.depthImage.update(_data: depthmap)
-                    self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon)])
+                    self.myVolume.integrateDepthMap(image: self.depthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
                     DispatchQueue.main.async {
                         if i == self.sizeOfDataset - 1 {
                             self.displayAlertMessage(title: "Fin Acquisition", message: "", handler: {_ in })
@@ -248,15 +249,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         volumeSize.text = "Volume Size : \(quantity)"
     }
     
-    @IBAction func updateIsolevel(_ sender: Any) {
-        let power = (isolevelStepper.value - 6)
-        let newLevel = pow(10.0, power)
-        if isolevelStepper.value == 0 {
-            isolevelLabel.text = "Isolevel: 0"
-        }
-        else {
-           isolevelLabel.text = "Isolevel: \(newLevel)"
-        }
+    @IBAction func updateLambda(_ sender: Any) {
+        let quantity = lambdaStepper.value * lambdaTick
+        lambdaLabel.text = "Lambda: \(quantity)"
     }
     
     @IBAction func changeDataset(_ sender: Any) {
@@ -289,6 +284,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         guard let currentFrame = sceneView.session.currentFrame
             else { return }
         */
+        /*
         var isolevel: Float
         if isolevelStepper.value == 0 {
             isolevel = 0
@@ -302,6 +298,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //sceneView.scene.rootNode.addChildNode(pointNode)
         exportToPLY(mesh: points, at: "mesh_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
         //exportToPLY(volume: self.myVolume, at: "volume_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
+         */
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

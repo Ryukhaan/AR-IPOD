@@ -11,13 +11,11 @@ import ARKit
 import AVFoundation
 
 struct Voxel {
-    static let UNDEFINED_SDF: Float = 9999.0
-    
     var sdf:    Float
-    var weight: UInt8
+    var weight: Float
     
     init() {
-        sdf     = Voxel.UNDEFINED_SDF
+        sdf     = 9999.0
         weight  = 0
     }
 }

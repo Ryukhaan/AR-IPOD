@@ -19,12 +19,20 @@
 
 typedef struct Voxel {
     float sdf;
-    unsigned char weight;
+    //unsigned char weight;
+    float weight;
     //unsigned char time;
 } Voxel;
 
-
-inline void update_voxel(Voxel* voxels, const float sdf, const char weight, const int index) {
+inline float constant_weighting(const float distance, const float delta, const float lambda) {
+    if ( distance < lambda ) return 1.0;
+    else if (distance > delta) return 0.0;
+    else return (delta - distance) / (delta - lambda);
+}
+inline void update_voxel(Voxel* voxels,
+                         const float sdf,
+                         const float weight,
+                         const int index) {
     float old_sdf      = voxels[index].sdf;
     float old_weight   = voxels[index].weight;
     float new_weight   = old_weight + weight;
@@ -32,8 +40,17 @@ inline void update_voxel(Voxel* voxels, const float sdf, const char weight, cons
     float new_product  = sdf * weight;
     float new_sdf      = (new_product + old_product ) / new_weight;
     
+    // DWRAFing
+    /*
+    float delta = new_sdf - old_sdf;
+    if (delta > 0 && delta < 0.5)
+        voxels[index].sdf     = old_sdf+1;
+    else if (delta < 0 && delta > -0.5)
+        voxels[index].sdf     = old_sdf-1;
+    else
+    */
     voxels[index].sdf     = new_sdf;
-    voxels[index].weight  = simd_min(new_weight, 249);
+    voxels[index].weight  = simd_min(new_weight, 100);
     //voxels[index].time    = 0;
 };
 

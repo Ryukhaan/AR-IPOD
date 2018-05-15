@@ -9,45 +9,6 @@
 import Foundation
 import ARKit
 
-func importPointCloud(fromFile: String) -> PointCloud {
-    var text: String = ""
-    let pc = PointCloud()
-    if let path = Bundle.main.path(forResource: "pointCloudTest", ofType: "sdp") {
-        do {
-            try text = String(contentsOfFile: path, encoding: .utf8)
-        }
-        catch {
-            print("Sorry could not load file pointCloudTest.sdp !")
-        }
-    }
-    else {
-        print("Point cloud file not found !")
-    }
-    let rows = text.components(separatedBy: .newlines)
-    for row in rows {
-        let temp = row.components(separatedBy: " ")
-        if temp.count < 1 { continue }
-        pc.addPoint(point: Vector(Float(temp[0])!, Float(temp[1])!, Float(temp[2])!))
-    }
-    return pc
-}
-
-func importDepthMap(fromFile: String) -> [Float] {
-    var text: String = ""
-    var outArray = [Float]()
-    do {
-        try text = String(contentsOfFile: fromFile, encoding: .utf8)
-    }
-    catch {}
-    let rows = text.components(separatedBy: .newlines)
-    for row in rows {
-        let temp = row.components(separatedBy: " ")
-        if temp.count < 1 { print(temp.count); continue }
-        outArray.append(Float(temp[2])! + 0.5)
-    }
-    return outArray
-}
-
 func importDepthMapFromTXT(from: String, at: String) -> [Float] {
     let relativPath = "/\(at)/\(from)"
     var text: String = ""
@@ -125,20 +86,5 @@ func exportToPLY(mesh: [Vector], at: String) {
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         let cFileName = dir.appendingPathComponent(at).absoluteString.cString(using: .utf8)
         bridge_exportMeshToPLY(mesh, cFileName, Int32(numberOfTriangles))
-    }
-}
-
-func exportPointCloud(points: [Vector], at: String) {
-    var text: String = ""
-    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-        let cFileName = dir.appendingPathComponent(at)
-        for i in 0..<points.count {
-            let point = points[i]
-            text = "\(text)\(point.x) \(point.y) \(point.z)\n"
-        }
-        do {
-            try text.write(to: cFileName, atomically: false, encoding: .utf8)
-        }
-        catch {}
     }
 }

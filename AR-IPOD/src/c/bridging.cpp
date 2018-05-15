@@ -136,7 +136,8 @@ int bridge_integrateDepthMap(const float* depthmap,
                              const int dimension,
                              const float resolution[3],
                              const float delta,
-                             const float epsilon) {
+                             const float epsilon,
+                             const float lambda) {
     // Instanciate all local variables
     int number_of_changes = 0;
     //float diag = 2.0 * sqrt(3.0f) * (resolution[0] / dimension);
@@ -186,12 +187,14 @@ int bridge_integrateDepthMap(const float* depthmap,
         
         float z = local.z; //simd_length(local) ou local.z
         float zp = depthmap[u * width + v];
-        
         // Depth invalid
         if (zp < 0.000001) continue;
         float distance = zp - z;
+        // Calculate weight
+        float w = constant_weighting(distance, delta, lambda);
+        
         if (distance >= delta + epsilon && distance <= zp) carving_voxel((Voxel *)voxels, i);
-        if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, 1, i);
+        if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, w, i);
         //else if (distance > delta) update_voxel((Voxel *)voxels, delta, 1, i);
         //else update_voxel((Voxel *)voxels, -delta, 1, i);
     }

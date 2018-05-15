@@ -634,7 +634,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.109394"
+            timestampString = "547994574.058305"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "20"
@@ -650,7 +650,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.109773"
+            timestampString = "547994574.058606"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "22"
@@ -666,13 +666,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/swift/IO.swift"
-            timestampString = "547991439.233912"
+            timestampString = "547996503.6291699"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "126"
-            endingLineNumber = "126"
-            landmarkName = "exportToPLY(mesh:at:)"
-            landmarkType = "9">
+            endingLineNumber = "126">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -682,13 +680,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/swift/IO.swift"
-            timestampString = "547991439.2343431"
+            timestampString = "547996503.62959"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "127"
-            endingLineNumber = "127"
-            landmarkName = "exportToPLY(mesh:at:)"
-            landmarkType = "9">
+            endingLineNumber = "127">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -698,7 +694,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.110164"
+            timestampString = "547994574.058928"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "48"
@@ -714,7 +710,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.110222"
+            timestampString = "547994574.058973"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "33"
@@ -730,7 +726,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.110274"
+            timestampString = "547994574.0590169"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "23"
@@ -746,7 +742,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.110325"
+            timestampString = "547994574.05906"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "75"
@@ -762,7 +758,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.110378"
+            timestampString = "547994574.0591021"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "24"
@@ -778,11 +774,27 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/swift/space/Volume.swift"
-            timestampString = "547991439.234599"
+            timestampString = "548061241.070122"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "52"
-            endingLineNumber = "52"
+            startingLineNumber = "61"
+            endingLineNumber = "61"
+            landmarkName = "initialize(with:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/swift/space/Volume.swift"
+            timestampString = "548061241.070751"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
             landmarkName = "initialize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -794,11 +806,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/swift/space/Volume.swift"
-            timestampString = "547991439.234928"
+            timestampString = "548061241.071"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
             landmarkName = "initialize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -810,27 +822,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/swift/space/Volume.swift"
-            timestampString = "547991439.235009"
+            timestampString = "548061241.071221"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
-            landmarkName = "initialize()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/src/swift/space/Volume.swift"
-            timestampString = "547991439.235083"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "41"
-            endingLineNumber = "41"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
             landmarkName = "initialize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -842,12 +838,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/swift/IO.swift"
-            timestampString = "547991439.235154"
+            timestampString = "547996503.630427"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "60"
             endingLineNumber = "60"
-            landmarkName = "importDepthMapFromTXT(from:at:)"
+            landmarkName = "importCameraIntrinsics(from:at:)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -858,7 +854,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.110917"
+            timestampString = "547994574.059534"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "67"
@@ -874,7 +870,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.110966"
+            timestampString = "547994574.0595959"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "53"
@@ -890,7 +886,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/io.cpp"
-            timestampString = "547980791.111014"
+            timestampString = "547994574.059633"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "55"
@@ -906,13 +902,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/swift/space/Volume.swift"
-            timestampString = "547991439.235323"
+            timestampString = "548061241.071521"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "75"
-            endingLineNumber = "75"
-            landmarkName = "integrateDepthMap(image:camera:parameters:)"
-            landmarkType = "7">
+            startingLineNumber = "77"
+            endingLineNumber = "77">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -938,11 +932,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.235438"
+            timestampString = "548061241.071756"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "72"
-            endingLineNumber = "72"
+            startingLineNumber = "71"
+            endingLineNumber = "71"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -954,11 +948,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.236437"
+            timestampString = "548061241.072"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "298"
-            endingLineNumber = "298"
+            startingLineNumber = "294"
+            endingLineNumber = "294"
             landmarkName = "exportVolume(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -970,11 +964,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.237115"
+            timestampString = "548061241.072075"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "208"
-            endingLineNumber = "208"
+            startingLineNumber = "209"
+            endingLineNumber = "209"
             landmarkName = "startCompute(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -986,12 +980,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/swift/IO.swift"
-            timestampString = "547991439.23771"
+            timestampString = "547996503.631253"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "64"
             endingLineNumber = "64"
-            landmarkName = "importDepthMapFromTXT(from:at:)"
+            landmarkName = "importCameraIntrinsics(from:at:)"
             landmarkType = "9">
             <Locations>
                <Location
@@ -1034,13 +1028,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.23779"
+            timestampString = "548061241.07217"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "200"
-            endingLineNumber = "200"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "212"
+            endingLineNumber = "212"
+            landmarkName = "bridge_exportMeshToPLY(const void* vectors, const char* file_name, int n)"
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1050,7 +1044,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/linear_algebra.hpp"
-            timestampString = "547991439.238202"
+            timestampString = "548061241.072414"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "115"
@@ -1066,13 +1060,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.238507"
+            timestampString = "548061241.072612"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "209"
-            endingLineNumber = "209"
-            landmarkName = "bridge_exportVolumeToPLY(const void* centroids, const float* sdfs, const char* file_name, int size)"
-            landmarkType = "9">
+            startingLineNumber = "220"
+            endingLineNumber = "220">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1082,13 +1074,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.2386169"
+            timestampString = "548061241.072695"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "212"
-            endingLineNumber = "212"
-            landmarkName = "bridge_exportVolumeToPLY(const void* centroids, const float* sdfs, const char* file_name, int size)"
-            landmarkType = "9">
+            startingLineNumber = "220"
+            endingLineNumber = "220">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1098,11 +1088,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.238704"
+            timestampString = "548061241.072771"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "46"
-            endingLineNumber = "46"
+            startingLineNumber = "47"
+            endingLineNumber = "47"
             landmarkName = "bridge_initializeCentroids(void* centroids, int size, float resolution)"
             landmarkType = "9">
          </BreakpointContent>
@@ -1114,42 +1104,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.23879"
+            timestampString = "548061241.0728509"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "50"
-            endingLineNumber = "50"
-            landmarkName = "unknown"
-            landmarkType = "0">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.238873"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "213"
-            endingLineNumber = "213">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.238955"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "210"
-            endingLineNumber = "210"
-            landmarkName = "bridge_exportVolumeToPLY(const void* centroids, const float* sdfs, const char* file_name, int size)"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
+            landmarkName = "bridge_extractMesh(void* triangles, const float* voxels, //const void* centroids, int edgeTable[256], int triTable[4096], int n, float isolevel)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1160,11 +1120,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.239036"
+            timestampString = "548061241.072927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "213"
-            endingLineNumber = "213">
+            startingLineNumber = "220"
+            endingLineNumber = "220">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1174,13 +1134,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.239116"
+            timestampString = "548061241.073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "194"
-            endingLineNumber = "194"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
-            landmarkType = "9">
+            startingLineNumber = "220"
+            endingLineNumber = "220">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1189,13 +1147,27 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/src/swift/IO.swift"
-            timestampString = "547991439.239202"
+            filePath = "AR-IPOD/src/c/bridging.cpp"
+            timestampString = "548061241.073074"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "137"
-            endingLineNumber = "137"
-            landmarkName = "exportPointCloud(points:at:)"
+            startingLineNumber = "220"
+            endingLineNumber = "220">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/bridging.cpp"
+            timestampString = "548061241.073149"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "206"
+            endingLineNumber = "206"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1206,12 +1178,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.2392581"
+            timestampString = "548061241.073285"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "192"
-            endingLineNumber = "192"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "204"
+            endingLineNumber = "204"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1222,7 +1194,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/SceneViewController.swift"
-            timestampString = "547991439.239351"
+            timestampString = "547996503.638054"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "49"
@@ -1238,7 +1210,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/SceneViewController.swift"
-            timestampString = "547991439.23964"
+            timestampString = "547996503.638414"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "88"
@@ -1254,28 +1226,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/TSDF.hpp"
-            timestampString = "547742370.517845"
+            timestampString = "548061241.073442"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
-            landmarkName = "update_voxel(Voxel* voxels, const float sdf, const char weight, const int index)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/src/c/TSDF.hpp"
-            timestampString = "547742370.517886"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
-            landmarkName = "update_voxel(Voxel* voxels, const float sdf, const char weight, const int index)"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
+            landmarkName = "carving_voxel(Voxel * voxels, const int i)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1286,13 +1242,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.2397881"
+            timestampString = "548061241.073663"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "195"
-            endingLineNumber = "195"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
-            landmarkType = "9">
+            startingLineNumber = "207"
+            endingLineNumber = "207"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1302,11 +1258,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.23989"
+            timestampString = "548061241.0737489"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "170"
-            endingLineNumber = "170"
+            startingLineNumber = "169"
+            endingLineNumber = "169"
             landmarkName = "session(_:didUpdate:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1318,11 +1274,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.240472"
+            timestampString = "548061241.0738209"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "151"
-            endingLineNumber = "151"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
             landmarkName = "session(_:didUpdate:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1334,11 +1290,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.240801"
+            timestampString = "548061241.0738879"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
+            startingLineNumber = "131"
+            endingLineNumber = "131"
             landmarkName = "session(_:cameraDidChangeTrackingState:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1350,11 +1306,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.2411129"
+            timestampString = "548061241.073954"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "157"
-            endingLineNumber = "157"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
             landmarkName = "session(_:didUpdate:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1366,11 +1322,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.241423"
+            timestampString = "548061241.074018"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "137"
-            endingLineNumber = "137"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
             landmarkName = "session(_:didFailWithError:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1382,71 +1338,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.241878"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "142"
-            endingLineNumber = "142"
-            landmarkName = "sessionWasInterrupted(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.2424459"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "147"
-            endingLineNumber = "147"
-            landmarkName = "sessionInterruptionEnded(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.242998"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "193"
-            endingLineNumber = "193"
-            landmarkName = "session(_:didUpdate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.243587"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "133"
-            endingLineNumber = "133"
-            landmarkName = "session(_:cameraDidChangeTrackingState:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.244148"
+            timestampString = "548061241.074083"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "141"
@@ -1462,11 +1354,27 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.244684"
+            timestampString = "548061241.07415"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "171"
-            endingLineNumber = "171"
+            startingLineNumber = "146"
+            endingLineNumber = "146"
+            landmarkName = "sessionInterruptionEnded(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/ViewController.swift"
+            timestampString = "548061241.074214"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "193"
+            endingLineNumber = "193"
             landmarkName = "session(_:didUpdate:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1478,11 +1386,43 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.245211"
+            timestampString = "548061241.07428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "155"
-            endingLineNumber = "155"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
+            landmarkName = "session(_:cameraDidChangeTrackingState:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/ViewController.swift"
+            timestampString = "548061241.074343"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "140"
+            endingLineNumber = "140"
+            landmarkName = "sessionWasInterrupted(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/ViewController.swift"
+            timestampString = "548061241.074406"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "170"
+            endingLineNumber = "170"
             landmarkName = "session(_:didUpdate:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1494,7 +1434,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.245751"
+            timestampString = "548061241.074469"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "154"
@@ -1510,11 +1450,27 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.246278"
+            timestampString = "548061241.0745341"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "136"
-            endingLineNumber = "136"
+            startingLineNumber = "153"
+            endingLineNumber = "153"
+            landmarkName = "session(_:didUpdate:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/ViewController.swift"
+            timestampString = "548061241.074599"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "135"
+            endingLineNumber = "135"
             landmarkName = "session(_:didFailWithError:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1526,12 +1482,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.246802"
+            timestampString = "548061241.074666"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "171"
-            endingLineNumber = "171"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "177"
+            endingLineNumber = "177"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1542,12 +1498,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.246917"
+            timestampString = "548061241.074742"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "198"
-            endingLineNumber = "198"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "210"
+            endingLineNumber = "210"
+            landmarkName = "bridge_exportMeshToPLY(const void* vectors, const char* file_name, int n)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1558,12 +1514,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.2470191"
+            timestampString = "548061241.0748169"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "147"
-            endingLineNumber = "147"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1574,7 +1530,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.247113"
+            timestampString = "548061241.074887"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "202"
@@ -1590,7 +1546,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.247635"
+            timestampString = "548061241.074949"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "200"
@@ -1606,11 +1562,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.248122"
+            timestampString = "548061241.075012"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "263"
-            endingLineNumber = "263"
+            startingLineNumber = "258"
+            endingLineNumber = "258"
             landmarkName = "changeDataset(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1622,7 +1578,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/linear_algebra.hpp"
-            timestampString = "547991439.248449"
+            timestampString = "548061241.075078"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "45"
@@ -1638,60 +1594,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.248502"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "172"
-            endingLineNumber = "172"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.248558"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "157"
-            endingLineNumber = "157"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.24861"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "168"
-            endingLineNumber = "168"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.248661"
+            timestampString = "548061241.075127"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "178"
             endingLineNumber = "178"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1702,12 +1610,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.248706"
+            timestampString = "548061241.075196"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "188"
-            endingLineNumber = "188"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "163"
+            endingLineNumber = "163"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1718,12 +1626,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.248753"
+            timestampString = "548061241.075265"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "177"
-            endingLineNumber = "177"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "174"
+            endingLineNumber = "174"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1734,12 +1642,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.248798"
+            timestampString = "548061241.075334"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "186"
-            endingLineNumber = "186"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "184"
+            endingLineNumber = "184"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1750,12 +1658,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.248843"
+            timestampString = "548061241.0753959"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "193"
-            endingLineNumber = "193"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1766,12 +1674,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.2488869"
+            timestampString = "548061241.07546"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "185"
-            endingLineNumber = "185"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "183"
+            endingLineNumber = "183"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1782,12 +1690,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.248932"
+            timestampString = "548061241.075521"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "169"
-            endingLineNumber = "169"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "191"
+            endingLineNumber = "191"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1798,12 +1706,60 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/bridging.cpp"
-            timestampString = "547991439.2489721"
+            timestampString = "548061241.0755841"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "170"
-            endingLineNumber = "170"
-            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon)"
+            startingLineNumber = "205"
+            endingLineNumber = "205"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/bridging.cpp"
+            timestampString = "548061241.075646"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "190"
+            endingLineNumber = "190"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/bridging.cpp"
+            timestampString = "548061241.075709"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "175"
+            endingLineNumber = "175"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/bridging.cpp"
+            timestampString = "548061241.075767"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "176"
+            endingLineNumber = "176"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1814,7 +1770,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/src/c/linear_algebra.hpp"
-            timestampString = "547991439.249015"
+            timestampString = "548061241.075827"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "132"
@@ -1830,11 +1786,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.249056"
+            timestampString = "548061241.0758671"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "210"
-            endingLineNumber = "210"
+            startingLineNumber = "211"
+            endingLineNumber = "211"
             landmarkName = "startCompute(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1846,11 +1802,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.249352"
+            timestampString = "548061241.07592"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "62"
-            endingLineNumber = "62"
+            startingLineNumber = "61"
+            endingLineNumber = "61"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1862,7 +1818,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.249627"
+            timestampString = "548061241.075973"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "18"
@@ -1878,13 +1834,155 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AR-IPOD/ViewController.swift"
-            timestampString = "547991439.2498879"
+            timestampString = "548061241.0760289"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "218"
-            endingLineNumber = "218"
+            startingLineNumber = "219"
+            endingLineNumber = "219"
             landmarkName = "startCompute(_:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/TSDF.hpp"
+            timestampString = "548061241.0761369"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "update_voxel(Voxel* voxels, const float sdf, const float weight, const int index)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/TSDF.hpp"
+            timestampString = "548061241.076228"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
+            landmarkName = "carving_voxel(Voxel * voxels, const int i)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/TSDF.hpp"
+            timestampString = "548061241.0762939"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "update_voxel(Voxel* voxels, const float sdf, const float weight, const int index)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/swift/space/Volume.swift"
+            timestampString = "548061241.07635"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "77"
+            endingLineNumber = "77">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/bridging.cpp"
+            timestampString = "548061241.0766571"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/bridging.cpp"
+            timestampString = "548061241.076726"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/TSDF.hpp"
+            timestampString = "548061241.076787"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "61"
+            endingLineNumber = "61"
+            landmarkName = "unknown"
+            landmarkType = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/bridging.cpp"
+            timestampString = "548061241.076839"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "153"
+            endingLineNumber = "153"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AR-IPOD/src/c/bridging.cpp"
+            timestampString = "548061241.07691"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "152"
+            endingLineNumber = "152"
+            landmarkName = "bridge_integrateDepthMap(const float* depthmap, //const void* centroids, const void* camera_pose, const void* intrisics, void* voxels, const int width, const int height, const int dimension, const float resolution[3], const float delta, const float epsilon, const float lambda)"
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
