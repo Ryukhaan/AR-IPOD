@@ -68,9 +68,9 @@ class Volume {
     func integrateDepthMap(image: DepthImage, camera: inout Camera, parameters: [Float]) {
         let width = image.width
         let height = image.height
-        let dethmap = image.data
+        var dethmap = image.data
         let resolve = [resolutionInMeter, resolutionInMeter, resolutionInMeter]
-        _ = bridge_integrateDepthMap(dethmap, /*centroids,*/ &camera.extrinsics, &camera.intrinsics, &voxels, Int32(width), Int32(height), Int32(numberOfVoxels), resolve, parameters[0], parameters[1], parameters[2]);
+        _ = bridge_integrateDepthMap(&dethmap, /*centroids,*/ &camera.extrinsics, &camera.intrinsics, &voxels, Int32(width), Int32(height), Int32(numberOfVoxels), resolve, parameters[0], parameters[1], parameters[2]);
         //let voxel2 = voxels[numberOfVoxels].sdf
     }
 }

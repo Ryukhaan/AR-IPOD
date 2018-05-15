@@ -17,7 +17,7 @@
 #include <simd/conversion.h>
 #include <simd/matrix.h>
 
-
+#include "filtering.cpp"
 /**
  * Mapping between integer to centroid coordinate.
  */
@@ -26,7 +26,7 @@ inline float integer_to_global(float point, int dim, float resolution) {
 }
 
 inline int global_to_integer(float point, int dim, float resolution) {
-    return (int) (dim * point / resolution - 0.5);
+    return static_cast<int>(dim * point / resolution - 0.5);
 }
 
 inline simd_float3 create_centroid(const int i,
@@ -38,7 +38,7 @@ inline simd_float3 create_centroid(const int i,
     int x = i / square;
     int remainder = i % square;
     int y = remainder / dimension;
-    int z = (float)(((int) remainder) % dimension);
+    int z = remainder % dimension;
     centroid.x = integer_to_global(x, dimension, resolution) - offset;
     centroid.y = integer_to_global(y, dimension, resolution) - offset;
     centroid.z = integer_to_global(z, dimension, resolution);// - offset;
@@ -50,7 +50,7 @@ inline simd_float3 create_centroid(const int i,
 inline simd_int2 project(simd::float3 vector, simd_float3x3 K) {
     simd::float3 temp = simd_make_float3(vector.x / vector.z, vector.y / vector.z, 1);
     simd::float3 all  = simd_mul(K, temp);
-    return simd_make_int2((int)all.x, (int)all.y);
+    return simd_make_int2( static_cast<int>(all.x), static_cast<int>(all.y));
 }
 
 inline simd::float3 projectWithZ(simd::float3 vector, simd_float3x3 K) {
@@ -115,19 +115,27 @@ inline int hash_function(simd_int3 point, int base) {
     return a + b + c;
 }
 
-simd_float2x3 cameraBoxing(const float* depthmap, const int width, const int height, const simd_float3x3 rot, const simd::float3 t, const simd_float3x3 Kinv) {
-    int size = width * height;
-    simd_float2x3 box = simd_matrix(simd_make_float3(9999, 9999, 9999), simd_make_float3(-9999, -9999, -9999));
-    for (int i=0; i<size; i++) {
-        float depth = depthmap[i];
-        simd::float3 uv = simd_make_float3(i / width, i % width, 1);
-        simd::float3 world_point = simd_mul(simd_transpose(rot), simd_mul(Kinv, depth * uv) - t);
-        box.columns[0].x = simd_min(box.columns[0].x, world_point.x);
-        box.columns[0].y = simd_min(box.columns[0].y, world_point.y);
-        box.columns[0].z = simd_min(box.columns[0].z, world_point.z);
-        box.columns[1].x = simd_max(box.columns[1].x, world_point.x);
-        box.columns[1].y = simd_max(box.columns[1].y, world_point.y);
-        box.columns[1].z = simd_max(box.columns[1].z, world_point.z);
+simd_float2x3 bounding_box_and_filter(float* depthmap,
+                           const int width,
+                           const int height,
+                           const simd_float3x3 rot,
+                           const simd::float3 t,
+                           const simd_float3x3 Kinv,
+                           const int window_size) {
+    simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
+    for (int i=0; i<height; i++) {
+        for (int j=0; j<width; j++) {
+            float depth = depthmap[i*width+j];
+            simd::float3 uv = simd_make_float3(i, j, 1);
+            simd::float3 world_point = simd_mul(simd_transpose(rot), simd_mul(Kinv, depth * uv) - t);
+            box.columns[0].x = simd_min(box.columns[0].x, world_point.x);
+            box.columns[0].y = simd_min(box.columns[0].y, world_point.y);
+            box.columns[0].z = simd_min(box.columns[0].z, world_point.z);
+            box.columns[1].x = simd_max(box.columns[1].x, world_point.x);
+            box.columns[1].y = simd_max(box.columns[1].y, world_point.y);
+            box.columns[1].z = simd_max(box.columns[1].z, world_point.z);
+            local_median(depthmap, window_size, width, height, i, j);
+        }
     }
     return box;
 }

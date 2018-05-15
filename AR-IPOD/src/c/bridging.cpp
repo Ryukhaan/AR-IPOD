@@ -24,6 +24,7 @@ extern "C" {
 #include "marching_cube.hpp"
 #include "io.hpp"
 #include "TSDF.hpp"
+#include "filtering.hpp"
 
 using namespace std;
                                           
@@ -126,7 +127,7 @@ unsigned long bridge_extractMesh(void* triangles,
     return index;
 }
 
-int bridge_integrateDepthMap(const float* depthmap,
+int bridge_integrateDepthMap(float* depthmap,
                              //const void* centroids,
                              const void* camera_pose,
                              const void* intrisics,
@@ -138,6 +139,7 @@ int bridge_integrateDepthMap(const float* depthmap,
                              const float delta,
                              const float epsilon,
                              const float lambda) {
+    //median_filter(depthmap, 2, width, height);
     // Instanciate all local variables
     int number_of_changes = 0;
     //float diag = 2.0 * sqrt(3.0f) * (resolution[0] / dimension);
@@ -158,7 +160,7 @@ int bridge_integrateDepthMap(const float* depthmap,
     
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
-    simd_float2x3 box = cameraBoxing(depthmap, width, height, rotation, translation, Kinv);
+    simd_float2x3 box = bounding_box_and_filter(depthmap, width, height, rotation, translation, Kinv, 2);
     simd_int3 point_min = simd_make_int3(global_to_integer(box.columns[0].x + offset, dimension, resolution[0]),
                                          global_to_integer(box.columns[0].y + offset, dimension, resolution[1]),
                                          global_to_integer(box.columns[0].z, dimension, resolution[2]));
