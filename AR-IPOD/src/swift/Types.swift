@@ -22,3 +22,7 @@ struct Constant {
     static let IphoneWidth = 360
     static let IphoneHeight = 640
 }
+
+enum Sounds {
+    static let beep = Bundle.main.path(forResource: "beep", ofType: "wav")
+}

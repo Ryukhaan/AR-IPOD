@@ -61,7 +61,7 @@ void local_median(float* depthmap,
             tmp_array.push_back(depthmap[k*width + l]);
     std::sort(tmp_array.begin(), tmp_array.end());
     int size = static_cast<int>( tmp_array.size() );
-    if ( size % 2 == 0 )
+    if ( size % 2 != 0 )
         depthmap[i*width + j] = tmp_array[size/2];
     else
         depthmap[i*width + j] = (tmp_array[(size+1)/2.0] + tmp_array[(size-1)/2.0])/2.0;

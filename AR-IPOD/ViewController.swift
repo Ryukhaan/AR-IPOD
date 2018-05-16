@@ -326,8 +326,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     func displayAlertMessage(title: String, message: String, handler: @escaping ((UIAlertAction) -> Void)) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: handler))
-        self.present(alert, animated: true, completion: nil)
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+            try AVAudioSession.sharedInstance().setActive(true)
+            let player = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: Sounds.beep!), fileTypeHint: AVFileType.wav.rawValue)
+            player.prepareToPlay()
+            player.play()
+            sleep(1)
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: handler))
+            self.present(alert, animated: true, completion: nil)
+        }
+        catch {}
     }
 }
