@@ -16,7 +16,8 @@ void bridge_initializeCentroids(void* centroids,
                                 float resolution);
 
 unsigned long bridge_extractMesh(void* triangles,
-                                 const float* voxels,
+                                 void* voxels,
+                                 //const float* voxels,
                                  //const void* centroids,
                                  int edgeTable[256],
                                  int triTable[4096],

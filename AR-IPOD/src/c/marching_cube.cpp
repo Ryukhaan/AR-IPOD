@@ -22,6 +22,12 @@ simd::float3 interpolate(float isolevel, simd::float3 a, simd::float3 b, float a
     if (abs(alpha-beta) < 0.00001)      { return a; }
     float mu = (isolevel - alpha) / (beta - alpha);
     return a + mu * (b - a);
+    /*
+    if (fabs(alpha - beta) > 1e-6)
+        return a + (b - a) / (beta - alpha) * (isolevel - alpha);
+    else
+        return a;
+    */
 }
 
 std::vector<simd::float3> polygonise(simd::float3 points[8], float values[8], float isolevel, int* edgeTable, int* triTable) {
@@ -38,6 +44,9 @@ std::vector<simd::float3> polygonise(simd::float3 points[8], float values[8], fl
     if (values[5] < isolevel) cubeindex |= 32;
     if (values[6] < isolevel) cubeindex |= 64;
     if (values[7] < isolevel) cubeindex |= 128;
+
+    for(int i = 0; i<8; i++)
+        if (values[i] < 0) return triangles;
     /* Cube is entirely in/out of the surface */
     if (edgeTable[cubeindex] == 0) return triangles;
     

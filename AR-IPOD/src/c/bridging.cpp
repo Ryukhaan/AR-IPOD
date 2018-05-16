@@ -50,12 +50,13 @@ void bridge_initializeCentroids(void* centroids, int size, float resolution) {
 }
 
 unsigned long bridge_extractMesh(void* triangles,
-                            const float* voxels,
-                            //const void* centroids,
-                            int edgeTable[256],
-                            int triTable[4096],
-                            int n,
-                            float isolevel) {
+                                 void* voxels,
+                                 //const float* voxels,
+                                 //const void* centroids,
+                                 int edgeTable[256],
+                                 int triTable[4096],
+                                 int n,
+                                 float isolevel) {
     unsigned long index = 0;
     int n2 = n * n;
 //  int num_threads = omp_get_num_threads();
@@ -93,27 +94,38 @@ unsigned long bridge_extractMesh(void* triangles,
                  */
                 simd::float3 points[8] = {c0, c1, c2, c3, c4, c5, c6, c7};
                 float values[8] = {
-                    fabs(voxels[i0]),
-                    fabs(voxels[i1]),
-                    fabs(voxels[i2]),
-                    fabs(voxels[i3]),
-                    fabs(voxels[i4]),
-                    fabs(voxels[i5]),
-                    fabs(voxels[i6]),
-                    fabs(voxels[i7])
+                    fabs( ((Voxel*) voxels)[i0].sdf ),
+                    fabs( ((Voxel*) voxels)[i1].sdf ),
+                    fabs( ((Voxel*) voxels)[i2].sdf ),
+                    fabs( ((Voxel*) voxels)[i3].sdf ),
+                    fabs( ((Voxel*) voxels)[i4].sdf ),
+                    fabs( ((Voxel*) voxels)[i5].sdf ),
+                    fabs( ((Voxel*) voxels)[i6].sdf ),
+                    fabs( ((Voxel*) voxels)[i7].sdf )
                     /*
-                    (voxels[i0]),
-                    (voxels[i1]),
-                    (voxels[i2]),
-                    (voxels[i3]),
-                    (voxels[i4]),
-                    (voxels[i5]),
-                    (voxels[i6]),
-                    (voxels[i7])
-                     */
+                    ( ((Voxel*) voxels)[i0].sdf ),
+                    ( ((Voxel*) voxels)[i1].sdf ),
+                    ( ((Voxel*) voxels)[i2].sdf ),
+                    ( ((Voxel*) voxels)[i3].sdf ),
+                    ( ((Voxel*) voxels)[i4].sdf ),
+                    ( ((Voxel*) voxels)[i5].sdf ),
+                    ( ((Voxel*) voxels)[i6].sdf ),
+                    ( ((Voxel*) voxels)[i7].sdf )
+                    */
                 };
                 std::vector<simd::float3> temp = polygonise(points, values, isolevel, edgeTable, triTable);
                 if (temp.size() == 0) continue;
+                /*
+                simd::float3* more_triangles = nullptr;
+                more_triangles = (simd::float3*) realloc(triangles, (index + temp.size()) * sizeof(simd::float3));
+                if ( more_triangles != nullptr )
+                    triangles = more_triangles;
+                else {
+                    free(triangles);
+                    return index;
+                }
+                //triangles = (simd::float3*) realloc(triangles, );
+                */
                 for (simd::float3 triangle : temp) {
                     ((simd::float3*) triangles)[index][0] = triangle[0];
                     ((simd::float3*) triangles)[index][1] = triangle[1];
@@ -191,7 +203,7 @@ int bridge_integrateDepthMap(float* depthmap,
         float zp = depthmap[u * width + v];
         // Depth invalid
         if (zp < 0.000001) continue;
-        if (zp > 1.0) continue;
+
         float distance = zp - z;
         // Calculate weight
         float w = constant_weighting(distance, delta, lambda);

@@ -168,8 +168,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             let delta = deltaStepper.value * deltaTick
             let lambda = lambdaStepper.value * lambdaTick
             DispatchQueue.global().async {
-                if self.numberOfIterations < 120  {
-                    self.myVolume.integrateDepthMap(image: self.myDepthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
+                if self.numberOfIterations < 10  {
+                    self.myVolume.integrateDepthMap(image: self.myDepthImage, camera: self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
                     self.numberOfIterations += 1
                     DispatchQueue.main.async {
                         self.integrationProgress.progress = Float(self.numberOfIterations) / 120.0
@@ -202,11 +202,31 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             for i in 0..<self.sizeOfDataset {
                 let d: Double = 1.0 + Double(i)
                 DispatchQueue.global().asyncAfter(deadline: .now()+d) {
+                    
+                    self.timer = Double(CFAbsoluteTimeGetCurrent())
                     let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
+                    var end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+                    print(end)
+                    
+                    self.timer = Double(CFAbsoluteTimeGetCurrent())
                     let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.nameOfDataset)
+                    end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+                    print(end)
+                    
+                    self.timer = Double(CFAbsoluteTimeGetCurrent())
                     self.myCamera.update(extrinsics: extrinsics)
+                    end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+                    print(end)
+                    
+                    self.timer = Double(CFAbsoluteTimeGetCurrent())
                     self.myDepthImage.update(_data: depthmap)
-                    self.myVolume.integrateDepthMap(image: self.myDepthImage, camera: &self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
+                    end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+                    print(end)
+                    
+                    self.timer = Double(CFAbsoluteTimeGetCurrent())
+                    self.myVolume.integrateDepthMap(image: self.myDepthImage, camera: self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
+                    end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+                    print(end)
                     DispatchQueue.main.async {
                         if i == self.sizeOfDataset - 1 {
                             self.displayAlertMessage(title: "Fin Acquisition", message: "", handler: {_ in })

@@ -75,7 +75,7 @@ class SceneViewController: UIViewController {
         let iso = Float(isolevel.text!)
         isoLabel.text = "Isolevel: \(String(describing: iso!))"
         DispatchQueue.global().async {
-            let points = extractMesh(volume: self.volume, isolevel: iso!)
+            let points = extractMesh(volume: &self.volume, isolevel: iso!)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
             let pointCloudNode = self.self.createSimpleNode(from: points)
             let scnView = self.view as! SCNView

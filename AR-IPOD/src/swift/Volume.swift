@@ -22,26 +22,31 @@ class Volume {
     // Since i now the hash function, is adictionary still necessary ?
     //lazy var voxels:     [Int: Voxel]   = self.allocate()
     //lazy var centroids:  [Int: Vector]  = self.allocate()
-    lazy var voxels:    [Voxel]     = self.allocate()
+    var voxels:    [Voxel]     //= self.allocate()
     //lazy var centroids: [Vector]    = self.allocate()
     //lazy var centroids: [Id3: Vector] = [Int: Vector]()
     
     private init() {
         numberOfVoxels      = 256
         resolutionInMeter   = 4.0
+        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(numberOfVoxels), 3.0)))
     }
     
+    /*
     func allocate<T>() -> [T] {
         var allocator = [T]()
         allocator.removeAll()
         allocator.reserveCapacity(totalOfVoxels())
         return allocator
     }
+    */
     
     func initialize() {
         /* Sequence - serial */
         let count = totalOfVoxels()
         //let square = size * size
+        voxels.removeAll()
+        voxels.reserveCapacity(totalOfVoxels())
         voxels = [Voxel](repeating: Voxel(), count: count)
         //centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
         
@@ -65,12 +70,22 @@ class Volume {
         return numberOfVoxels * numberOfVoxels * numberOfVoxels
     }
     
-    func integrateDepthMap(image: DepthImage, camera: inout Camera, parameters: [Float]) {
+    func integrateDepthMap(image: DepthImage, camera: Camera, parameters: [Float]) {
         let width = image.width
         let height = image.height
         var dethmap = image.data
+        var Rt = camera.extrinsics
+        var K = camera.intrinsics
         let resolve = [resolutionInMeter, resolutionInMeter, resolutionInMeter]
-        _ = bridge_integrateDepthMap(&dethmap, /*centroids,*/ &camera.extrinsics, &camera.intrinsics, &voxels, Int32(width), Int32(height), Int32(numberOfVoxels), resolve, parameters[0], parameters[1], parameters[2]);
+        _ = bridge_integrateDepthMap(&dethmap, /*centroids,*/
+            &Rt,
+            &K,
+            &voxels,
+            Int32(width),
+            Int32(height),
+            Int32(numberOfVoxels),
+            resolve,
+            parameters[0], parameters[1], parameters[2]);
         //let voxel2 = voxels[numberOfVoxels].sdf
     }
 }
