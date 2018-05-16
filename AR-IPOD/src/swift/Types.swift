@@ -20,5 +20,5 @@ struct Constant {
     static let KinectHeight = 480
     
     static let IphoneWidth = 360
-    static let IphoneHeight = 480
+    static let IphoneHeight = 640
 }

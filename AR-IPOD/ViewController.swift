@@ -69,7 +69,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         // Set the scene to the view
         sceneView.scene = scene
-
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -78,7 +78,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Create a session configuration
         //let configuration = ARWorldTrackingConfiguration()
         let configuration = ARFaceTrackingConfiguration()
-
+        
         // Run the view's session
         sceneView.session.run(configuration)
         sceneView.session.delegate = self
@@ -115,17 +115,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
-
+    
     // MARK: - ARSCNViewDelegate
     
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
-    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-        let node = SCNNode()
+    /*
+     // Override to create and configure nodes for anchors added to the view's session.
+     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
+     let node = SCNNode()
      
-        return node
-    }
-*/
+     return node
+     }
+     */
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         //guard let currentFrame = sceneView.session.currentFrame
@@ -146,6 +146,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
+        let epsilon = epsilonStepper.value * epsilonTick
+        let delta = deltaStepper.value * deltaTick
+        let lambda = lambdaStepper.value * lambdaTick
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
         if hasIntegratingStarted {
@@ -161,31 +164,31 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 //compCIImage(depthDataMap: depthDataMap!)
                 //myDepthImage = UIImage(ciImage: myCIImage!)
                 //depthView.image = myDepthImage
-                self.myDepthImage.update(_data: depthPointer)
+                //self.myDepthImage.update(_data: depthPointer)
+                self.myDepthImage.push(map: depthPointer)
                 self.myCamera.update(extrinsics: frame.camera.transform)
             }
-            let epsilon = epsilonStepper.value * epsilonTick
-            let delta = deltaStepper.value * deltaTick
-            let lambda = lambdaStepper.value * lambdaTick
-            DispatchQueue.global().async {
-                if self.numberOfIterations < 10  {
-                    self.myVolume.integrateDepthMap(image: self.myDepthImage, camera: self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
-                    self.numberOfIterations += 1
-                    DispatchQueue.main.async {
-                        self.integrationProgress.progress = Float(self.numberOfIterations) / 120.0
+            if self.myDepthImage.savedData.count == 6 {
+                DispatchQueue.global().asyncAfter(deadline: .now()+Double(3*self.numberOfIterations)) {
+                    if self.numberOfIterations < 10  {
+                        self.myDepthImage.updateDataWithSavedData()
+                        self.myDepthImage.savedData.removeAll()
+                        self.myVolume.integrateDepthMap(
+                            image: self.myDepthImage,
+                            camera: self.myCamera,
+                            parameters: [Float(delta), Float(epsilon), Float(lambda)])
+                        self.numberOfIterations += 1
                     }
-                }
-                else {
-                    self.displayAlertMessage(
-                        title: "Fin de l'acquisition",
-                        message: "Vous pouvez visualiser avec le bouton \"Show Vol.\"",
-                        handler: { _ in
-                        self.numberOfIterations = 0
-                        self.inRealTime = false
-                        self.hasIntegratingStarted = false
-                        self.integrationProgress.isHidden = true
-                        self.integrationProgress.progress = 0.0
-                    })
+                    else {
+                        self.displayAlertMessage(
+                            title: "Fin de l'acquisition",
+                            message: "Vous pouvez visualiser avec le bouton \"Show Vol.\"",
+                            handler: { _ in
+                                self.numberOfIterations = 0
+                                self.inRealTime = false
+                                self.hasIntegratingStarted = false
+                        })
+                    }
                 }
             }
         }
@@ -193,52 +196,47 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     
     @IBAction func startCompute(_ sender: Any) {
+        let group = DispatchGroup()
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
-        if !inRealTime {
-            let epsilon = epsilonStepper.value * epsilonTick
-            let delta = deltaStepper.value * deltaTick
-            let lambda = lambdaStepper.value * lambdaTick
-            for i in 0..<self.sizeOfDataset {
-                let d: Double = 1.0 + Double(i)
-                DispatchQueue.global().asyncAfter(deadline: .now()+d) {
-                    
-                    self.timer = Double(CFAbsoluteTimeGetCurrent())
-                    let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
-                    var end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
-                    print(end)
-                    
-                    self.timer = Double(CFAbsoluteTimeGetCurrent())
-                    let depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.nameOfDataset)
-                    end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
-                    print(end)
-                    
-                    self.timer = Double(CFAbsoluteTimeGetCurrent())
-                    self.myCamera.update(extrinsics: extrinsics)
-                    end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
-                    print(end)
-                    
-                    self.timer = Double(CFAbsoluteTimeGetCurrent())
-                    self.myDepthImage.update(_data: depthmap)
-                    end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
-                    print(end)
-                    
-                    self.timer = Double(CFAbsoluteTimeGetCurrent())
-                    self.myVolume.integrateDepthMap(image: self.myDepthImage, camera: self.myCamera, parameters: [Float(delta), Float(epsilon), Float(lambda)])
-                    end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
-                    print(end)
-                    DispatchQueue.main.async {
-                        if i == self.sizeOfDataset - 1 {
-                            self.displayAlertMessage(title: "Fin Acquisition", message: "", handler: {_ in })
-                            self.integrationProgress.isHidden = true
-                            self.integrationProgress.progress = 0.0
-                        }
-                        else {
-                            self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
-                        }
-                    }
+        let epsilon = epsilonStepper.value * epsilonTick
+        let delta = deltaStepper.value * deltaTick
+        let lambda = lambdaStepper.value * lambdaTick
+        var itDone = 0
+        var itRead = 0
+        let integrateItem = DispatchWorkItem {
+            // Compute TSDF
+            let extrinsics = importCameraPose(from: "frame-\(itRead).pose", at: self.nameOfDataset)
+            let depthmap = importDepthMapFromTXT(from: "frame-\(itRead).depth", at: self.nameOfDataset)
+            self.myCamera.update(extrinsics: extrinsics)
+            self.myDepthImage.update(_data: depthmap)
+            self.myVolume.integrateDepthMap(image: self.myDepthImage,
+                                            camera: self.myCamera,
+                                            parameters: [Float(delta), Float(epsilon), Float(lambda)])
+            itDone += 1
+            // Update UI
+            DispatchQueue.main.async {
+                self.integrationProgress.progress = Float(itDone) / Float(self.sizeOfDataset)
+                let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+                if itDone == self.sizeOfDataset {
+                    self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in
+                        self.integrationProgress.isHidden = true
+                        self.integrationProgress.progress = 0.0
+                    })
                 }
             }
+        }
+        if !inRealTime {
+            timer = Double(CFAbsoluteTimeGetCurrent())
+            for i in 0..<self.sizeOfDataset {
+                group.enter()
+                DispatchQueue.global().asyncAfter(deadline: .now()+0.1+Double(3*i)) {
+                    itRead = i
+                    integrateItem.perform()
+                    group.leave()
+                }
+            }
+            group.wait()
         }
         else {
             self.displayAlertMessage(
@@ -247,7 +245,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 handler: { _ in
                     self.hasIntegratingStarted = true
                     AudioServicesPlaySystemSound (self.systemSoundID)
-                })
+            })
         }
     }
     
@@ -255,7 +253,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         let quantity = epsilonStepper.value * epsilonTick
         epsilonLabel.text = "Epsilon: \(quantity)"
     }
-
+    
     @IBAction func updateDelta(_ sender: Any) {
         let quantity = deltaStepper.value * deltaTick
         deltaLabel.text = "Delta: \(quantity)"
@@ -294,26 +292,26 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBAction func exportVolume(_ sender: Any) {
         /*
-        guard let currentFrame = sceneView.session.currentFrame
-            else { return }
-        */
+         guard let currentFrame = sceneView.session.currentFrame
+         else { return }
+         */
         /*
-        var isolevel: Float
-        if isolevelStepper.value == 0 {
-            isolevel = 0
-        }
-        else {
-            isolevel = Float(pow(10.0, isolevelStepper.value - 6))
-        }
-        //let delta = deltaStepper.value * deltaTick
-        let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
-        //let points = extractMesh(volume: myVolume, isolevel: Float(delta))
-        //sceneView.scene.rootNode.addChildNode(pointNode)
-        exportToPLY(mesh: points, at: "mesh_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
-        //exportToPLY(volume: self.myVolume, at: "volume_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
+         var isolevel: Float
+         if isolevelStepper.value == 0 {
+         isolevel = 0
+         }
+         else {
+         isolevel = Float(pow(10.0, isolevelStepper.value - 6))
+         }
+         //let delta = deltaStepper.value * deltaTick
+         let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
+         //let points = extractMesh(volume: myVolume, isolevel: Float(delta))
+         //sceneView.scene.rootNode.addChildNode(pointNode)
+         exportToPLY(mesh: points, at: "mesh_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
+         //exportToPLY(volume: self.myVolume, at: "volume_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
          */
     }
-
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ScenePoints" {
             if let destination = segue.destination as? SceneViewController {

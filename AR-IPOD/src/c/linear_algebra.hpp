@@ -123,6 +123,7 @@ simd_float2x3 bounding_box_and_filter(float* depthmap,
                            const simd_float3x3 Kinv,
                            const int window_size) {
     simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
+    float* tmp_depth = (float*) malloc(sizeof(float) * width * height);
     for (int i=0; i<height; i++) {
         for (int j=0; j<width; j++) {
             float depth = depthmap[i*width+j];
@@ -134,9 +135,10 @@ simd_float2x3 bounding_box_and_filter(float* depthmap,
             box.columns[1].x = simd_max(box.columns[1].x, world_point.x);
             box.columns[1].y = simd_max(box.columns[1].y, world_point.y);
             box.columns[1].z = simd_max(box.columns[1].z, world_point.z);
-            local_median(depthmap, window_size, width, height, i, j);
+            local_median(tmp_depth, window_size, width, height, i, j);
         }
     }
+    depthmap = tmp_depth;
     return box;
 }
 #endif /* linear_algebra_hpp */

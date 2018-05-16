@@ -17,6 +17,7 @@ struct DepthImage {
     var width:  UInt16          // Image width  (IPhoneX : 360 pixel)
     var height: UInt16          // Image height (IPhoneX : 480 pixel)
     var data:   [Float]         // Stores all depths in an array
+    var savedData: [[Float]]    = [[Float]]()
     
     init(onRealTime: Bool) {
         if onRealTime {
@@ -58,6 +59,42 @@ struct DepthImage {
         }
     }
     
+    mutating func push(map: UnsafeMutablePointer<Float>) {
+        let countH = Int(height)
+        let countW = Int(width)
+        if savedData.count >= 6 {
+            savedData.remove(at: 0)
+        }
+        savedData.append([Float]())
+        for i in 0..<countH {
+            for j in 0..<countW {
+                savedData[savedData.count-1][i*countW+j] = map[i*countW+j]
+            }
+        }
+    }
+    
+    mutating func updateDataWithSavedData() {
+        let countH = Int(height)
+        let countW = Int(width)
+        for i in 0..<countH {
+            for j in 0..<countW {
+                let index = i*countW+j
+                let array  = [savedData[0][index],
+                               savedData[1][index],
+                               savedData[2][index],
+                               savedData[3][index],
+                               savedData[4][index],
+                               savedData[5][index]]
+                let sorted = array.sorted()
+                if sorted.count % 2 == 0 {
+                    data[index] = Float((sorted[(sorted.count / 2)] + sorted[(sorted.count / 2) - 1])) / 2
+                }
+                else {
+                    data[index] = Float(sorted[(sorted.count - 1) / 2])
+                }
+            }
+        }
+    }
     /**
      * Updates depths values stored in UInt8 Array.
      */
