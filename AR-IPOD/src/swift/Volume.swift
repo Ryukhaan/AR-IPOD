@@ -28,7 +28,7 @@ class Volume {
     
     private init() {
         numberOfVoxels      = 256
-        resolutionInMeter   = 4.0
+        resolutionInMeter   = 3.0
         voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(numberOfVoxels), 3.0)))
     }
     

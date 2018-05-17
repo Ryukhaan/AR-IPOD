@@ -26,3 +26,9 @@ struct Constant {
 enum Sounds {
     static let beep = Bundle.main.path(forResource: "beep", ofType: "wav")
 }
+
+enum DataAcquisition {
+    static let InRealTime = 2
+    static let Ikea = 1
+    static let Chair = 0
+}

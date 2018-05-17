@@ -65,7 +65,7 @@ struct DepthImage {
         if savedData.count >= 6 {
             savedData.remove(at: 0)
         }
-        savedData.append([Float]())
+        savedData.append([Float](repeating: 0.0, count: countH*countW))
         for i in 0..<countH {
             for j in 0..<countW {
                 savedData[savedData.count-1][i*countW+j] = map[i*countW+j]

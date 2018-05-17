@@ -24,7 +24,7 @@ struct Camera {
     var zNear:      Float   = 0.0   // Farther point ssen by camera
     
     var intrinsics: matrix_float3x3 // Matrix K (state-of-the-art). Converts 3D point to 2D
-    var extrinsics: matrix_float4x4 // Extrinsics camera : rotation and camera's position
+    var extrinsics: matrix_float4x3 // Extrinsics camera : rotation and camera's position
     
     init(onRealTime: Bool) {
         if onRealTime {
@@ -36,7 +36,7 @@ struct Camera {
             height = UInt16(Constant.KinectHeight)
         }
         intrinsics = matrix_float3x3()
-        extrinsics = matrix_float4x4()
+        extrinsics = matrix_float4x3()
     }
     
     /**
@@ -46,7 +46,7 @@ struct Camera {
         intrinsics  = _intrinsics
         width       = UInt16(dim.width)
         height      = UInt16(dim.height)
-        extrinsics  = matrix_float4x4()
+        extrinsics  = matrix_float4x3()
     }
     
     mutating func update(intrinsics: matrix_float3x3) {
@@ -55,7 +55,10 @@ struct Camera {
     /**
      * Updates extrinsics matrix (rotation and camera's position).
      */
-    mutating func update(extrinsics: matrix_float4x4) {
+    mutating func update(extrinsics: matrix_float4x3) {
+        //let Rtt = extrinsics.transpose
+        //let newRt = matrix_float4x4(rows: [Rtt.columns.0, Rtt.columns.1, Rtt.columns.2, float4(0,0,0,1)])
+        //self.extrinsics = newRt
         self.extrinsics = extrinsics
     }
     

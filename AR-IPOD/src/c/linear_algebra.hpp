@@ -41,7 +41,7 @@ inline simd_float3 create_centroid(const int i,
     int z = remainder % dimension;
     centroid.x = integer_to_global(x, dimension, resolution) - offset;
     centroid.y = integer_to_global(y, dimension, resolution) - offset;
-    centroid.z = integer_to_global(z, dimension, resolution);// - offset;
+    centroid.z = integer_to_global(z, dimension, resolution) - offset;
     return centroid;
 }
 /**
@@ -129,6 +129,7 @@ simd_float2x3 bounding_box_and_filter(float* depthmap,
             float depth = depthmap[i*width+j];
             simd::float3 uv = simd_make_float3(i, j, 1);
             simd::float3 world_point = simd_mul(simd_transpose(rot), simd_mul(Kinv, depth * uv) - t);
+            //simd::float3 world_point = simd_mul(rot, simd_mul(simd_inverse(Kinv), depth * uv) + t);
             box.columns[0].x = simd_min(box.columns[0].x, world_point.x);
             box.columns[0].y = simd_min(box.columns[0].y, world_point.y);
             box.columns[0].z = simd_min(box.columns[0].z, world_point.z);

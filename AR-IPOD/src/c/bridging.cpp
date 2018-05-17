@@ -45,7 +45,7 @@ void bridge_initializeCentroids(void* centroids, int size, float resolution) {
         int z = (float)(((int) remainder) % size);
         ((simd::float3*) centroids)[i][0] = integer_to_global(x, size, resolution) - offset;
         ((simd::float3*) centroids)[i][1] = integer_to_global(y, size, resolution) - offset;
-        ((simd::float3*) centroids)[i][2] = integer_to_global(z, size, resolution); //- offset;
+        ((simd::float3*) centroids)[i][2] = integer_to_global(z, size, resolution) - offset;
     }
 }
 
@@ -141,8 +141,8 @@ unsigned long bridge_extractMesh(void* triangles,
 
 int bridge_integrateDepthMap(float* depthmap,
                              //const void* centroids,
-                             const void* camera_pose,
-                             const void* intrisics,
+                             const void* extrinsics,
+                             const void* intrinsics,
                              void* voxels,
                              const int width,
                              const int height,
@@ -156,18 +156,16 @@ int bridge_integrateDepthMap(float* depthmap,
     int number_of_changes = 0;
     //float diag = 2.0 * sqrt(3.0f) * (resolution[0] / dimension);
     //int count = width * height;
-    //int size = pow(dimension, 3.0);
+    int size = pow(dimension, 3.0);
     int square = pow(dimension, 2.0);
     float offset = resolution[0] * 0.5;
     
     // Relative camera variables
-    simd_float3x3 K = ((simd_float3x3 *) intrisics)[0];
-    simd_float4x4 Rt = ((simd_float4x4 *) camera_pose)[0];
+    simd_float3x3 K = ((simd_float3x3 *) intrinsics)[0];
+    simd_float4x3 Rt = ((simd_float4x3 *) extrinsics)[0];
     simd_float3x3 Kinv = simd_inverse(K);
-    simd_float4x4 tRt = simd_transpose(Rt);
-    simd_float4x3 Rtc = simd_matrix_from_rows(tRt.columns[0], tRt.columns[1], tRt.columns[2]);
-    simd_float3x3 rotation = simd_matrix(Rtc.columns[0], Rtc.columns[1], Rtc.columns[2]);
-    simd_float3 translation = simd_make_float3(Rtc.columns[3][0],Rtc.columns[3][1],Rtc.columns[3][2]);
+    simd_float3x3 rotation = simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]);
+    simd_float3 translation = Rt.columns[3];
     //simd_float3 resolve = simd_make_float3(resolution[0], resolution[1], resolution[2]);
     
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
@@ -175,14 +173,16 @@ int bridge_integrateDepthMap(float* depthmap,
     simd_float2x3 box = bounding_box_and_filter(depthmap, width, height, rotation, translation, Kinv, 2);
     simd_int3 point_min = simd_make_int3(global_to_integer(box.columns[0].x + offset, dimension, resolution[0]),
                                          global_to_integer(box.columns[0].y + offset, dimension, resolution[1]),
-                                         global_to_integer(box.columns[0].z, dimension, resolution[2]));
+                                         global_to_integer(box.columns[0].z + offset, dimension, resolution[2]));
     simd_int3 point_max = simd_make_int3(global_to_integer(box.columns[1].x + offset, dimension, resolution[0]),
                                          global_to_integer(box.columns[1].y + offset, dimension, resolution[1]),
-                                         global_to_integer(box.columns[1].z, dimension, resolution[2]));
+                                         global_to_integer(box.columns[1].z + offset, dimension, resolution[2]));
     int mini = hash_function(point_min, dimension);
     int maxi = hash_function(point_max, dimension);
 
-    for( int i = mini; i<maxi; i++) {
+    //for( int i = mini; i<maxi; i++) {
+    //    if (i >= size) continue;
+    for (int i = 0; i<size; i++) {
         //simd::float3 centroid = ((simd::float3 *) centroids)[i];
         simd::float3 centroid = create_centroid(i,
                                                 dimension,
@@ -190,20 +190,22 @@ int bridge_integrateDepthMap(float* depthmap,
                                                 square,
                                                 offset);
         simd::float3 local = simd_mul(rotation, centroid + translation);
+        //simd::float3 local = simd_mul(simd_transpose(rotation), centroid-translation);
         
         simd::float3 temp = simd_mul(K, local / local.z);
         simd::float3 project = simd_make_float3(temp.x, temp.y, local.z);
         int u = (int) project.x;
         int v = (int) project.y;
-        if (local.z < 0)            continue;
+        //if (local.z < 0)            continue;
         if (u < 0 || u >= height)   continue;
         if (v < 0 || v >= width)    continue;
         
         float z = local.z; //simd_length(local) ou local.z
         float zp = depthmap[u * width + v];
         // Depth invalid
-        if (zp < 0.000001) continue;
-
+        if (std::isnan(zp)) continue;
+        //if (zp > 1.0) continue;
+        
         float distance = zp - z;
         // Calculate weight
         float w = constant_weighting(distance, delta, lambda);

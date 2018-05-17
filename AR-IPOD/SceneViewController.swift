@@ -88,6 +88,19 @@ class SceneViewController: UIViewController {
         //scnView.backgroundColor = UIColor.black
     }
     
+    @IBAction func display(_ sender: Any) {
+        DispatchQueue.global().async {
+            let points = extractMesh(volume: &self.volume, isolevel: 0.05)
+            //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
+            let pointCloudNode = self.self.createSimpleNode(from: points)
+            let scnView = self.view as! SCNView
+            if self.self.indexOfPointCloud > 0 {
+                scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
+            }
+            scnView.scene?.rootNode.addChildNode(pointCloudNode)
+            self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
+        }
+    }
     func createSimpleNode(from: Volume, with: Float) -> SCNNode{
         let points = [Vector]()
         let size = from.totalOfVoxels()

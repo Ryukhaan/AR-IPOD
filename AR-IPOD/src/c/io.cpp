@@ -16,6 +16,26 @@
 
 using namespace std;
 
+inline float integer_to_global(float point, int dim, float resolution) {
+    return (resolution / dim) * (point + 0.5);
+}
+
+inline simd_float3 centroid_at(const int i,
+                               const int dimension,
+                               const float resolution,
+                               const int square,
+                               const float offset) {
+    simd::float3 centroid;
+    int x = i / square;
+    int remainder = i % square;
+    int y = remainder / dimension;
+    int z = remainder % dimension;
+    centroid.x = integer_to_global(x, dimension, resolution) - offset;
+    centroid.y = integer_to_global(y, dimension, resolution) - offset;
+    centroid.z = integer_to_global(z, dimension, resolution);// - offset;
+    return centroid;
+}
+
 void save_meshing_ply_format(const simd::float3* points, const char* file_name, int number_of_triangles) {
     std::ofstream file;
     /* file_name + 7 because file_name is like file:// then /var/... ] */
@@ -67,7 +87,8 @@ void save_volume_ply_format(const simd::float3* centroids, const float* sdfs, co
     
     // Write Vertex
     for(int i = 0; i<size; i++) {
-        simd::float3 centroid = centroids[i];
+        //simd::float3 centroid = centroids[i];
+        simd::float3 centroid = centroid_at(i, 256, 3.0, 65536, 1.5);
         float sdf = sdfs[i];
         file << centroid.x << " " << centroid.y << " " << centroid.z << " ";
         file << sdf << " 54 14" << endl;
