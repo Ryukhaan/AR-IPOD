@@ -18,7 +18,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     
-    let myARSession: ARSession = ARSession()
     let systemSoundID: SystemSoundID = 1016
     var myVolume: Volume            = Volume.sharedInstance
     var myDepthImage: DepthImage    = DepthImage(onRealTime: false)
@@ -71,7 +70,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         // Create a new scene
         let scene = SCNScene()
-        
         // Set the scene to the view
         sceneView.scene = scene
         
@@ -81,15 +79,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         super.viewWillAppear(animated)
         
         // Create a session configuration
-        let tracking = AROrientationTrackingConfiguration()
-        let configuration = ARFaceTrackingConfiguration()
+        let configuration = ARWorldTrackingConfiguration()
+        //let configuration = ARFaceTrackingConfiguration()
         
         // Run the view's session
-        sceneView.session.run(configuration)
+        sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
         sceneView.session.delegate = self
+        sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
         
-        myARSession.run(tracking)
-        myARSession.delegate = self
+        sceneView.session.setWorldOrigin(relativeTransform: matrix_float4x4(diagonal: [1,1,1,1]))
         
         // Version with dataset
         let starter = Double(CFAbsoluteTimeGetCurrent())
@@ -161,9 +159,18 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         integrationProgress.isHidden = false
         if hasIntegratingStarted
         {
-            tx.text = "\(myARSession.currentFrame?.camera.transform.columns.3.x)"//"\(self.myCamera.extrinsics.columns.3.x)"
-            ty.text = "\(myARSession.currentFrame?.camera.transform.columns.3.y)"//"\(self.myCamera.extrinsics.columns.3.y)"
-            tz.text = "\(myARSession.currentFrame?.camera.transform.columns.3.z)"//"\(self.myCamera.extrinsics.columns.3.z)"
+            //tx.text = "\(frame.camera.intrinsics.columns.2.x)"//"\(self.myCamera.extrinsics.columns.3.x)"
+            //ty.text = "\(frame.camera.intrinsics.columns.2.y)"//"\(self.myCamera.extrinsics.columns.3.y)"
+            //tz.text = "\(frame.camera.intrinsics.columns.2.z)"//"\(self.myCamera.extrinsics.columns.3.z)"
+            //let camera = frame.camera.trackingState
+            self.myCamera.update(extrinsics: frame.camera.transform)
+            self.myCamera.intrinsics = frame.camera.intrinsics
+            self.numberOfIterations += 1
+            /*
+            if let points = frame.rawFeaturePoints {
+                    self.myVolume.integrate(points: points, camera: self.myCamera)
+            }
+            */
             if frame.capturedDepthData != nil
             {
                 self.myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
@@ -189,21 +196,25 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 //ty.text = "\(self.myDepthData?.cameraCalibrationData?.extrinsicMatrix.columns.3.x)"
                 //tz.text = "\(self.myDepthData?.cameraCalibrationData?.extrinsicMatrix.columns.3.x)"
                 
-                //self.myDepthImage.push(map: depthPointer)
-                self.myCamera.update(extrinsics: (myDepthData?.cameraCalibrationData?.extrinsicMatrix)!)
-                self.myCamera.intrinsics = (myDepthData?.cameraCalibrationData?.intrinsicMatrix)!
+                self.myDepthImage.push(map: depthPointer)
+                //self.myCamera.update(extrinsics: frame.camera.transform)
+                //self.myCamera.intrinsics = frame.camera.intrinsics
                 self.numberOfIterations += 1
             }
             if self.numberOfIterations >= 6
             {
-                //self.myDepthImage.updateDataWithSavedData()
+                let last_points = self.myDepthImage.data
+                self.myDepthImage.updateDataWithSavedData()
+                let current_points = self.myDepthImage.data
+                var K = self.myCamera.intrinsics
+                var Rt = self.myCamera.extrinsics
+                bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
+                self.myCamera.extrinsics = Rt
                 //DispatchQueue.global().async {
-                /*
                 self.myVolume.integrateDepthMap(
                     image: self.myDepthImage,
                     camera: self.myCamera,
                     parameters: [Float(delta), Float(epsilon), Float(lambda)])
-                 */
                 //}
                 self.numberOfIterations = 0
             }
@@ -248,15 +259,30 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         var itRead = 0
         let integrateItem = DispatchWorkItem {
             // Compute TSDF
-            //let extrinsics = importCameraPose(from: "frame-\(itRead).pose", at: self.nameOfDataset)
+            let extrinsics = importCameraPose(from: "frame-\(itRead).pose", at: self.nameOfDataset)
             let depthmap = importDepthMapFromTXT(from: "frame-\(itRead).depth", at: self.nameOfDataset)
-            //self.myCamera.update(extrinsics: extrinsics)
+            self.myCamera.update(extrinsics: extrinsics)
+
+            let last_points = self.myDepthImage.data
             self.myDepthImage.update(_data: depthmap)
+            let current_points = self.myDepthImage.data
+            var K = self.myCamera.intrinsics
+            var Rt = self.myCamera.extrinsics
+            // Before
+            bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
+            // After
+            DispatchQueue.main.async {
+                self.tx.text = "\(Rt.columns.3.x) vs \(extrinsics.columns.3.x)"
+                self.ty.text = "\(Rt.columns.3.y) vs \(extrinsics.columns.3.y)"
+                self.tz.text = "\(Rt.columns.3.z) vs \(extrinsics.columns.3.z)"
+            }
+            self.myCamera.extrinsics = Rt
             self.myVolume.integrateDepthMap(image: self.myDepthImage,
                                             camera: self.myCamera,
                                             parameters: [Float(delta), Float(epsilon), Float(lambda)])
             itDone += 1
             // Update UI
+            /*
             DispatchQueue.main.async {
                 self.integrationProgress.progress = Float(itDone) / Float(self.sizeOfDataset)
                 let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
@@ -267,17 +293,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                     })
                 }
             }
+            */
         }
         
         if datasetChoice.selectedSegmentIndex != DataAcquisition.InRealTime {
             timer = Double(CFAbsoluteTimeGetCurrent())
             for i in 0..<self.sizeOfDataset {
-                group.enter()
+                //group.enter()
                 DispatchQueue.global().asyncAfter(deadline: .now()+0.1+Double(3*i)) {
                     itRead = i
                     integrateItem.perform()
-                    group.leave()
+                //    group.leave()
                 }
+                //itRead = i
+                //integrateItem.perform()
+                //sleep(1)
             }
             group.wait()
         }
@@ -358,7 +388,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ScenePoints" {
             if let destination = segue.destination as? SceneViewController {
-                //destination.volume = self.myVolume
+                destination.volume = self.myVolume
                 destination.savedDatasetIndex       = datasetChoice.selectedSegmentIndex
                 destination.savedFramesIndex        = datasetSize.selectedSegmentIndex
                 destination.savedDeltaIndex         = deltaStepper.value

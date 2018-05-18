@@ -90,7 +90,7 @@ class SceneViewController: UIViewController {
     
     @IBAction func display(_ sender: Any) {
         DispatchQueue.global().async {
-            let points = extractMesh(volume: &self.volume, isolevel: 0.05)
+            let points = extractMesh(volume: &self.volume, isolevel: 0.01)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
             let pointCloudNode = self.self.createSimpleNode(from: points)
             let scnView = self.view as! SCNView

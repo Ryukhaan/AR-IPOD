@@ -94,6 +94,7 @@ struct DepthImage {
                 }
             }
         }
+        savedData.removeAll()
     }
     /**
      * Updates depths values stored in UInt8 Array.

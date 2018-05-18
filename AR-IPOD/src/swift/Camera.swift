@@ -55,11 +55,11 @@ struct Camera {
     /**
      * Updates extrinsics matrix (rotation and camera's position).
      */
-    mutating func update(extrinsics: matrix_float4x3) {
-        //let Rtt = extrinsics.transpose
-        //let newRt = matrix_float4x4(rows: [Rtt.columns.0, Rtt.columns.1, Rtt.columns.2, float4(0,0,0,1)])
+    mutating func update(extrinsics: matrix_float4x4) {
+        let Rt = extrinsics.transpose
+        let newRt = matrix_float4x3(rows: [Rt.columns.0, Rt.columns.1, Rt.columns.2])
         //self.extrinsics = newRt
-        self.extrinsics = extrinsics
+        self.extrinsics = newRt
     }
     
     mutating func changeTo(realTime: Bool) {

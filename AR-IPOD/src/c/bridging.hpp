@@ -45,4 +45,12 @@ void bridge_exportVolumeToPLY(const void* centroids,
                               const float* sdfs,
                               const char* file_name,
                               int size);
+
+void bridge_fast_icp(const float* last_points,
+                     const float* current_points,
+                     const void* intrinsics,
+                     void* extrinsics,
+                     const int width,
+                     const int height);
+
 #endif /* volumeInit_hpp */

@@ -180,9 +180,9 @@ int bridge_integrateDepthMap(float* depthmap,
     int mini = hash_function(point_min, dimension);
     int maxi = hash_function(point_max, dimension);
 
-    //for( int i = mini; i<maxi; i++) {
-    //    if (i >= size) continue;
-    for (int i = 0; i<size; i++) {
+    for( int i = mini; i<maxi; i++) {
+        if (i >= size) continue;
+    //for (int i = 0; i<size; i++) {
         //simd::float3 centroid = ((simd::float3 *) centroids)[i];
         simd::float3 centroid = create_centroid(i,
                                                 dimension,
@@ -229,4 +229,46 @@ void bridge_exportVolumeToPLY(const void* centroids,
                         const char* file_name,
                         int size) {
     save_volume_ply_format((simd::float3 *) centroids, sdfs, file_name, size);
+}
+
+void bridge_fast_icp(const float* last_points,
+                     const float* current_points,
+                     const void* intrinsics,
+                     void* extrinsics,
+                     const int width,
+                     const int height) {
+    simd_float3x3 K = ((simd_float3x3 *) intrinsics)[0];
+    simd_float4x3 Rt = ((simd_float4x3 *) extrinsics)[0];
+    simd_float3x3 Kinv = simd_inverse(K);
+    simd_float3x3 rotation = simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]);
+    simd_float3 translation = Rt.columns[3];
+    
+    int count_last = 0;
+    int count_current = 0;
+    simd::float3 centre_last = simd_make_float3(0, 0, 0);
+    simd::float3 centre_current = simd_make_float3(0, 0, 0);
+    for (int i=0; i<height; i++) {
+        for (int j = 0; j<width; j++) {
+            if ( ! std::isnan(last_points[ i*width + j]) && last_points[ i*width + j] > 1e-6) {
+                // Unproject point
+                float depth = last_points[ i*width + j];
+                simd::float3 uv = simd_make_float3(i, j, 1);
+                simd::float3 local_point = simd_mul(Kinv, depth * uv);
+                count_last ++;
+                centre_last = centre_last + local_point;
+            }
+            if ( ! std::isnan(current_points[ i*width + j]) && current_points[ i*width + j] > 1e-6) {
+                float depth = current_points[ i*width + j];
+                simd::float3 uv = simd_make_float3(i, j, 1);
+                simd::float3 local_point = simd_mul(Kinv, depth * uv);
+                count_current ++;
+                centre_current = centre_current + local_point;
+            }
+        }
+    }
+    centre_current = centre_current / (float) count_current;
+    centre_last = centre_last / (float) count_last;
+    //simd::float3 tmp = translation;
+    translation = simd_mul(rotation, -centre_last) + centre_current;
+    ((simd_float4x3 *) extrinsics)[0].columns[3] = translation;
 }

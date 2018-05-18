@@ -18,4 +18,17 @@ struct Voxel {
         sdf     = 9999.0
         weight  = 0
     }
+    
+    mutating func update(sdf: Float, weight: Float) {
+        let old_sdf      = self.sdf;
+        let old_weight   = self.weight;
+        
+        let new_weight   = old_weight + weight;
+        let old_product  = old_weight * old_sdf;
+        let new_product  = sdf * weight;
+        
+        let new_sdf      = (new_product + old_product ) / new_weight;
+        self.sdf = new_sdf;
+        self.weight = new_weight;
+    }
 }
