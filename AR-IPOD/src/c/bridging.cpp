@@ -242,25 +242,27 @@ void bridge_fast_icp(const float* last_points,
     simd_float3x3 Kinv = simd_inverse(K);
     simd_float3x3 rotation = simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]);
     simd_float3 translation = Rt.columns[3];
+    //simd_float3 translation = simd_make_float3(0, 0, 0);
     
+    //for (int k=0; k<4; k++) {
     int count_last = 0;
     int count_current = 0;
     simd::float3 centre_last = simd_make_float3(0, 0, 0);
     simd::float3 centre_current = simd_make_float3(0, 0, 0);
     for (int i=0; i<height; i++) {
         for (int j = 0; j<width; j++) {
+            // Unproject point
             if ( ! std::isnan(last_points[ i*width + j]) && last_points[ i*width + j] > 1e-6) {
-                // Unproject point
                 float depth = last_points[ i*width + j];
                 simd::float3 uv = simd_make_float3(i, j, 1);
-                simd::float3 local_point = simd_mul(Kinv, depth * uv);
+                simd::float3 local_point = simd_mul(rotation, simd_mul(Kinv, depth * uv) + translation);
                 count_last ++;
                 centre_last = centre_last + local_point;
             }
             if ( ! std::isnan(current_points[ i*width + j]) && current_points[ i*width + j] > 1e-6) {
                 float depth = current_points[ i*width + j];
                 simd::float3 uv = simd_make_float3(i, j, 1);
-                simd::float3 local_point = simd_mul(Kinv, depth * uv);
+                simd::float3 local_point = simd_mul(rotation, simd_mul(Kinv, depth * uv) + translation);
                 count_current ++;
                 centre_current = centre_current + local_point;
             }
@@ -269,6 +271,8 @@ void bridge_fast_icp(const float* last_points,
     centre_current = centre_current / (float) count_current;
     centre_last = centre_last / (float) count_last;
     //simd::float3 tmp = translation;
-    translation = simd_mul(rotation, -centre_last) + centre_current;
+    translation = simd_mul(rotation, -centre_current) + centre_last;
+    //translation = simd_mul(rotation, -centre_last) + centre_current;
+    //}
     ((simd_float4x3 *) extrinsics)[0].columns[3] = translation;
 }

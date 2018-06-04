@@ -79,15 +79,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         super.viewWillAppear(animated)
         
         // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
-        //let configuration = ARFaceTrackingConfiguration()
+        //let configuration = ARWorldTrackingConfiguration()
+        let configuration = ARFaceTrackingConfiguration()
         
         // Run the view's session
-        sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        sceneView.session.run(configuration)
         sceneView.session.delegate = self
-        sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
-        
-        sceneView.session.setWorldOrigin(relativeTransform: matrix_float4x4(diagonal: [1,1,1,1]))
+        //sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
+        //sceneView.session.setWorldOrigin(relativeTransform: matrix_float4x4(diagonal: [1,1,1,1]))
         
         // Version with dataset
         let starter = Double(CFAbsoluteTimeGetCurrent())
@@ -165,7 +164,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             //let camera = frame.camera.trackingState
             self.myCamera.update(extrinsics: frame.camera.transform)
             self.myCamera.intrinsics = frame.camera.intrinsics
-            self.numberOfIterations += 1
             /*
             if let points = frame.rawFeaturePoints {
                     self.myVolume.integrate(points: points, camera: self.myCamera)
@@ -200,24 +198,37 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 //self.myCamera.update(extrinsics: frame.camera.transform)
                 //self.myCamera.intrinsics = frame.camera.intrinsics
                 self.numberOfIterations += 1
-            }
-            if self.numberOfIterations >= 6
-            {
+                /*
+                 tx.text = "\(Rt.columns.3.x)"
+                 ty.text = "\(Rt.columns.3.y)"
+                 tz.text = "\(Rt.columns.3.z)"
+                 */
                 let last_points = self.myDepthImage.data
-                self.myDepthImage.updateDataWithSavedData()
+                //self.myDepthImage.updateDataWithSavedData()
+                self.myDepthImage.update(_data: depthPointer)
                 let current_points = self.myDepthImage.data
                 var K = self.myCamera.intrinsics
                 var Rt = self.myCamera.extrinsics
                 bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
                 self.myCamera.extrinsics = Rt
-                //DispatchQueue.global().async {
-                self.myVolume.integrateDepthMap(
-                    image: self.myDepthImage,
-                    camera: self.myCamera,
-                    parameters: [Float(delta), Float(epsilon), Float(lambda)])
-                //}
-                self.numberOfIterations = 0
-            }
+                }
+            if self.numberOfIterations >= 6
+                {
+                    //let last_points = self.myDepthImage.data
+                    self.myDepthImage.updateDataWithSavedData()
+                    //let current_points = self.myDepthImage.data
+                    //var K = self.myCamera.intrinsics
+                    //var Rt = self.myCamera.extrinsics
+                    //bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
+                    //self.myCamera.extrinsics = Rt
+                    //DispatchQueue.global().async {
+                    self.myVolume.integrateDepthMap(
+                        image: self.myDepthImage,
+                        camera: self.myCamera,
+                        parameters: [Float(delta), Float(epsilon), Float(lambda)])
+                    //}
+                    self.numberOfIterations = 0
+                }
         }
     }
             /*
