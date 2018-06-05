@@ -15,7 +15,7 @@ typealias Line      = int2
 typealias Id3       = int3
 typealias Pixel     = float2
 
-struct Constant {
+enum Constant {
     static let KinectWidth = 640
     static let KinectHeight = 480
     
@@ -27,8 +27,8 @@ enum Sounds {
     static let beep = Bundle.main.path(forResource: "beep", ofType: "wav")
 }
 
-enum DataAcquisition {
-    static let InRealTime = 2
+enum AcquisitionType {
+    static let RealTime = 2
     static let Ikea = 1
     static let Chair = 0
 }

@@ -21,12 +21,12 @@ struct DepthImage {
     
     init(onRealTime: Bool) {
         if onRealTime {
-            width = UInt16(Constant.IphoneWidth)
-            height = UInt16(Constant.IphoneHeight)
+            width = UInt16(Constant.Iphone.Width)
+            height = UInt16(Constant.Iphone.Height)
         }
         else {
-            width = UInt16(Constant.KinectWidth)
-            height = UInt16(Constant.KinectHeight)
+            width = UInt16(Constant.Kinect.Width)
+            height = UInt16(Constant.Kinect.Height)
         }
         data = Array<Float>(repeating: 0, count: Int(width)*Int(height))
     }
@@ -120,12 +120,12 @@ struct DepthImage {
  
     mutating func changeTo(realTime: Bool) {
         if realTime {
-            width = UInt16(Constant.IphoneWidth)
-            height = UInt16(Constant.IphoneHeight)
+            width = UInt16(Constant.Iphone.Width)
+            height = UInt16(Constant.Iphone.Height)
         }
         else {
-            width = UInt16(Constant.KinectWidth)
-            height = UInt16(Constant.KinectHeight)
+            width = UInt16(Constant.Kinect.Width)
+            height = UInt16(Constant.Kinect.Height)
         }
         data = Array<Float>(repeating: 0, count: Int(width)*Int(height))
     }

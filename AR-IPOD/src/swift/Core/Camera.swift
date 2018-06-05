@@ -28,12 +28,12 @@ struct Camera {
     
     init(onRealTime: Bool) {
         if onRealTime {
-            width = UInt16(Constant.IphoneWidth)
-            height = UInt16(Constant.IphoneHeight)
+            width = UInt16(Constant.Iphone.Width)
+            height = UInt16(Constant.Iphone.Height)
         }
         else {
-            width = UInt16(Constant.KinectWidth)
-            height = UInt16(Constant.KinectHeight)
+            width = UInt16(Constant.Kinect.Width)
+            height = UInt16(Constant.Kinect.Height)
         }
         intrinsics = matrix_float3x3()
         extrinsics = matrix_float4x3(diagonal: float3(1,1,1))
@@ -62,15 +62,21 @@ struct Camera {
         //self.extrinsics = newRt
         self.extrinsics = newRt
     }
+    /**
+     * Updates extrinsics matrix (rotation and camera's position).
+     */
+    mutating func update(_extrinsics: matrix_float4x3) {
+        extrinsics = _extrinsics
+    }
     
     mutating func changeTo(realTime: Bool) {
         if realTime {
-            width = UInt16(Constant.IphoneWidth)
-            height = UInt16(Constant.IphoneHeight)
+            width = UInt16(Constant.Iphone.Width)
+            height = UInt16(Constant.Iphone.Height)
         }
         else {
-            width = UInt16(Constant.KinectWidth)
-            height = UInt16(Constant.KinectHeight)
+            width = UInt16(Constant.Kinect.Width)
+            height = UInt16(Constant.Kinect.Height)
         }
     }
 }

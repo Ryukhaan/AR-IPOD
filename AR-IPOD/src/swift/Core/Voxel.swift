@@ -19,6 +19,7 @@ struct Voxel {
         weight  = 0
     }
     
+    /*
     mutating func update(sdf: Float, weight: Float) {
         let old_sdf      = self.sdf;
         let old_weight   = self.weight;
@@ -31,4 +32,5 @@ struct Voxel {
         self.sdf = new_sdf;
         self.weight = new_weight;
     }
+    */
 }

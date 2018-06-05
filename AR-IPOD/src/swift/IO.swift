@@ -72,7 +72,7 @@ func importCameraIntrinsics(from: String, at: String) -> matrix_float3x3 {
     return matrix_float3x3()
 }
 
-func exportToPLY(volume: Volume, at: String) {
+func exportToPLY(volume: Model, at: String) {
     let size = volume.numberOfVoxels * volume.numberOfVoxels * volume.numberOfVoxels
     let sdfs = volume.voxels.map { $0.sdf }
     var v = [Vector(0,0,0)]

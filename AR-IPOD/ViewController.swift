@@ -19,9 +19,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet var sceneView: ARSCNView!
     
     let systemSoundID: SystemSoundID = 1016
-    var myVolume: Volume            = Volume.sharedInstance
-    var myDepthImage: DepthImage    = DepthImage(onRealTime: false)
-    var myCamera: Camera            = Camera(onRealTime: false)
+    var myModel: Model              = Model.sharedInstance
+    //var myDepthImage: DepthImage    = DepthImage(onRealTime: false)
+    //var myCamera: Camera            = Camera(onRealTime: false)
     
     let batchSize:  Int             = 3
     var sizeOfDataset: Int          = 1
@@ -29,7 +29,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var numberOfIterations: Int     = 0
     var timer                       = Double(CFAbsoluteTimeGetCurrent())
     var inRealTime: Bool            = false
-    var hasIntegratingStarted: Bool = false
     
     @IBOutlet var volumeSize: UILabel!
     @IBOutlet var stepperSize: UIStepper!
@@ -98,12 +97,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         group.enter()
         threads[0].async {
             let intrinsics = importCameraIntrinsics(from: "depthIntrinsics", at: self.nameOfDataset)
-            self.myCamera.update(intrinsics: intrinsics)
+            self.myModel.update(intrinsics: intrinsics)
             group.leave()
         }
         group.enter()
         threads[1].async {
-            self.myVolume.initialize()
+            self.myModel.reallocateVoxels()
             group.leave()
         }
         _ = Double(CFAbsoluteTimeGetCurrent()) - starter
@@ -157,7 +156,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         let lambda = lambdaStepper.value * lambdaTick
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
-        if hasIntegratingStarted
+        /*
+        if inRealTime
         {
             //tx.text = "\(frame.camera.intrinsics.columns.2.x)"//"\(self.myCamera.extrinsics.columns.3.x)"
             //ty.text = "\(frame.camera.intrinsics.columns.2.y)"//"\(self.myCamera.extrinsics.columns.3.y)"
@@ -231,6 +231,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                     self.numberOfIterations = 0
                 }
         }
+        */
     }
             /*
             if self.myDepthImage.savedData.count == 6 {
@@ -264,6 +265,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         let group = DispatchGroup()
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
+        inRealTime = false
+        self.myModel.switchTo(realTime: inRealTime)
         let epsilon = epsilonStepper.value * epsilonTick
         let delta = deltaStepper.value * deltaTick
         let lambda = lambdaStepper.value * lambdaTick
@@ -329,32 +332,32 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         }
         */
         
-        if datasetChoice.selectedSegmentIndex != DataAcquisition.InRealTime {
-            self.integrationProgress.isHidden = false
-            timer = Double(CFAbsoluteTimeGetCurrent())
-            for i in 0..<self.sizeOfDataset {
-                let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
-                var depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.nameOfDataset)
-                bridge_median_filter(&depthmap, 2, Int32(self.myCamera.width), Int32(self.myCamera.height))
-                self.myCamera.update(extrinsics: extrinsics)
-                let last_points = self.myDepthImage.data
-                self.myDepthImage.update(_data: depthmap)
-                let current_points = self.myDepthImage.data
-                var K = self.myCamera.intrinsics
-                var Rt = self.myCamera.extrinsics
-                bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
-                self.myCamera.extrinsics = Rt
-                self.myVolume.integrateDepthMap(image: self.myDepthImage,
-                                                camera: self.myCamera,
-                                                parameters: [Float(delta), Float(epsilon), Float(lambda)])
-                self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
+        self.integrationProgress.isHidden = false
+        timer = Double(CFAbsoluteTimeGetCurrent())
+        for i in 0..<self.sizeOfDataset {
+            let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
+            var depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.nameOfDataset)
+            bridge_median_filter(&depthmap, 2, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
+            
+            self.myModel.update(extrinsics: extrinsics)
+            let last_points = self.myModel.image.data
+            self.myModel.update(data: depthmap)
+            if i != 0 {
+                let current_points = self.myModel.image.data
+                var K = self.myModel.camera.intrinsics
+                var Rt = self.myModel.camera.extrinsics
+                bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
+                self.myModel.update(extrinsics: Rt)
             }
-            let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
-            self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in
-                self.integrationProgress.isHidden = true
-                self.integrationProgress.progress = 0.0
-            })
+            self.myModel.integrate()
+            self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
         }
+        let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+        self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in
+            self.integrationProgress.isHidden = true
+            self.integrationProgress.progress = 0.0
+        })
+        /*
         else {
             self.numberOfIterations = 0
             self.displayAlertMessage(
@@ -365,32 +368,34 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                     AudioServicesPlaySystemSound (self.systemSoundID)
             })
         }
+         */
     }
     
     @IBAction func updateEpsilon(_ sender: Any) {
         let quantity = epsilonStepper.value * epsilonTick
         epsilonLabel.text = "Epsilon: \(quantity)"
+        myModel.parameters["Epsilon"] = Float(quantity)
     }
     
     @IBAction func updateDelta(_ sender: Any) {
         let quantity = deltaStepper.value * deltaTick
         deltaLabel.text = "Delta: \(quantity)"
+        myModel.parameters["Delta"] = Float(quantity)
     }
     
     @IBAction func increaseVolume(_ sender: Any) {
         let quantity = pow(2.0, stepperSize.value)
-        self.myVolume.initialize(with: Int(quantity))
         volumeSize.text = "Volume Size : \(quantity)"
+        myModel.reallocateVoxels(with: Int(quantity))
     }
     
     @IBAction func updateLambda(_ sender: Any) {
         let quantity = lambdaStepper.value * lambdaTick
         lambdaLabel.text = "Lambda: \(quantity)"
+        myModel.parameters["Lambda"] = Float(quantity)
     }
     
     @IBAction func changeDataset(_ sender: Any) {
-        hasIntegratingStarted = false
-        inRealTime = false
         switch datasetChoice.selectedSegmentIndex {
         case 0:
             nameOfDataset = "chair"
@@ -398,16 +403,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             nameOfDataset = "ikea-table"
         default: break
         }
-        myDepthImage.changeTo(realTime: inRealTime)
-        myCamera.changeTo(realTime: inRealTime)
     }
     
     @IBAction func changeDatasetSize(_ sender: Any) {
         switch datasetSize.selectedSegmentIndex {
         case 0:
-            sizeOfDataset = 1
-        case 1:
             sizeOfDataset = 10
+        case 1:
+            sizeOfDataset = 100
         case 2:
             sizeOfDataset = 200
         default:
@@ -416,34 +419,20 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     @IBAction func exportVolume(_ sender: Any) {
-        /*
-         guard let currentFrame = sceneView.session.currentFrame
-         else { return }
-         */
-        /*
-         var isolevel: Float
-         if isolevelStepper.value == 0 {
-         isolevel = 0
-         }
-         else {
-         isolevel = Float(pow(10.0, isolevelStepper.value - 6))
-         }
-         //let delta = deltaStepper.value * deltaTick
-         let points = extractMesh(volume: myVolume, isolevel: Float(isolevel))
-         //let points = extractMesh(volume: myVolume, isolevel: Float(delta))
-         //sceneView.scene.rootNode.addChildNode(pointNode)
-         exportToPLY(mesh: points, at: "mesh_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
-         */
-        let points = extractMesh(volume: &self.myVolume, isolevel: 0.04)
-        //exportToPLY(volume: self.myVolume, at: "volume_\(self.sizeOfDataset)_\(self.myVolume.numberOfVoxels).ply")
-        exportToPLY(mesh: points, at: "mesh_\(self.sizeOfDataset).ply")
- 
+        self.myModel.switchTo(realTime: true)
+        self.displayAlertMessage(
+            title: "Acquisition en temps réel",
+            message: "Veuillez mettre la caméra en face de l'objet",
+            handler: { _ in
+                AudioServicesPlaySystemSound (self.systemSoundID)
+                self.inRealTime = true
+        })
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ScenePoints" {
             if let destination = segue.destination as? SceneViewController {
-                destination.volume = self.myVolume
+                destination.volume = self.myModel
                 destination.savedDatasetIndex       = datasetChoice.selectedSegmentIndex
                 destination.savedFramesIndex        = datasetSize.selectedSegmentIndex
                 destination.savedDeltaIndex         = deltaStepper.value

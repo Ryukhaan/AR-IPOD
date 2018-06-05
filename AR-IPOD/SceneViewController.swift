@@ -16,7 +16,7 @@ class SceneViewController: UIViewController {
     @IBOutlet var isoLabel: UILabel!
     @IBOutlet var isolevel: UITextField!
     
-    var volume: Volume = Volume.sharedInstance
+    var volume: Model = Model.sharedInstance
     var indexOfPointCloud: Int = 0
     var savedDeltaIndex: Double = 0
     var savedEpsilonIndex: Double = 0
@@ -37,10 +37,7 @@ class SceneViewController: UIViewController {
         cameraNode.camera?.zNear = 0.01
         cameraNode.camera?.zFar = 15
         scene.rootNode.addChildNode(cameraNode)
-    
-        
-        // create and add a light to the scene
-        
+
         // add a cube
         let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0)
         let node = SCNNode(geometry: cube)
@@ -77,7 +74,7 @@ class SceneViewController: UIViewController {
         DispatchQueue.global().async {
             let points = extractMesh(volume: &self.volume, isolevel: iso!)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
-            let pointCloudNode = self.self.createSimpleNode(from: points)
+            let pointCloudNode = UIFactory.createMeshNode(points: points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
                 scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
@@ -91,7 +88,6 @@ class SceneViewController: UIViewController {
     @IBAction func export(_ sender: Any) {
         let iso = Float(isolevel.text!)
         let points = extractMesh(volume: &self.volume, isolevel: iso!)
-        //exportToPLY(volume: self.myVolume, at: "volume_\(self.sizeOfDataset)_\(self.myVolume.numberOfVoxels).ply")
         exportToPLY(mesh: points, at: "meshing.ply")
     }
     
@@ -99,7 +95,7 @@ class SceneViewController: UIViewController {
         DispatchQueue.global().async {
             let points = extractMesh(volume: &self.volume, isolevel: 0.01)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
-            let pointCloudNode = self.self.createSimpleNode(from: points)
+            let pointCloudNode = UIFactory.createMeshNode(points: points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
                 scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
@@ -107,60 +103,6 @@ class SceneViewController: UIViewController {
             scnView.scene?.rootNode.addChildNode(pointCloudNode)
             self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
         }
-    }
-    func createSimpleNode(from: Volume, with: Float) -> SCNNode{
-        let points = [Vector]()
-        let size = from.totalOfVoxels()
-        for i in 0..<size {
-            if (abs(from.voxels[i].sdf) <= with) {
-                //points.append(from.centroids[i])
-            }
-        }
-        let vertexData = NSData(bytes: points, length: MemoryLayout<Vector>.stride * points.count)
-        let positionSources = SCNGeometrySource(data: vertexData as Data,
-                                                semantic: SCNGeometrySource.Semantic.vertex,
-                                                vectorCount: points.count,
-                                                usesFloatComponents: true,
-                                                componentsPerVector: 3,
-                                                bytesPerComponent: MemoryLayout<Float>.size,
-                                                dataOffset: 0,
-                                                dataStride: MemoryLayout<Vector>.stride)
-        let elements = SCNGeometryElement(
-            data: nil,
-            primitiveType: .point,
-            primitiveCount: points.count,
-            bytesPerIndex: MemoryLayout<Double>.size
-        )
-        let pointCloudGeometry = SCNGeometry(sources: [positionSources], elements: [elements])
-        return SCNNode(geometry: pointCloudGeometry)
-    }
-    
-    func createSimpleNode(from: [Vector]) -> SCNNode{
-        let vertexData = NSData(bytes: from, length: MemoryLayout<Vector>.stride * from.count)
-        let positionSources = SCNGeometrySource(data: vertexData as Data,
-                                                semantic: SCNGeometrySource.Semantic.vertex,
-                                                vectorCount: from.count,
-                                                usesFloatComponents: true,
-                                                componentsPerVector: 3,
-                                                bytesPerComponent: MemoryLayout<Float>.size,
-                                                dataOffset: 0,
-                                                dataStride: MemoryLayout<Vector>.stride)
-        /*let normalsSources = SCNGeometrySource(data: vertexData as Data,
-                                               semantic: SCNGeometrySource.Semantic.normal,
-                                               vectorCount: points.count,
-                                               usesFloatComponents: true,
-                                               componentsPerVector: 3,
-                                               bytesPerComponent: MemoryLayout<Float>.size,
-                                               dataOffset: 0,
-                                               dataStride: MemoryLayout<Vector>.stride)*/
-        let elements = SCNGeometryElement(
-            data: nil,
-            primitiveType: .triangles,
-            primitiveCount: from.count / 3,
-            bytesPerIndex: MemoryLayout<Double>.size
-        )
-        let pointCloudGeometry = SCNGeometry(sources: [positionSources], elements: [elements])
-        return SCNNode(geometry: pointCloudGeometry)
     }
     
     override func didReceiveMemoryWarning() {
@@ -171,7 +113,7 @@ class SceneViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Main" {
             if let destination = segue.destination as? ViewController {
-                destination.myVolume = self.volume
+                destination.myModel = self.volume
                 destination.datasetChoice.selectedSegmentIndex  = savedDatasetIndex
                 destination.datasetSize.selectedSegmentIndex    = savedFramesIndex
                 destination.deltaStepper.value                  = savedDeltaIndex
