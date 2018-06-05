@@ -37,6 +37,7 @@ struct Camera {
         }
         intrinsics = matrix_float3x3()
         extrinsics = matrix_float4x3(diagonal: float3(1,1,1))
+        extrinsics.columns.3 = float3(0,0,0)
     }
     
     /**

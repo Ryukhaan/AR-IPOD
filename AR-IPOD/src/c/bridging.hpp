@@ -53,4 +53,8 @@ void bridge_fast_icp(const float* last_points,
                      const int width,
                      const int height);
 
+void bridge_median_filter(float* depthmap,
+                          const int window_size,
+                          const int width,
+                          const int height);
 #endif /* volumeInit_hpp */

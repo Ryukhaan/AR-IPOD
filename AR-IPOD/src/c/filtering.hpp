@@ -23,6 +23,7 @@ void median_filter(float* depthmap,
                    const int window_size,
                    const int width,
                    const int height) {
+    float* tmp_depth = (float*) malloc(sizeof(float) * width * height);
     for (int i = 0; i<height; i++) {
         int iMin = fmax(i-window_size, 0);
         int iMax = fmin(i+window_size, height-1);
@@ -38,11 +39,12 @@ void median_filter(float* depthmap,
             std::sort(tmp_array.begin(), tmp_array.end());
             int size = static_cast<int>( tmp_array.size() );
             if ( size % 2 == 0 )
-                depthmap[i*width + j] = tmp_array[size/2];
+                tmp_depth[i*width + j] = tmp_array[size/2];
             else
-                depthmap[i*width + j] = (tmp_array[(size+1)/2.0] + tmp_array[(size-1)/2.0])/2.0;
+                tmp_depth[i*width + j] = (tmp_array[(size+1)/2.0] + tmp_array[(size-1)/2.0])/2.0;
         }
     }
+    depthmap = tmp_depth;
 }
 
 void local_median(float* depthmap,

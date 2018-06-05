@@ -184,7 +184,8 @@ int bridge_integrateDepthMap(float* depthmap,
     //for( int i = mini; i<maxi; i++) {
     //    if (i >= size) continue;
     //    if (i < 0) continue;
-    for (int i = 0; i<size; i++) {
+    for (int i = 0; i<size; i++)
+    {
         //simd::float3 centroid = ((simd::float3 *) centroids)[i];
         simd::float3 centroid = create_centroid(i,
                                                 dimension,
@@ -233,47 +234,64 @@ void bridge_exportVolumeToPLY(const void* centroids,
     save_volume_ply_format((simd::float3 *) centroids, sdfs, file_name, size);
 }
 
-void bridge_fast_icp(const float* last_points,
+void bridge_fast_icp(const float* previous_points,
                      const float* current_points,
                      const void* intrinsics,
                      void* extrinsics,
                      const int width,
                      const int height) {
-    simd_float3x3 K = ((simd_float3x3 *) intrinsics)[0];
-    simd_float4x3 Rt = ((simd_float4x3 *) extrinsics)[0];
-    simd_float3x3 Kinv = simd_inverse(K);
-    simd_float3x3 rotation = simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]);
+    simd_float3x3 K     = ((simd_float3x3 *) intrinsics)[0];
+    simd_float4x3 Rt    = ((simd_float4x3 *) extrinsics)[0];
+    simd_float3x3 Kinv  = simd_inverse(K);
+    simd_float3x3 rotation  = simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]);
     simd_float3 translation = Rt.columns[3];
-    //simd_float3 translation = simd_make_float3(0, 0, 0);
     
-    //for (int k=0; k<4; k++) {
-    int count_last = 0;
-    int count_current = 0;
-    simd::float3 centre_last = simd_make_float3(0, 0, 0);
-    simd::float3 centre_current = simd_make_float3(0, 0, 0);
-    for (int i=0; i<height; i++) {
-        for (int j = 0; j<width; j++) {
-            // Unproject point
-            if ( ! std::isnan(last_points[ i*width + j]) && last_points[ i*width + j] > 1e-6) {
-                float depth = last_points[ i*width + j];
+    int previous_count  = 0;
+    int current_count   = 0;
+    simd::float3 previous_mass_centre   = simd_make_float3(0, 0, 0);
+    simd::float3 current_mass_centre    = simd_make_float3(0, 0, 0);
+
+    // Calculate mass center of last point cloud and current point cloud
+    for (int i=0; i<height; i++)
+    {
+        for (int j = 0; j<width; j++)
+        {
+            // Previous points
+            if ( ! std::isnan(previous_points[ i*width + j]) &&
+                previous_points[ i*width + j] > 1e-6)
+            {
+                // Unproject into global coordinate
+                float depth     = previous_points[ i*width + j];
                 simd::float3 uv = simd_make_float3(i, j, 1);
-                simd::float3 local_point = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
-                count_last ++;
-                centre_last = centre_last + local_point;
+                simd::float3 previous_global_point  = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
+                previous_count ++;
+                previous_mass_centre +=  previous_global_point;
             }
-            if ( ! std::isnan(current_points[ i*width + j]) && current_points[ i*width + j] > 1e-6) {
-                float depth = current_points[ i*width + j];
+            // Current points
+            if ( ! std::isnan(current_points[ i*width + j]) &&
+                current_points[ i*width + j] > 1e-6)
+            {
+                // Unproject into global coordinate
+                float depth     = current_points[ i*width + j];
                 simd::float3 uv = simd_make_float3(i, j, 1);
-                simd::float3 local_point = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
-                count_current ++;
-                centre_current = centre_current + local_point;
+                simd::float3 current_global_point   = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
+                current_count ++;
+                current_mass_centre += current_global_point;
             }
         }
     }
-    centre_current = centre_current / (float) count_current;
-    centre_last = centre_last / (float) count_last;
-    //simd::float3 tmp = translation;
-    translation += centre_last - centre_current;
-    //}
+    // Divide by number of points seen
+    current_mass_centre     = current_mass_centre / (float) current_count;
+    previous_mass_centre    = previous_mass_centre / (float) previous_count;
+    // Add translation vector between current and previous points to previous transalation
+    translation             += previous_mass_centre - current_mass_centre;
     ((simd_float4x3 *) extrinsics)[0].columns[3] = translation;
+}
+
+
+void bridge_median_filter(float* depthmap,
+                          const int window_size,
+                          const int width,
+                          const int height) {
+    median_filter(depthmap, window_size, width, height);
 }

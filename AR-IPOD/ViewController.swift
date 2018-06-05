@@ -23,6 +23,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var myDepthImage: DepthImage    = DepthImage(onRealTime: false)
     var myCamera: Camera            = Camera(onRealTime: false)
     
+    let batchSize:  Int             = 3
     var sizeOfDataset: Int          = 1
     var nameOfDataset: String       = "chair"
     var numberOfIterations: Int     = 0
@@ -268,6 +269,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         let lambda = lambdaStepper.value * lambdaTick
         var itDone = 0
         var itRead = 0
+        /*
         let integrateItem = DispatchWorkItem {
             // Compute TSDF
             let extrinsics = importCameraPose(from: "frame-\(itRead).pose", at: self.nameOfDataset)
@@ -321,6 +323,34 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             }
             group.wait()
             self.displayAlertMessage(title: "Fin Algorithme", message: "", handler: {_ in
+                self.integrationProgress.isHidden = true
+                self.integrationProgress.progress = 0.0
+            })
+        }
+        */
+        
+        if datasetChoice.selectedSegmentIndex != DataAcquisition.InRealTime {
+            self.integrationProgress.isHidden = false
+            timer = Double(CFAbsoluteTimeGetCurrent())
+            for i in 0..<self.sizeOfDataset {
+                let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
+                var depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.nameOfDataset)
+                bridge_median_filter(&depthmap, 2, Int32(self.myCamera.width), Int32(self.myCamera.height))
+                self.myCamera.update(extrinsics: extrinsics)
+                let last_points = self.myDepthImage.data
+                self.myDepthImage.update(_data: depthmap)
+                let current_points = self.myDepthImage.data
+                var K = self.myCamera.intrinsics
+                var Rt = self.myCamera.extrinsics
+                bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
+                self.myCamera.extrinsics = Rt
+                self.myVolume.integrateDepthMap(image: self.myDepthImage,
+                                                camera: self.myCamera,
+                                                parameters: [Float(delta), Float(epsilon), Float(lambda)])
+                self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
+            }
+            let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+            self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in
                 self.integrationProgress.isHidden = true
                 self.integrationProgress.progress = 0.0
             })
@@ -379,7 +409,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         case 1:
             sizeOfDataset = 10
         case 2:
-            sizeOfDataset = 250
+            sizeOfDataset = 200
         default:
             sizeOfDataset = 10
         }
