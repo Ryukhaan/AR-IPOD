@@ -607,17 +607,9 @@
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = (
-					"/Users/Remi/Documents/Install/pcl-1.8.1-darwin/include/pcl-1.8/",
-					/usr/local/Cellar/eigen/3.3.4/include/eigen3,
-					/usr/local/Cellar/boost/1.62.0/include,
-					/usr/local/Cellar/opencv/2.4.13.2/include/,
-					/usr/local/Cellar/opencv/3.2.0/include/opencv2/,
-				);
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "/Users/Remi/Documents/Install/pcl-1.8.1-darwin/lib";
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -639,17 +631,9 @@
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = (
-					"/Users/Remi/Documents/Install/pcl-1.8.1-darwin/include/pcl-1.8/",
-					/usr/local/Cellar/eigen/3.3.4/include/eigen3,
-					/usr/local/Cellar/boost/1.62.0/include,
-					/usr/local/Cellar/opencv/2.4.13.2/include/,
-					/usr/local/Cellar/opencv/3.2.0/include/opencv2/,
-				);
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "/Users/Remi/Documents/Install/pcl-1.8.1-darwin/lib";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";

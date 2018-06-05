@@ -36,14 +36,14 @@ std::vector<simd::float3> polygonise(simd::float3 points[8], float values[8], fl
     int cubeindex = 0;
     simd::float3 vertexlist[12];
     
-    if (values[0] < isolevel) cubeindex |= 1;
-    if (values[1] < isolevel) cubeindex |= 2;
-    if (values[2] < isolevel) cubeindex |= 4;
-    if (values[3] < isolevel) cubeindex |= 8;
-    if (values[4] < isolevel) cubeindex |= 16;
-    if (values[5] < isolevel) cubeindex |= 32;
-    if (values[6] < isolevel) cubeindex |= 64;
-    if (values[7] < isolevel) cubeindex |= 128;
+    if (fabs(values[0]) < isolevel) cubeindex |= 1;
+    if (fabs(values[1]) < isolevel) cubeindex |= 2;
+    if (fabs(values[2]) < isolevel) cubeindex |= 4;
+    if (fabs(values[3]) < isolevel) cubeindex |= 8;
+    if (fabs(values[4]) < isolevel) cubeindex |= 16;
+    if (fabs(values[5]) < isolevel) cubeindex |= 32;
+    if (fabs(values[6]) < isolevel) cubeindex |= 64;
+    if (fabs(values[7]) < isolevel) cubeindex |= 128;
 
     for(int i = 0; i<8; i++)
         if (values[i] < 0) return triangles;

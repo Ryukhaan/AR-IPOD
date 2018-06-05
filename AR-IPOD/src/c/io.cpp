@@ -38,7 +38,7 @@ inline simd_float3 centroid_at(const int i,
 
 void save_meshing_ply_format(const simd::float3* points, const char* file_name, int number_of_triangles) {
     std::ofstream file;
-    /* file_name + 7 because file_name is like file:// then /var/... ] */
+    /* file_name + 7 because file_name is like file:///var/... ] */
     file.open(file_name + 7, std::ofstream::trunc);
     if ( ! file.is_open() ) return;
     file << "ply" << endl;

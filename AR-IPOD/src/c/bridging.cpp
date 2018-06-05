@@ -94,6 +94,7 @@ unsigned long bridge_extractMesh(void* triangles,
                  */
                 simd::float3 points[8] = {c0, c1, c2, c3, c4, c5, c6, c7};
                 float values[8] = {
+                    /*
                     fabs( ((Voxel*) voxels)[i0].sdf ),
                     fabs( ((Voxel*) voxels)[i1].sdf ),
                     fabs( ((Voxel*) voxels)[i2].sdf ),
@@ -102,7 +103,7 @@ unsigned long bridge_extractMesh(void* triangles,
                     fabs( ((Voxel*) voxels)[i5].sdf ),
                     fabs( ((Voxel*) voxels)[i6].sdf ),
                     fabs( ((Voxel*) voxels)[i7].sdf )
-                    /*
+                    */
                     ( ((Voxel*) voxels)[i0].sdf ),
                     ( ((Voxel*) voxels)[i1].sdf ),
                     ( ((Voxel*) voxels)[i2].sdf ),
@@ -111,7 +112,6 @@ unsigned long bridge_extractMesh(void* triangles,
                     ( ((Voxel*) voxels)[i5].sdf ),
                     ( ((Voxel*) voxels)[i6].sdf ),
                     ( ((Voxel*) voxels)[i7].sdf )
-                    */
                 };
                 std::vector<simd::float3> temp = polygonise(points, values, isolevel, edgeTable, triTable);
                 if (temp.size() == 0) continue;
@@ -170,6 +170,7 @@ int bridge_integrateDepthMap(float* depthmap,
     
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
+    /*
     simd_float2x3 box = bounding_box_and_filter(depthmap, width, height, rotation, translation, Kinv, 2);
     simd_int3 point_min = simd_make_int3(global_to_integer(box.columns[0].x + offset, dimension, resolution[0]),
                                          global_to_integer(box.columns[0].y + offset, dimension, resolution[1]),
@@ -179,10 +180,11 @@ int bridge_integrateDepthMap(float* depthmap,
                                          global_to_integer(box.columns[1].z + offset, dimension, resolution[2]));
     int mini = hash_function(point_min, dimension);
     int maxi = hash_function(point_max, dimension);
-
-    for( int i = mini; i<maxi; i++) {
-        if (i >= size) continue;
-    //for (int i = 0; i<size; i++) {
+    */
+    //for( int i = mini; i<maxi; i++) {
+    //    if (i >= size) continue;
+    //    if (i < 0) continue;
+    for (int i = 0; i<size; i++) {
         //simd::float3 centroid = ((simd::float3 *) centroids)[i];
         simd::float3 centroid = create_centroid(i,
                                                 dimension,
@@ -255,14 +257,14 @@ void bridge_fast_icp(const float* last_points,
             if ( ! std::isnan(last_points[ i*width + j]) && last_points[ i*width + j] > 1e-6) {
                 float depth = last_points[ i*width + j];
                 simd::float3 uv = simd_make_float3(i, j, 1);
-                simd::float3 local_point = simd_mul(rotation, simd_mul(Kinv, depth * uv) + translation);
+                simd::float3 local_point = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
                 count_last ++;
                 centre_last = centre_last + local_point;
             }
             if ( ! std::isnan(current_points[ i*width + j]) && current_points[ i*width + j] > 1e-6) {
                 float depth = current_points[ i*width + j];
                 simd::float3 uv = simd_make_float3(i, j, 1);
-                simd::float3 local_point = simd_mul(rotation, simd_mul(Kinv, depth * uv) + translation);
+                simd::float3 local_point = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
                 count_current ++;
                 centre_current = centre_current + local_point;
             }
@@ -271,8 +273,7 @@ void bridge_fast_icp(const float* last_points,
     centre_current = centre_current / (float) count_current;
     centre_last = centre_last / (float) count_last;
     //simd::float3 tmp = translation;
-    translation = simd_mul(rotation, -centre_current) + centre_last;
-    //translation = simd_mul(rotation, -centre_last) + centre_current;
+    translation += centre_last - centre_current;
     //}
     ((simd_float4x3 *) extrinsics)[0].columns[3] = translation;
 }

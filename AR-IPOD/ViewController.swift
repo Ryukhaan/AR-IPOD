@@ -306,7 +306,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             }
             */
         }
-        
         if datasetChoice.selectedSegmentIndex != DataAcquisition.InRealTime {
             timer = Double(CFAbsoluteTimeGetCurrent())
             for i in 0..<self.sizeOfDataset {
@@ -321,6 +320,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 //sleep(1)
             }
             group.wait()
+            self.displayAlertMessage(title: "Fin Algorithme", message: "", handler: {_ in
+                self.integrationProgress.isHidden = true
+                self.integrationProgress.progress = 0.0
+            })
         }
         else {
             self.numberOfIterations = 0
@@ -370,7 +373,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     @IBAction func changeDatasetSize(_ sender: Any) {
-        sizeOfDataset = Int(pow(10.0, Float(datasetSize.selectedSegmentIndex)))
+        switch datasetSize.selectedSegmentIndex {
+        case 0:
+            sizeOfDataset = 1
+        case 1:
+            sizeOfDataset = 10
+        case 2:
+            sizeOfDataset = 250
+        default:
+            sizeOfDataset = 10
+        }
     }
     
     @IBAction func exportVolume(_ sender: Any) {
@@ -392,7 +404,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          //sceneView.scene.rootNode.addChildNode(pointNode)
          exportToPLY(mesh: points, at: "mesh_\(dataset)_\(self.myVolume.numberOfVoxels).ply")
          */
-         exportToPLY(volume: self.myVolume, at: "volume_\(self.sizeOfDataset)_\(self.myVolume.numberOfVoxels).ply")
+        let points = extractMesh(volume: &self.myVolume, isolevel: 0.04)
+        //exportToPLY(volume: self.myVolume, at: "volume_\(self.sizeOfDataset)_\(self.myVolume.numberOfVoxels).ply")
+        exportToPLY(mesh: points, at: "mesh_\(self.sizeOfDataset).ply")
  
     }
     

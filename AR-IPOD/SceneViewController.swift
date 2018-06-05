@@ -88,6 +88,13 @@ class SceneViewController: UIViewController {
         //scnView.backgroundColor = UIColor.black
     }
     
+    @IBAction func export(_ sender: Any) {
+        let iso = Float(isolevel.text!)
+        let points = extractMesh(volume: &self.volume, isolevel: iso!)
+        //exportToPLY(volume: self.myVolume, at: "volume_\(self.sizeOfDataset)_\(self.myVolume.numberOfVoxels).ply")
+        exportToPLY(mesh: points, at: "meshing.ply")
+    }
+    
     @IBAction func display(_ sender: Any) {
         DispatchQueue.global().async {
             let points = extractMesh(volume: &self.volume, isolevel: 0.01)
@@ -138,6 +145,14 @@ class SceneViewController: UIViewController {
                                                 bytesPerComponent: MemoryLayout<Float>.size,
                                                 dataOffset: 0,
                                                 dataStride: MemoryLayout<Vector>.stride)
+        /*let normalsSources = SCNGeometrySource(data: vertexData as Data,
+                                               semantic: SCNGeometrySource.Semantic.normal,
+                                               vectorCount: points.count,
+                                               usesFloatComponents: true,
+                                               componentsPerVector: 3,
+                                               bytesPerComponent: MemoryLayout<Float>.size,
+                                               dataOffset: 0,
+                                               dataStride: MemoryLayout<Vector>.stride)*/
         let elements = SCNGeometryElement(
             data: nil,
             primitiveType: .triangles,
