@@ -90,3 +90,47 @@ func exportToPLY(mesh: [Vector], at: String) {
         bridge_exportMeshToPLY(mesh, cFileName, Int32(numberOfTriangles))
     }
 }
+
+func save(model: Model, atTime: Int) {
+    let intrinsicsPath  = "depthIntrinsics.txt"
+    let extrinsicsPath  = "frame-\(atTime).pose.txt"
+    let depthmapPath    = "frame-\(atTime).depth.txt"
+    let K   = model.camera.intrinsics
+    let Rt  = model.camera.extrinsics
+    let Dm  = model.image.data
+    let size = Int(model.image.width * model.image.height)
+    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        let KPath   = dir.appendingPathComponent(intrinsicsPath)
+        let RtPath  = dir.appendingPathComponent(extrinsicsPath)
+        let DmPath  = dir.appendingPathComponent(depthmapPath)
+        // Write K
+        do {
+            try "\(K.columns.0.x) \(K.columns.1.x) \(K.columns.2.x) 0\n".write(to: KPath, atomically: false, encoding: .utf8)
+            try "\(K.columns.0.y) \(K.columns.1.y) \(K.columns.2.y) 0\n".write(to: KPath, atomically: false, encoding: .utf8)
+            try "\(K.columns.0.z) \(K.columns.1.z) \(K.columns.2.z) 0\n".write(to: KPath, atomically: false, encoding: .utf8)
+            try "0 0 0 1".write(to: KPath, atomically: false, encoding: .utf8)
+        }
+        catch {}
+        // Write Rt
+        do {
+            try "\(Rt.columns.0.x) \(Rt.columns.1.x) \(Rt.columns.2.x) \(Rt.columns.3.x)\n".write(to: RtPath, atomically: false, encoding: .utf8)
+            try "\(Rt.columns.0.y) \(Rt.columns.1.y) \(Rt.columns.2.y) \(Rt.columns.3.y)\n".write(to: RtPath, atomically: false, encoding: .utf8)
+            try "\(Rt.columns.0.z) \(Rt.columns.1.z) \(Rt.columns.2.z) \(Rt.columns.3.z)\n".write(to: RtPath, atomically: false, encoding: .utf8)
+            try "0 0 0 1".write(to: KPath, atomically: false, encoding: .utf8)
+        }
+        catch {}
+        // Write DepthMap
+        do {
+            for i in 0..<size {
+                let depth = Dm[i]
+                if (i+1) % Int(model.image.width) == 0 {
+                    try "\(depth) \n".write(to: DmPath, atomically: false, encoding: .utf8)
+                }
+                else {
+                    try "\(depth)".write(to: DmPath, atomically: false, encoding: .utf8)
+                }
+            }
+        }
+        catch {}
+    }
+}

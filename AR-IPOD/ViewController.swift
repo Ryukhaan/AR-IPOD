@@ -154,6 +154,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Capture DepthMap
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
+        k = 0
         if inRealTime
         {
             //tx.text = "\(frame.camera.intrinsics.columns.2.x)"//"\(self.myCamera.extrinsics.columns.3.x)"
@@ -209,6 +210,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 var Rt  = self.myModel.camera.extrinsics
                 bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
                 self.myModel.update(extrinsics: Rt)
+                
+                /* Another Way : Save all depth maps and pose then do it offline */
+                //save(model: self.myModel, atTime: k)
+                //k += 1
+                
             }
             if self.numberOfIterations >= 6
             {

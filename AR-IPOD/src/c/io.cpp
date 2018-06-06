@@ -97,3 +97,4 @@ void save_volume_ply_format(const simd::float3* centroids, const float* sdfs, co
     file.flush();
     file.close();
 }
+
