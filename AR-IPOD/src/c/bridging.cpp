@@ -94,7 +94,6 @@ unsigned long bridge_extractMesh(void* triangles,
                  */
                 simd::float3 points[8] = {c0, c1, c2, c3, c4, c5, c6, c7};
                 float values[8] = {
-                    /*
                     fabs( ((Voxel*) voxels)[i0].sdf ),
                     fabs( ((Voxel*) voxels)[i1].sdf ),
                     fabs( ((Voxel*) voxels)[i2].sdf ),
@@ -103,7 +102,7 @@ unsigned long bridge_extractMesh(void* triangles,
                     fabs( ((Voxel*) voxels)[i5].sdf ),
                     fabs( ((Voxel*) voxels)[i6].sdf ),
                     fabs( ((Voxel*) voxels)[i7].sdf )
-                    */
+                    /*
                     ( ((Voxel*) voxels)[i0].sdf ),
                     ( ((Voxel*) voxels)[i1].sdf ),
                     ( ((Voxel*) voxels)[i2].sdf ),
@@ -112,6 +111,7 @@ unsigned long bridge_extractMesh(void* triangles,
                     ( ((Voxel*) voxels)[i5].sdf ),
                     ( ((Voxel*) voxels)[i6].sdf ),
                     ( ((Voxel*) voxels)[i7].sdf )
+                    */
                 };
                 std::vector<simd::float3> temp = polygonise(points, values, isolevel, edgeTable, triTable);
                 if (temp.size() == 0) continue;
@@ -202,7 +202,8 @@ int bridge_integrateDepthMap(float* depthmap,
         if (u < 0 || u >= height)   continue;
         if (v < 0 || v >= width)    continue;
         
-        float z = local.z; //simd_length(local) ou local.z
+        float z = centroid.z;
+        //float z = local.z; //simd_length(local) ou local.z
         float zp = depthmap[u * width + v];
         // Depth invalid
         if (std::isnan(zp)) continue;
@@ -347,8 +348,72 @@ void bridge_drift_correction(const float* current_points,
             }
         }
     }
-    
     //xtilde = simd_inverse(xtilde);
-    simd_float4x3 error = simd_transpose(simd_mul(xtilde, xy));
-    
+    //simd_float4x3 error = simd_transpose(simd_mul(xtilde, xy));
+}
+
+int bridge_raycastDepthMap(float* depthmap,
+                           //const void* centroids,
+                           const void* extrinsics,
+                           const void* intrinsics,
+                           void* voxels,
+                           const int width,
+                           const int height,
+                           const int dimension,
+                           const float resolution[3],
+                           const float delta,
+                           const float epsilon,
+                           const float lambda) {
+    int size = pow(dimension, 3.0);
+    int square = pow(dimension, 2.0);
+    float offset = resolution[0] * 0.5;
+    simd_float3x3 K = ((simd_float3x3 *) intrinsics)[0];
+    simd_float3x3 Kinv = simd_inverse(K);
+    simd_float4x3 Rt = ((simd_float4x3 *) extrinsics)[0];
+    simd_float3x3 rotation = simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]);
+    simd_float3 translation = Rt.columns[3];
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            float depth = depthmap[ i*width + j];
+            if (std::isnan(depth) || depth < 1e-6) continue;
+            simd::float3 uv = simd_make_float3(i, j, 1);
+            simd::float3 global  = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
+            simd_int3 end = simd_make_int3(
+                                           global_to_integer(global.x + offset, dimension, resolution[0]),
+                                           global_to_integer(global.y + offset, dimension, resolution[1]),
+                                           global_to_integer(global.z + offset, dimension, resolution[2])
+                                           );
+            simd_int3 current = simd_make_int3(
+                                             global_to_integer(translation.x + offset, dimension, resolution[0]),
+                                             global_to_integer(translation.y + offset, dimension, resolution[1]),
+                                             global_to_integer(translation.z + offset, dimension, resolution[2])
+                                             );
+            //float maxDist = simd_length(direction);
+            float dx = global.x - translation.x;
+            float dy = global.y - translation.y;
+            float dz = global.z - translation.z;
+            int stepX = dx == 0 ? 0 : dx > 0 ? 1 : -1;
+            int stepY = dy == 0 ? 0 : dy > 0 ? 1 : -1;
+            int stepZ = dz == 0 ? 0 : dz > 0 ? 1 : -1;
+
+            if (stepX == 0 && stepY == 0 && stepZ == 0) return 0;
+            while (true) {
+                if (current.x == end.x && current.y == end.y && current.z == end.z) break;
+                int k = hash_function(current, dimension);
+                if (k <= size && k >= 0) {
+                    simd::float3 c = create_centroid(k, dimension, 4.0, square, 2.0);
+                    float distance = c.z - global.z;
+                    float w = constant_weighting(distance, delta, lambda);
+                    if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, w, k);
+                }
+                if (current.x != end.x)
+                    current.x += stepX;
+                if (current.y != end.y)
+                    current.y += stepY;
+                if (current.z != end.z)
+                    current.z += stepZ;
+            }
+        }
+    }
+    return 0;
 }

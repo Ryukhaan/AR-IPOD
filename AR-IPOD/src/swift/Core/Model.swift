@@ -81,6 +81,14 @@ class Model {
         image.update(_data: data)
     }
     
+    func update(data: UnsafeMutablePointer<Float>) {
+        image.update(_data: data)
+    }
+    
+    func createMedianDepthMap() {
+        image.updateDataWithSavedData()
+    }
+    
     func integrate() {
         let width = image.width
         let height = image.height
@@ -88,7 +96,9 @@ class Model {
         var Rt = camera.extrinsics
         var K = camera.intrinsics
         let resolve = [resolutionInMeter, resolutionInMeter, resolutionInMeter]
-        _ = bridge_integrateDepthMap(&dethmap, /*centroids,*/
+        _ = bridge_raycastDepthMap(
+        //_ = bridge_integrateDepthMap(
+            &dethmap, /*centroids,*/
             &Rt,
             &K,
             &voxels,

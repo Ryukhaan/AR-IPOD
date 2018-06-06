@@ -152,25 +152,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
-        let epsilon = epsilonStepper.value * epsilonTick
-        let delta = deltaStepper.value * deltaTick
-        let lambda = lambdaStepper.value * lambdaTick
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
-        /*
         if inRealTime
         {
             //tx.text = "\(frame.camera.intrinsics.columns.2.x)"//"\(self.myCamera.extrinsics.columns.3.x)"
             //ty.text = "\(frame.camera.intrinsics.columns.2.y)"//"\(self.myCamera.extrinsics.columns.3.y)"
             //tz.text = "\(frame.camera.intrinsics.columns.2.z)"//"\(self.myCamera.extrinsics.columns.3.z)"
             //let camera = frame.camera.trackingState
-            self.myCamera.update(extrinsics: frame.camera.transform)
-            self.myCamera.intrinsics = frame.camera.intrinsics
+            self.myModel.update(extrinsics: frame.camera.transform)
+            self.myModel.update(intrinsics: frame.camera.intrinsics)
             /*
-            if let points = frame.rawFeaturePoints {
-                    self.myVolume.integrate(points: points, camera: self.myCamera)
-            }
-            */
+             if let points = frame.rawFeaturePoints {
+             self.myVolume.integrate(points: points, camera: self.myCamera)
+             }
+             */
             if frame.capturedDepthData != nil
             {
                 self.myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
@@ -178,10 +174,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 let depthDataMap = self.myDepthData?.depthDataMap
                 CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
                 let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
-                self.myDepthImage.width = UInt16(CVPixelBufferGetWidth(depthDataMap!))
-                self.myDepthImage.height = UInt16(CVPixelBufferGetHeight(depthDataMap!))
-                self.myCamera.width = UInt16(CVPixelBufferGetWidth(depthDataMap!))
-                self.myCamera.height = UInt16(CVPixelBufferGetHeight(depthDataMap!))
+                self.myModel.image.width = UInt16(CVPixelBufferGetWidth(depthDataMap!))
+                self.myModel.image.height = UInt16(CVPixelBufferGetHeight(depthDataMap!))
+                self.myModel.camera.width = UInt16(CVPixelBufferGetWidth(depthDataMap!))
+                self.myModel.camera.height = UInt16(CVPixelBufferGetHeight(depthDataMap!))
                 /*
                  * We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
                  */
@@ -196,7 +192,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 //ty.text = "\(self.myDepthData?.cameraCalibrationData?.extrinsicMatrix.columns.3.x)"
                 //tz.text = "\(self.myDepthData?.cameraCalibrationData?.extrinsicMatrix.columns.3.x)"
                 
-                self.myDepthImage.push(map: depthPointer)
+                self.myModel.image.push(map: depthPointer)
                 //self.myCamera.update(extrinsics: frame.camera.transform)
                 //self.myCamera.intrinsics = frame.camera.intrinsics
                 self.numberOfIterations += 1
@@ -205,34 +201,34 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                  ty.text = "\(Rt.columns.3.y)"
                  tz.text = "\(Rt.columns.3.z)"
                  */
-                let last_points = self.myDepthImage.data
+                let last_points = self.myModel.image.data
                 //self.myDepthImage.updateDataWithSavedData()
-                self.myDepthImage.update(_data: depthPointer)
-                let current_points = self.myDepthImage.data
-                var K = self.myCamera.intrinsics
-                var Rt = self.myCamera.extrinsics
-                bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
-                self.myCamera.extrinsics = Rt
-                }
+                self.myModel.update(data: depthPointer)
+                let current_points = self.myModel.image.data
+                var K   = self.myModel.camera.intrinsics
+                var Rt  = self.myModel.camera.extrinsics
+                bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
+                self.myModel.update(extrinsics: Rt)
+            }
             if self.numberOfIterations >= 6
-                {
-                    //let last_points = self.myDepthImage.data
-                    self.myDepthImage.updateDataWithSavedData()
-                    //let current_points = self.myDepthImage.data
-                    //var K = self.myCamera.intrinsics
-                    //var Rt = self.myCamera.extrinsics
-                    //bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
-                    //self.myCamera.extrinsics = Rt
-                    //DispatchQueue.global().async {
-                    self.myVolume.integrateDepthMap(
-                        image: self.myDepthImage,
-                        camera: self.myCamera,
-                        parameters: [Float(delta), Float(epsilon), Float(lambda)])
-                    //}
-                    self.numberOfIterations = 0
-                }
+            {
+                //let last_points = self.myDepthImage.data
+                self.myModel.createMedianDepthMap()
+                //let current_points = self.myDepthImage.data
+                //var K = self.myCamera.intrinsics
+                //var Rt = self.myCamera.extrinsics
+                //bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
+                //self.myCamera.extrinsics = Rt
+                //DispatchQueue.global().async {
+                self.myModel.integrate()
+                //self.myVolume.integrateDepthMap(
+                //    image: self.myDepthImage,
+                //    camera: self.myCamera,
+                //    parameters: [Float(delta), Float(epsilon), Float(lambda)])
+                //}
+                self.numberOfIterations = 0
+            }
         }
-        */
     }
             /*
             if self.myDepthImage.savedData.count == 6 {
@@ -263,16 +259,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     
     @IBAction func startCompute(_ sender: Any) {
-        let group = DispatchGroup()
+        //let group = DispatchGroup()
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
         inRealTime = false
         self.myModel.switchTo(realTime: inRealTime)
-        let epsilon = epsilonStepper.value * epsilonTick
-        let delta = deltaStepper.value * deltaTick
-        let lambda = lambdaStepper.value * lambdaTick
-        var itDone = 0
-        var itRead = 0
+        //var itDone = 0
+        //var itRead = 0
         /*
         let integrateItem = DispatchWorkItem {
             // Compute TSDF

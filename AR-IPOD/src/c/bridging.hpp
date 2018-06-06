@@ -66,4 +66,17 @@ void bridge_drift_correction(const float* current_points,
                              const float resolution[3],
                              const int width,
                              const int height);
+
+int bridge_raycastDepthMap(float* depthmap,
+                           //const void* centroids,
+                           const void* extrinsics,
+                           const void* intrinsics,
+                           void* voxels,
+                           const int width,
+                           const int height,
+                           const int dimension,
+                           const float resolution[3],
+                           const float delta,
+                           const float epsilon,
+                           const float lambda);
 #endif /* volumeInit_hpp */
