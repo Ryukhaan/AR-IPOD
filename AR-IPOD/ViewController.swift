@@ -154,7 +154,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Capture DepthMap
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
-        k = 0
+        //var k = 0
         if inRealTime
         {
             //tx.text = "\(frame.camera.intrinsics.columns.2.x)"//"\(self.myCamera.extrinsics.columns.3.x)"
