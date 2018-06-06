@@ -57,4 +57,13 @@ void bridge_median_filter(float* depthmap,
                           const int window_size,
                           const int width,
                           const int height);
+
+void bridge_drift_correction(const float* current_points,
+                             const void* intrinsics,
+                             void* extrinsics,
+                             const void* voxels,
+                             const int dimension,
+                             const float resolution[3],
+                             const int width,
+                             const int height);
 #endif /* volumeInit_hpp */

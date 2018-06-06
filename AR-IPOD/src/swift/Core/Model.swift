@@ -99,6 +99,9 @@ class Model {
             parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!);
     }
     
+    func fullResolution() -> [Float] {
+        return [resolutionInMeter, resolutionInMeter, resolutionInMeter]
+    }
     /*
     func integrateDepthMap(image: DepthImage, camera: Camera, parameters: [Float]) {
         let width = image.width

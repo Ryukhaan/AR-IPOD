@@ -170,8 +170,7 @@ int bridge_integrateDepthMap(float* depthmap,
     
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
-    /*
-    simd_float2x3 box = bounding_box_and_filter(depthmap, width, height, rotation, translation, Kinv, 2);
+    simd_float2x3 box = compute_bounding_box(depthmap, width, height, rotation, translation, Kinv, 2);
     simd_int3 point_min = simd_make_int3(global_to_integer(box.columns[0].x + offset, dimension, resolution[0]),
                                          global_to_integer(box.columns[0].y + offset, dimension, resolution[1]),
                                          global_to_integer(box.columns[0].z + offset, dimension, resolution[2]));
@@ -180,12 +179,12 @@ int bridge_integrateDepthMap(float* depthmap,
                                          global_to_integer(box.columns[1].z + offset, dimension, resolution[2]));
     int mini = hash_function(point_min, dimension);
     int maxi = hash_function(point_max, dimension);
-    */
-    //for( int i = mini; i<maxi; i++) {
-    //    if (i >= size) continue;
-    //    if (i < 0) continue;
-    for (int i = 0; i<size; i++)
+
+    for( int i = mini; i<maxi; i++)
+    //for (int i = 0; i<size; i++)
     {
+        if (i >= size) continue;
+        if (i < 0) continue;
         //simd::float3 centroid = ((simd::float3 *) centroids)[i];
         simd::float3 centroid = create_centroid(i,
                                                 dimension,
@@ -286,6 +285,7 @@ void bridge_fast_icp(const float* previous_points,
     // Add translation vector between current and previous points to previous transalation
     translation             += previous_mass_centre - current_mass_centre;
     ((simd_float4x3 *) extrinsics)[0].columns[3] = translation;
+    
 }
 
 
@@ -294,4 +294,61 @@ void bridge_median_filter(float* depthmap,
                           const int width,
                           const int height) {
     median_filter(depthmap, window_size, width, height);
+}
+
+void bridge_drift_correction(const float* current_points,
+                             const void* intrinsics,
+                             void* extrinsics,
+                             const void* voxels,
+                             const int dimension,
+                             const float resolution[3],
+                             const int width,
+                             const int height) {
+    simd_float3x3 K     = ((simd_float3x3 *) intrinsics)[0];
+    simd_float4x3 Rt    = ((simd_float4x3 *) extrinsics)[0];
+    simd_float3x3 Kinv  = simd_inverse(K);
+    simd_float3x3 rotation  = simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]);
+    simd_float3 translation = Rt.columns[3];
+    float offset    = resolution[0] * 0.5;
+    int square      = pow(dimension, 2.0);
+    int size        = pow(dimension, 3.0);
+    simd_float4x4 xtilde = simd_diagonal_matrix(simd_make_float4(0, 0, 0, 0));
+    simd_float3x4 xy;
+
+    for (int i=0; i<height; i++)
+    {
+        for (int j = 0; j<width; j++)
+        {
+            if ( ! std::isnan(current_points[ i*width + j]) &&
+                current_points[ i*width + j] > 1e-6)
+            {
+                float depth     = current_points[ i*width + j];
+                simd::float3 uv = simd_make_float3(i, j, 1);
+                simd::float3 global  = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
+                simd_int3 global_int = simd_make_int3(
+                                                      global_to_integer(global.x + offset, dimension, resolution[0]),
+                                                      global_to_integer(global.y + offset, dimension, resolution[1]),
+                                                      global_to_integer(global.z + offset, dimension, resolution[2]));
+                int k = hash_function(global_int, dimension);
+                if (k >= size || k < 0) continue;
+                float phi_p = ((Voxel *) voxels)[k].sdf;
+                simd_float3 M = simd_make_float3(0, 0, 0);
+                M[0] = ((Voxel *) voxels)[k + 1].sdf - phi_p;
+                M[1] = ((Voxel *) voxels)[k + dimension].sdf - phi_p;
+                M[2] = ((Voxel *) voxels)[k + square].sdf - phi_p;
+                if (simd_length(M) == 0) continue;
+                M = (- M / simd_length(M)) * phi_p;
+                for (int n = 0; n<4; n++)
+                    for (int m = 0; m<4; m++)
+                        xtilde.columns[m][n] += global[n] * global[m];
+                for (int n = 0; n<4; n++)
+                    for (int m=0; m<3; m++)
+                        xy.columns[m][n] += global[n] * M[m];
+            }
+        }
+    }
+    
+    //xtilde = simd_inverse(xtilde);
+    simd_float4x3 error = simd_transpose(simd_mul(xtilde, xy));
+    
 }

@@ -9,6 +9,7 @@
 import UIKit
 import SceneKit
 import ARKit
+import Accelerate
 
 class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
@@ -332,7 +333,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         }
         */
         
-        self.integrationProgress.isHidden = false
         timer = Double(CFAbsoluteTimeGetCurrent())
         for i in 0..<self.sizeOfDataset {
             let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
@@ -342,11 +342,26 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             self.myModel.update(extrinsics: extrinsics)
             let last_points = self.myModel.image.data
             self.myModel.update(data: depthmap)
-            if i != 0 {
+            if i > 0 {
                 let current_points = self.myModel.image.data
                 var K = self.myModel.camera.intrinsics
                 var Rt = self.myModel.camera.extrinsics
-                bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
+                bridge_fast_icp(last_points,
+                                current_points,
+                                &K,
+                                &Rt,
+                                Int32(self.myModel.camera.width),
+                                Int32(self.myModel.camera.height))
+                /*
+                bridge_drift_correction(current_points,
+                                        &K,
+                                        &Rt,
+                                        myModel.voxels,
+                                        Int32(self.myModel.numberOfVoxels),
+                                        myModel.fullResolution(),
+                                        Int32(self.myModel.camera.width),
+                                        Int32(self.myModel.camera.height))
+                */
                 self.myModel.update(extrinsics: Rt)
             }
             self.myModel.integrate()
