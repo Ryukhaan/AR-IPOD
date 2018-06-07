@@ -52,7 +52,7 @@ func importCameraPose(from: String, at: String) -> matrix_float4x4 {
     return matrix_float4x4()
 }
 
-func importCameraIntrinsics(from: String, at: String) -> matrix_float3x3 {
+func importCameraIntrinsics(from: String, at: String) -> matrix_float4x4 {
     let relativPath = "/\(at)/\(from)"
     if let path = Bundle.main.path(forResource: relativPath, ofType: "txt") {
         do {
@@ -61,19 +61,21 @@ func importCameraIntrinsics(from: String, at: String) -> matrix_float3x3 {
             let row1 = rows[0].components(separatedBy: .whitespaces)
             let row2 = rows[2].components(separatedBy: .whitespaces)
             let row3 = rows[4].components(separatedBy: .whitespaces)
-            return matrix_float3x3(rows: [
-                float3(Float(row1[0])!, Float(row1[1])!, Float(row1[2])!),
-                float3(Float(row2[0])!, Float(row2[1])!, Float(row2[2])!),
-                float3(Float(row3[0])!, Float(row3[1])!, Float(row3[2])!)
+            let row4 = rows[6].components(separatedBy: .whitespaces)
+            return matrix_float4x4(rows: [
+                float4(Float(row1[0])!, Float(row1[1])!, Float(row1[2])!, Float(row1[3])!),
+                float4(Float(row2[0])!, Float(row2[1])!, Float(row2[2])!, Float(row2[3])!),
+                float4(Float(row3[0])!, Float(row3[1])!, Float(row3[2])!, Float(row3[3])!),
+                float4(Float(row4[0])!, Float(row4[1])!, Float(row4[2])!, Float(row4[3])!)
                 ])
         }
         catch { print(error) }
     }
-    return matrix_float3x3()
+    return matrix_float4x4()
 }
 
 func exportToPLY(volume: Model, at: String) {
-    let size = volume.numberOfVoxels * volume.numberOfVoxels * volume.numberOfVoxels
+    let size = volume.resolution * volume.resolution * volume.resolution
     let sdfs = volume.voxels.map { $0.sdf }
     var v = [Vector(0,0,0)]
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {

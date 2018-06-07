@@ -14,17 +14,17 @@ class Model {
     // Singleton pattern : Only one volume will be create
     static let sharedInstance = Model()
     
-    var resolutionInMeter: Float
-    var numberOfVoxels:   Int
+    var dimension: Float
+    var resolution:   Int
     var voxels: [Voxel]
     var camera: Camera
     var image: DepthImage
     var parameters: [String: Float] = [String: Float]()
     
     private init() {
-        numberOfVoxels      = 256
-        resolutionInMeter   = 3.0
-        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(numberOfVoxels), 3.0)))
+        resolution  = 256
+        dimension   = 8.0
+        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(resolution), 3.0)))
         camera = Camera(onRealTime: false)
         image  = DepthImage(onRealTime: false)
         parameters["Lambda"]    = 0.0
@@ -52,24 +52,24 @@ class Model {
     }
     
     func reallocateVoxels(with: Int) {
-        numberOfVoxels = with
+        resolution = with
         reallocateVoxels()
     }
     
     func totalOfVoxels() -> Int {
-        return numberOfVoxels * numberOfVoxels * numberOfVoxels
+        return resolution * resolution * resolution
     }
     
     func update(intrinsics: matrix_float3x3) {
         camera.update(intrinsics: intrinsics)
     }
     
-    func update(extrinsics: matrix_float4x4) {
-        camera.update(extrinsics: extrinsics)
+    func update(intrinsics: matrix_float4x4) {
+        camera.update(intrinsics: intrinsics)
     }
     
-    func update(extrinsics: matrix_float4x3) {
-        camera.update(_extrinsics: extrinsics)
+    func update(extrinsics: matrix_float4x4) {
+        camera.update(extrinsics: extrinsics)
     }
     
     func switchTo(realTime: Bool) {
@@ -95,22 +95,26 @@ class Model {
         var dethmap = image.data
         var Rt = camera.extrinsics
         var K = camera.intrinsics
-        let resolve = [resolutionInMeter, resolutionInMeter, resolutionInMeter]
-        //_ = bridge_raycastDepthMap(
-        _ = bridge_integrateDepthMap(
-            &dethmap, /*centroids,*/
-            &Rt,
-            &K,
-            &voxels,
-            Int32(width),
-            Int32(height),
-            Int32(numberOfVoxels),
-            resolve,
-            parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!);
+        let resolve = [dimension, dimension, dimension]
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let cFileName = dir.appendingPathComponent("points.sdp").absoluteString.cString(using: .utf8)
+            //_ = bridge_raycastDepthMap(
+            _ = bridge_integrateDepthMap(
+                &dethmap, /*centroids,*/
+                &Rt,
+                &K,
+                &voxels,
+                Int32(width),
+                Int32(height),
+                Int32(resolution),
+                resolve,
+                parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!,
+                cFileName)
+        }
     }
     
     func fullResolution() -> [Float] {
-        return [resolutionInMeter, resolutionInMeter, resolutionInMeter]
+        return [dimension, dimension, dimension]
     }
     /*
     func integrateDepthMap(image: DepthImage, camera: Camera, parameters: [Float]) {

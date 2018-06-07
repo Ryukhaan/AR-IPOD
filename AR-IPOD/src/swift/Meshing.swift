@@ -60,7 +60,7 @@ func extractMesh(volume: inout Model, isolevel: Float) -> [Vector] {
     let count = volume.totalOfVoxels()
     let stride = MemoryLayout<Vector>.stride
     // Why i can't allocate more than around "count" bytes ?
-    let byteCount = 3 * stride * volume.numberOfVoxels * volume.numberOfVoxels
+    let byteCount = 3 * stride * volume.resolution * volume.resolution
     //let byteCount = 3 * stride
     let triangles = UnsafeMutablePointer<Vector>.allocate(capacity: byteCount)
     defer {
@@ -75,17 +75,17 @@ func extractMesh(volume: inout Model, isolevel: Float) -> [Vector] {
         //&volume.centroids,
         &Tables.edgeTable,
         &tempTri,
-        Int32(volume.numberOfVoxels),
+        Int32(volume.resolution),
         isolevel)
     let buffer = UnsafeBufferPointer(start: triangles, count: Int(numberOfTriangles))
     return Array(buffer)
 }
 
 func extractTSDF(model: Model, isolevel: Float) -> [Vector] {
-    let resolution = model.resolutionInMeter
-    let dim = model.numberOfVoxels
+    let resolution = model.dimension
+    let dim = model.resolution
     let offset = resolution * 0.5
-    let square = model.numberOfVoxels * model.numberOfVoxels
+    let square = model.resolution * model.resolution
     var points = [Vector]()
     for (i, voxel) in model.voxels.enumerated() {
         if voxel.sdf == isolevel {

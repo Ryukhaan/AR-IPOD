@@ -337,7 +337,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         for i in 0..<self.sizeOfDataset {
             let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
             var depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.nameOfDataset)
-            bridge_median_filter(&depthmap, 2, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
+            //bridge_median_filter(&depthmap, 2, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
             
             self.myModel.update(extrinsics: extrinsics)
             let last_points = self.myModel.image.data

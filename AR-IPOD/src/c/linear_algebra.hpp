@@ -26,7 +26,14 @@ inline float integer_to_global(float point, int dim, float resolution) {
 }
 
 inline int global_to_integer(float point, int dim, float resolution) {
-    return static_cast<int>(dim * point / resolution - 0.5);
+    //return static_cast<int>(dim * point / resolution - 0.5);
+    return static_cast<int>((dim * point / resolution) - 0.5);
+}
+
+inline simd_int3 global_to_integer(simd::float3 point, int dim, simd::float3 resolution) {
+    return simd_make_int3(global_to_integer(point.x, dim, resolution.x),
+                          global_to_integer(point.y, dim, resolution.y),
+                          global_to_integer(point.z, dim, resolution.z));
 }
 
 inline simd_float3 create_centroid(const int i,
@@ -45,7 +52,7 @@ inline simd_float3 create_centroid(const int i,
     return centroid;
 }
 /**
- * Project. A 3D point is porjected into the image plane (2D)
+ * Project. A 3D point is projected into the image plane (2D)
  */
 inline simd_int2 project(simd::float3 vector, simd_float3x3 K) {
     simd::float3 temp = simd_make_float3(vector.x / vector.z, vector.y / vector.z, 1);

@@ -23,8 +23,8 @@ struct Camera {
     var zFar:       Float   = 0.0   // Nearest point seen by camera
     var zNear:      Float   = 0.0   // Farther point ssen by camera
     
-    var intrinsics: matrix_float3x3 // Matrix K (state-of-the-art). Converts 3D point to 2D
-    var extrinsics: matrix_float4x3 // Extrinsics camera : rotation and camera's position
+    var intrinsics: matrix_float4x4 // Matrix K (state-of-the-art). Converts 3D point to 2D
+    var extrinsics: matrix_float4x4 // Extrinsics camera : rotation and camera's position
     
     init(onRealTime: Bool) {
         if onRealTime {
@@ -35,38 +35,35 @@ struct Camera {
             width = UInt16(Constant.Kinect.Width)
             height = UInt16(Constant.Kinect.Height)
         }
-        intrinsics = matrix_float3x3()
-        extrinsics = matrix_float4x3(diagonal: float3(1,1,1))
-        extrinsics.columns.3 = float3(0,0,0)
-    }
-    
-    /**
-     * Initilialize camera given K and camera's dimensions
-     */
-    init(_intrinsics: matrix_float3x3, dim: CGSize) {
-        intrinsics  = _intrinsics
-        width       = UInt16(dim.width)
-        height      = UInt16(dim.height)
-        extrinsics  = matrix_float4x3()
+        intrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
+        extrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
     }
     
     mutating func update(intrinsics: matrix_float3x3) {
+        self.intrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
+        // First column
+        self.intrinsics.columns.0.x = intrinsics.columns.0.x
+        self.intrinsics.columns.0.z = intrinsics.columns.0.y
+        self.intrinsics.columns.0.y = intrinsics.columns.0.z
+        // Second column
+        self.intrinsics.columns.0.x = intrinsics.columns.1.x
+        self.intrinsics.columns.1.z = intrinsics.columns.1.y
+        self.intrinsics.columns.2.y = intrinsics.columns.1.z
+        // Third column
+        self.intrinsics.columns.0.x = intrinsics.columns.2.x
+        self.intrinsics.columns.1.z = intrinsics.columns.2.y
+        self.intrinsics.columns.2.y = intrinsics.columns.2.z
+    }
+    
+    mutating func update(intrinsics: matrix_float4x4) {
         self.intrinsics = intrinsics
     }
+    
     /**
      * Updates extrinsics matrix (rotation and camera's position).
      */
     mutating func update(extrinsics: matrix_float4x4) {
-        let Rt = extrinsics.transpose
-        let newRt = matrix_float4x3(rows: [Rt.columns.0, Rt.columns.1, Rt.columns.2])
-        //self.extrinsics = newRt
-        self.extrinsics = newRt
-    }
-    /**
-     * Updates extrinsics matrix (rotation and camera's position).
-     */
-    mutating func update(_extrinsics: matrix_float4x3) {
-        extrinsics = _extrinsics
+        self.extrinsics = extrinsics
     }
     
     mutating func changeTo(realTime: Bool) {
