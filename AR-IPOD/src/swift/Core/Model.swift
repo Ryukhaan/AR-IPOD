@@ -98,8 +98,8 @@ class Model {
         let resolve = [dimension, dimension, dimension]
         //if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         //    let cFileName = dir.appendingPathComponent("points.sdp").absoluteString.cString(using: .utf8)
-        //_ = bridge_raycastDepthMap(
-        _ = bridge_integrateDepthMap(
+        _ = bridge_raycastDepthMap(
+        //_ = bridge_integrateDepthMap(
             &dethmap, /*centroids,*/
             &Rt,
             &K,
@@ -117,9 +117,8 @@ class Model {
         return [dimension, dimension, dimension]
     }
     
-    func reinit() {
+    func reinitExtrinsics() {
         voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(resolution), 3.0)))
-        camera = Camera(onRealTime: false)
-        image  = DepthImage(onRealTime: false)
+        camera.extrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
     }
 }

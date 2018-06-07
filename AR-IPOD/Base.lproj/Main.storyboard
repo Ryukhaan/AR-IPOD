@@ -173,6 +173,7 @@
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
                                     <action selector="setDatasetSize:" destination="BV1-FR-VrT" eventType="editingDidEnd" id="f4H-jr-o7d"/>
+                                    <action selector="updateDatasetSize:" destination="BV1-FR-VrT" eventType="editingDidEnd" id="UmA-QY-vdP"/>
                                 </connections>
                             </textField>
                         </subviews>
