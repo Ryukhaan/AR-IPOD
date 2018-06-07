@@ -96,8 +96,8 @@ class Model {
         var Rt = camera.extrinsics
         var K = camera.intrinsics
         let resolve = [resolutionInMeter, resolutionInMeter, resolutionInMeter]
-        _ = bridge_raycastDepthMap(
-        //_ = bridge_integrateDepthMap(
+        //_ = bridge_raycastDepthMap(
+        _ = bridge_integrateDepthMap(
             &dethmap, /*centroids,*/
             &Rt,
             &K,

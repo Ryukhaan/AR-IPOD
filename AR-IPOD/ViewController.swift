@@ -31,6 +31,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var timer                       = Double(CFAbsoluteTimeGetCurrent())
     var inRealTime: Bool            = false
     
+    @IBOutlet var datasetSizeField: UITextField!
     @IBOutlet var volumeSize: UILabel!
     @IBOutlet var stepperSize: UIStepper!
     @IBOutlet var integrationProgress: UIProgressView!
@@ -419,6 +420,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         }
     }
     
+    @IBAction func updateDatasetSize(_ sender: Any) {
+        let size = Int(datasetSizeField.text!)
+        sizeOfDataset = size!
+        tx.text = datasetSizeField.text
+    }
+    
     @IBAction func changeDatasetSize(_ sender: Any) {
         switch datasetSize.selectedSegmentIndex {
         case 0:
@@ -439,7 +446,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             message: "Veuillez mettre la caméra en face de l'objet",
             handler: { _ in
                 AudioServicesPlaySystemSound (self.systemSoundID)
-                self.inRealTime = true
+                self.inRealTime = !self.inRealTime
         })
     }
     

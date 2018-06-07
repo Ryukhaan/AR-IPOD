@@ -15,6 +15,7 @@ class SceneViewController: UIViewController {
     
     @IBOutlet var isoLabel: UILabel!
     @IBOutlet var isolevel: UITextField!
+    @IBOutlet var withoutMesh: UITextField!
     
     var volume: Model = Model.sharedInstance
     var indexOfPointCloud: Int = 0
@@ -70,7 +71,6 @@ class SceneViewController: UIViewController {
 
     @IBAction func update(_ sender: Any) {
         let iso = Float(isolevel.text!)
-        isoLabel.text = "Isolevel: \(String(describing: iso!))"
         DispatchQueue.global().async {
             let points = extractMesh(volume: &self.volume, isolevel: iso!)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
@@ -85,6 +85,21 @@ class SceneViewController: UIViewController {
         //scnView.backgroundColor = UIColor.black
     }
     
+    @IBAction func displayPoints(_ sender: Any) {
+        let iso = Float(withoutMesh.text!)
+        DispatchQueue.global().async {
+            //let points = extractMesh(volume: &self.volume, isolevel: iso!)
+            let points = extractTSDF(model: self.volume, isolevel: iso!)
+            //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
+            let pointCloudNode = UIFactory.createPointsNode(points: points)
+            let scnView = self.view as! SCNView
+            if self.self.indexOfPointCloud > 0 {
+                scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
+            }
+            scnView.scene?.rootNode.addChildNode(pointCloudNode)
+            self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
+        }
+    }
     @IBAction func export(_ sender: Any) {
         let iso = Float(isolevel.text!)
         let points = extractMesh(volume: &self.volume, isolevel: iso!)
@@ -93,7 +108,7 @@ class SceneViewController: UIViewController {
     
     @IBAction func display(_ sender: Any) {
         DispatchQueue.global().async {
-            let points = extractMesh(volume: &self.volume, isolevel: 0.01)
+            let points = extractMesh(volume: &self.volume, isolevel: 0.02)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
             let pointCloudNode = UIFactory.createMeshNode(points: points)
             let scnView = self.view as! SCNView

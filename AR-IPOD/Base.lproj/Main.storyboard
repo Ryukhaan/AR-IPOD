@@ -111,6 +111,19 @@
                                     <action selector="updateEpsilon:" destination="BV1-FR-VrT" eventType="valueChanged" id="dTs-ft-1M0"/>
                                 </connections>
                             </stepper>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="hL3-Os-wfc">
+                                <rect key="frame" x="20" y="44" width="150" height="29"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="150" id="wZT-Nu-PFU"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="Chair"/>
+                                    <segment title="Ikea Table"/>
+                                </segments>
+                                <connections>
+                                    <action selector="changeDataset:" destination="BV1-FR-VrT" eventType="valueChanged" id="NOg-L5-Jg9"/>
+                                </connections>
+                            </segmentedControl>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="c8J-og-tAT">
                                 <rect key="frame" x="209" y="44" width="150" height="29"/>
                                 <segments>
@@ -152,19 +165,16 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="hL3-Os-wfc">
-                                <rect key="frame" x="20" y="44" width="150" height="29"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="150" id="wZT-Nu-PFU"/>
-                                </constraints>
-                                <segments>
-                                    <segment title="Chair"/>
-                                    <segment title="Ikea Table"/>
-                                </segments>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ds4-bn-c2c">
+                                <rect key="frame" x="209" y="80" width="150" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
                                 <connections>
-                                    <action selector="changeDataset:" destination="BV1-FR-VrT" eventType="valueChanged" id="NOg-L5-Jg9"/>
+                                    <action selector="setDatasetSize:" destination="BV1-FR-VrT" eventType="editingDidEnd" id="f4H-jr-o7d"/>
                                 </connections>
-                            </segmentedControl>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -225,6 +235,7 @@
                     <connections>
                         <outlet property="datasetChoice" destination="hL3-Os-wfc" id="cDO-xr-aEs"/>
                         <outlet property="datasetSize" destination="c8J-og-tAT" id="xhJ-TA-tAa"/>
+                        <outlet property="datasetSizeField" destination="ds4-bn-c2c" id="vlN-M1-81h"/>
                         <outlet property="deltaLabel" destination="MRJ-Kk-xJJ" id="KSt-D8-JkQ"/>
                         <outlet property="deltaStepper" destination="bM2-3c-gd0" id="qMz-mI-cwc"/>
                         <outlet property="epsilonLabel" destination="lEQ-JZ-aY5" id="AGq-9A-LMl"/>
@@ -270,13 +281,31 @@
                                     <action selector="export:" destination="Veu-Bj-pVo" eventType="touchUpInside" id="ZAX-jr-IDN"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" fixedFrame="YES" text="Isolevel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dFQ-gN-Uew">
-                                <rect key="frame" x="143" y="50" width="58" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cAf-Cz-cIb">
+                                <rect key="frame" x="38" y="88" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="display:" destination="Veu-Bj-pVo" eventType="touchUpInside" id="Zij-9z-Rhe"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" fixedFrame="YES" text="Meshing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dFQ-gN-Uew">
+                                <rect key="frame" x="114" y="50" width="66" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="knn-XJ-ZZq">
+                                <rect key="frame" x="209" y="88" width="150" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="displayPoints:" destination="Veu-Bj-pVo" eventType="editingDidEnd" id="bqP-xl-KLt"/>
+                                </connections>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="kib-kx-Maq"/>
@@ -285,11 +314,12 @@
                     <connections>
                         <outlet property="isoLabel" destination="dFQ-gN-Uew" id="bYO-wD-kTt"/>
                         <outlet property="isolevel" destination="32c-sp-SpH" id="Bqo-l3-dU3"/>
+                        <outlet property="withoutMesh" destination="knn-XJ-ZZq" id="s1g-aL-oYW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Gm5-Yp-8RQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="43" y="-1029"/>
+            <point key="canvasLocation" x="42.399999999999999" y="-1029.3103448275863"/>
         </scene>
         <!--Settings-->
         <scene sceneID="Ihw-sq-vrA">

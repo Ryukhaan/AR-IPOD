@@ -163,6 +163,7 @@ int bridge_integrateDepthMap(float* depthmap,
     // Relative camera variables
     simd_float3x3 K = ((simd_float3x3 *) intrinsics)[0];
     simd_float4x3 Rt = ((simd_float4x3 *) extrinsics)[0];
+
     simd_float3x3 Kinv = simd_inverse(K);
     simd_float3x3 rotation = simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]);
     simd_float3 translation = Rt.columns[3];
@@ -170,7 +171,7 @@ int bridge_integrateDepthMap(float* depthmap,
     
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
-    simd_float2x3 box = compute_bounding_box(depthmap, width, height, rotation, translation, Kinv, 2);
+    /*simd_float2x3 box = compute_bounding_box(depthmap, width, height, rotation, translation, Kinv, 2);
     simd_int3 point_min = simd_make_int3(global_to_integer(box.columns[0].x + offset, dimension, resolution[0]),
                                          global_to_integer(box.columns[0].y + offset, dimension, resolution[1]),
                                          global_to_integer(box.columns[0].z + offset, dimension, resolution[2]));
@@ -179,9 +180,27 @@ int bridge_integrateDepthMap(float* depthmap,
                                          global_to_integer(box.columns[1].z + offset, dimension, resolution[2]));
     int mini = hash_function(point_min, dimension);
     int maxi = hash_function(point_max, dimension);
-
-    for( int i = mini; i<maxi; i++)
-    //for (int i = 0; i<size; i++)
+    */
+    for (int i = 0; i<width*height; i++) {
+        float depth = depthmap[i];
+        int u = i / width;
+        int v = i % width;
+        simd::float3 homogene = depth * simd_make_float3(u, v, 1);
+        simd::float3 local = simd_mul(Kinv, homogene);
+        simd::float3 global = simd_mul(simd_transpose(rotation), local - translation);
+        simd_int3 coordinate = simd_make_int3
+        (
+         global_to_integer(global.x + offset, dimension, resolution[0]),
+         global_to_integer(global.y + offset, dimension, resolution[1]),
+         global_to_integer(global.z + offset, dimension, resolution[2])
+         );
+        int k = hash_function(coordinate, dimension);
+        if (k < 0 || k >= size) continue;
+        update_voxel((Voxel *)voxels, 0.0, 1, k);
+    }
+    /*
+    //for( int i = mini; i<maxi; i++)
+    for (int i = 0; i<size; i++)
     {
         if (i >= size) continue;
         if (i < 0) continue;
@@ -213,11 +232,12 @@ int bridge_integrateDepthMap(float* depthmap,
         // Calculate weight
         float w = constant_weighting(distance, delta, lambda);
         
-        if (distance >= delta + epsilon && distance <= zp) carving_voxel((Voxel *)voxels, i);
+        //if (distance >= delta + epsilon && distance <= zp) carving_voxel((Voxel *)voxels, i);
         if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, w, i);
-        //else if (distance > delta) update_voxel((Voxel *)voxels, delta, 1, i);
-        //else update_voxel((Voxel *)voxels, -delta, 1, i);
+        else if (distance > delta) update_voxel((Voxel *)voxels, delta, 1, i);
+        else update_voxel((Voxel *)voxels, -delta, 1, i);
     }
+    */
     return number_of_changes;
 }
 

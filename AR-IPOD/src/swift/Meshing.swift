@@ -81,3 +81,25 @@ func extractMesh(volume: inout Model, isolevel: Float) -> [Vector] {
     return Array(buffer)
 }
 
+func extractTSDF(model: Model, isolevel: Float) -> [Vector] {
+    let resolution = model.resolutionInMeter
+    let dim = model.numberOfVoxels
+    let offset = resolution * 0.5
+    let square = model.numberOfVoxels * model.numberOfVoxels
+    var points = [Vector]()
+    for (i, voxel) in model.voxels.enumerated() {
+        if voxel.sdf == isolevel {
+            var centroid = Vector(0,0,0)
+            let x = Float(i / square)
+            let remainder = i % square
+            let y = Float(remainder / dim)
+            let z = Float(remainder % dim)
+            centroid.x = ((resolution / Float(dim)) * (x + 0.5)) - offset
+            centroid.y = ((resolution / Float(dim)) * (y + 0.5)) - offset
+            centroid.z = ((resolution / Float(dim)) * (z + 0.5)) - offset
+            points.append(centroid)
+        }
+    }
+    return points
+}
+
