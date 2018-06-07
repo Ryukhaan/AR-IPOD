@@ -176,8 +176,8 @@ int bridge_integrateDepthMap(float* depthmap,
     // It can reduce (always ?) next loop complexity.
     /*
     simd_float2x3 box = compute_bounding_box(depthmap, width, height, Rtinv, Kinv);
-    simd_int3 point_min = global_to_integer(box.columns[0], resolution, dimensions);
-    simd_int3 point_max = global_to_integer(box.columns[1], resolution, dimensions);
+    simd_int3 point_min = global_to_integer(box.columns[0] + offset, resolution, dimensions);
+    simd_int3 point_max = global_to_integer(box.columns[1] + offset, resolution, dimensions);
     int mini = hash_function(point_min, resolution);
     int maxi = hash_function(point_max, resolution);
     */
