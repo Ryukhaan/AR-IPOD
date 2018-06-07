@@ -43,16 +43,16 @@ struct Camera {
         self.intrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
         // First column
         self.intrinsics.columns.0.x = intrinsics.columns.0.x
-        self.intrinsics.columns.0.z = intrinsics.columns.0.y
-        self.intrinsics.columns.0.y = intrinsics.columns.0.z
+        self.intrinsics.columns.0.y = intrinsics.columns.0.y
+        self.intrinsics.columns.0.z = intrinsics.columns.0.z
         // Second column
-        self.intrinsics.columns.0.x = intrinsics.columns.1.x
-        self.intrinsics.columns.1.z = intrinsics.columns.1.y
-        self.intrinsics.columns.2.y = intrinsics.columns.1.z
+        self.intrinsics.columns.1.x = intrinsics.columns.1.x
+        self.intrinsics.columns.1.y = intrinsics.columns.1.y
+        self.intrinsics.columns.1.z = intrinsics.columns.1.z
         // Third column
-        self.intrinsics.columns.0.x = intrinsics.columns.2.x
-        self.intrinsics.columns.1.z = intrinsics.columns.2.y
-        self.intrinsics.columns.2.y = intrinsics.columns.2.z
+        self.intrinsics.columns.2.x = intrinsics.columns.2.x
+        self.intrinsics.columns.2.y = intrinsics.columns.2.y
+        self.intrinsics.columns.2.z = intrinsics.columns.2.z
     }
     
     mutating func update(intrinsics: matrix_float4x4) {
@@ -62,8 +62,24 @@ struct Camera {
     /**
      * Updates extrinsics matrix (rotation and camera's position).
      */
-    mutating func update(extrinsics: matrix_float4x4) {
-        self.extrinsics = extrinsics
+    mutating func update(extrinsics: matrix_float4x4, onlyRotation: Bool) {
+        if onlyRotation {
+            // Beware, there is no translation in IPhone (we do "fast_icp" instead)
+            self.extrinsics.columns.0.x = extrinsics.columns.0.x
+            self.extrinsics.columns.0.y = extrinsics.columns.0.y
+            self.extrinsics.columns.0.z = extrinsics.columns.0.z
+            // Second column
+            self.extrinsics.columns.1.x = extrinsics.columns.1.x
+            self.extrinsics.columns.1.y = extrinsics.columns.1.y
+            self.extrinsics.columns.1.z = extrinsics.columns.1.z
+            // Third column
+            self.extrinsics.columns.2.x = extrinsics.columns.2.x
+            self.extrinsics.columns.2.y = extrinsics.columns.2.y
+            self.extrinsics.columns.2.z = extrinsics.columns.2.z
+        }
+        else {
+            self.extrinsics = extrinsics
+        }
     }
     
     mutating func changeTo(realTime: Bool) {

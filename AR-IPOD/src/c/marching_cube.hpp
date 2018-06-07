@@ -19,6 +19,10 @@
 #include <vector>
 
 simd::float3 interpolate(float isolevel, simd::float3 a, simd::float3 b, float alpha, float beta);
-std::vector<simd::float3> polygonise(simd::float3 points[8], float values[8], float isolevel, int* edgeTable, int* triTable);
+std::vector<simd::float3> polygonise(const simd::float3 points[8],
+                                     const float values[8],
+                                     const float isolevel,
+                                     const int edgeTable[256],
+                                     const int triTable[4096]);
 
 #endif /* marching_cube_hpp */

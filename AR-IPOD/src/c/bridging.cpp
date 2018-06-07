@@ -54,16 +54,16 @@ void bridge_initializeCentroids(void* centroids, int size, float resolution) {
 
 unsigned long bridge_extractMesh(void* triangles,
                                  void* voxels,
-                                 //const float* voxels,
-                                 //const void* centroids,
-                                 int edgeTable[256],
-                                 int triTable[4096],
-                                 int n,
-                                 float isolevel) {
+                                 const int edgeTable[256],
+                                 const int triTable[4096],
+                                 const int resolution,
+                                 const float isolevel,
+                                 const float dimension[3]) {
     unsigned long index = 0;
+    int n = resolution;
+    simd::float3 dimensions = simd_make_float3(dimension[0], dimension[1], dimension[2]);
+    simd::float3 offset = 0.5 * dimensions;
     int n2 = n * n;
-    float whd = 16.0;
-    float offset = whd * 0.5;
 //  int num_threads = omp_get_num_threads();
 //#pragma omp parallel for shared(index) collapse(3) num_threads(num_threads)
     for (int i = 0; i<n-1; i++) {
@@ -77,14 +77,14 @@ unsigned long bridge_extractMesh(void* triangles,
                 int i5 = (i+1)*n2 + (j+1)*n + (k+1);
                 int i6 = (i+1)*n2 + (j+1)*n + k;
                 int i7 = i*n2 + (j+1)*n + k;
-                simd::float3 c0 = create_centroid(i0, n, whd, n2, offset);
-                simd::float3 c1 = create_centroid(i1, n, whd, n2, offset);
-                simd::float3 c2 = create_centroid(i2, n, whd, n2, offset);
-                simd::float3 c3 = create_centroid(i3, n, whd, n2, offset);
-                simd::float3 c4 = create_centroid(i4, n, whd, n2, offset);
-                simd::float3 c5 = create_centroid(i5, n, whd, n2, offset);
-                simd::float3 c6 = create_centroid(i6, n, whd, n2, offset);
-                simd::float3 c7 = create_centroid(i7, n, whd, n2, offset);
+                simd::float3 c0 = create_centroid(i0, n, dimensions, n2, offset);
+                simd::float3 c1 = create_centroid(i1, n, dimensions, n2, offset);
+                simd::float3 c2 = create_centroid(i2, n, dimensions, n2, offset);
+                simd::float3 c3 = create_centroid(i3, n, dimensions, n2, offset);
+                simd::float3 c4 = create_centroid(i4, n, dimensions, n2, offset);
+                simd::float3 c5 = create_centroid(i5, n, dimensions, n2, offset);
+                simd::float3 c6 = create_centroid(i6, n, dimensions, n2, offset);
+                simd::float3 c7 = create_centroid(i7, n, dimensions, n2, offset);
                 /*
                 simd::float3 points[8] = {
                     ((simd::float3*) centroids)[i0],
@@ -155,8 +155,7 @@ int bridge_integrateDepthMap(float* depthmap,
                              const float dimension[3],
                              const float delta,
                              const float epsilon,
-                             const float lambda,
-                             const char* name) {
+                             const float lambda) {
     //median_filter(depthmap, 2, width, height);
     // Instanciate all local variables
     int number_of_changes = 0;
@@ -175,15 +174,12 @@ int bridge_integrateDepthMap(float* depthmap,
     
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
-    /*simd_float2x3 box = compute_bounding_box(depthmap, width, height, rotation, translation, Kinv, 2);
-    simd_int3 point_min = simd_make_int3(global_to_integer(box.columns[0].x + offset, dimension, resolution[0]),
-                                         global_to_integer(box.columns[0].y + offset, dimension, resolution[1]),
-                                         global_to_integer(box.columns[0].z + offset, dimension, resolution[2]));
-    simd_int3 point_max = simd_make_int3(global_to_integer(box.columns[1].x + offset, dimension, resolution[0]),
-                                         global_to_integer(box.columns[1].y + offset, dimension, resolution[1]),
-                                         global_to_integer(box.columns[1].z + offset, dimension, resolution[2]));
-    int mini = hash_function(point_min, dimension);
-    int maxi = hash_function(point_max, dimension);
+    /*
+    simd_float2x3 box = compute_bounding_box(depthmap, width, height, Rtinv, Kinv);
+    simd_int3 point_min = global_to_integer(box.columns[0], resolution, dimensions);
+    simd_int3 point_max = global_to_integer(box.columns[1], resolution, dimensions);
+    int mini = hash_function(point_min, resolution);
+    int maxi = hash_function(point_max, resolution);
     */
     /*
     for (int i = 0; i<width*height; i++) {
@@ -207,9 +203,9 @@ int bridge_integrateDepthMap(float* depthmap,
     //for( int i = mini; i<maxi; i++)
     for (int i = 0; i<size; i++)
     {
-        //if (i >= size) continue;
-        //if (i < 0) continue;
-        simd::float3 centroid = create_centroid(i, resolution, dimensions.x, square, offset.x);
+        if (i >= size) continue;
+        if (i < 0) continue;
+        simd::float3 centroid = create_centroid(i, resolution, dimensions, square, offset);
 
         simd::float4 homogene_3d = simd_make_float4(centroid.x, centroid.y, centroid.z, 1);
         //simd::float3 local = simd_mul(rotation, centroid + translation);
@@ -225,7 +221,7 @@ int bridge_integrateDepthMap(float* depthmap,
         if (v < 0 || v >= width)    continue;
         
         //float z = local.z;
-        float z = local.z;
+        float z = centroid.z;
         float zp = depthmap[u * width + v];
         // Depth invalid
         if (std::isnan(zp)) continue;
@@ -233,7 +229,7 @@ int bridge_integrateDepthMap(float* depthmap,
         
         float distance = zp - z;
         // Calculate weight
-        float w = constant_weighting(distance, delta, lambda);
+        float w = constant_weighting(distance, delta);
         
         if (distance >= delta + epsilon && distance <= zp) carving_voxel((Voxel *)voxels, i);
         if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, w, i);
@@ -278,27 +274,20 @@ void bridge_fast_icp(const float* previous_points,
         for (int j = 0; j<width; j++)
         {
             // Previous points
-            if ( ! std::isnan(previous_points[ i*width + j]) &&
-                previous_points[ i*width + j] > 1e-6)
-            {
-                // Unproject into global coordinate
-                float depth     = previous_points[ i*width + j];
-                simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
-                simd::float4 previous_point  = simd_mul(simd_mul(Rtinv, Kinv), uv);
-                previous_count ++;
-                previous_mass_centre += simd_make_float4(previous_point.x, previous_point.y, previous_point.z, 1);
-            }
+            float depth = previous_points[ i*width + j];
+            if ( std::isnan(depth) || depth < 1e-6 ) continue;
+            simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
+            simd::float4 previous_point  = simd_mul(simd_mul(Rtinv, Kinv), uv);
+            previous_count ++;
+            previous_mass_centre += simd_make_float4(previous_point.x, previous_point.y, previous_point.z, 1);
+            
             // Current points
-            if ( ! std::isnan(current_points[ i*width + j]) &&
-                current_points[ i*width + j] > 1e-6)
-            {
-                // Unproject into global coordinate
-                float depth     = current_points[ i*width + j];
-                simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
-                simd::float4 current_point   = simd_mul(simd_mul(Rtinv, Kinv), uv);
-                current_count ++;
-                current_mass_centre += simd_make_float4(current_point.x, current_point.y, current_point.z, 1);
-            }
+            depth = current_points[ i*width + j];
+            if ( std::isnan(depth) || depth < 1e-6 ) continue;
+            uv = simd_make_float4(depth * i, depth * j, depth, 1);
+            simd::float4 current_point   = simd_mul(simd_mul(Rtinv, Kinv), uv);
+            current_count ++;
+            current_mass_centre += simd_make_float4(current_point.x, current_point.y, current_point.z, 1);
         }
     }
     // Divide by number of points seen
@@ -306,8 +295,7 @@ void bridge_fast_icp(const float* previous_points,
     previous_mass_centre    = previous_mass_centre / (float) previous_count;
     // Add translation vector between current and previous points to previous transalation
     simd::float4 t          = Rt.columns[3] + (previous_mass_centre - current_mass_centre);
-    ((simd_float4x4 *) extrinsics)[0].columns[3] = t;
-    
+    //((simd_float4x4 *) extrinsics)[0].columns[3] = t;
 }
 
 
@@ -341,10 +329,9 @@ void bridge_drift_correction(const float* current_points,
     {
         for (int j = 0; j<width; j++)
         {
-            if ( ! std::isnan(current_points[ i*width + j]) &&
-                current_points[ i*width + j] > 1e-6)
+            float depth = current_points[ i*width + j];
+            if ( ! std::isnan(depth) && depth > 1e-6)
             {
-                float depth     = current_points[ i*width + j];
                 simd::float3 uv = simd_make_float3(i, j, 1);
                 simd::float3 global  = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
                 simd_int3 global_int = simd_make_int3(
@@ -380,35 +367,30 @@ int bridge_raycastDepthMap(float* depthmap,
                            void* voxels,
                            const int width,
                            const int height,
-                           const int dimension,
-                           const float resolution[3],
+                           const int resolution,
+                           const float dimension[3],
                            const float delta,
                            const float epsilon,
                            const float lambda) {
-    int size = pow(dimension, 3.0);
-    int square = pow(dimension, 2.0);
-    float offset = resolution[0] * 0.5;
-    simd_float3x3 K = ((simd_float3x3 *) intrinsics)[0];
-    simd_float3x3 Kinv = simd_inverse(K);
-    simd_float4x3 Rt = ((simd_float4x3 *) extrinsics)[0];
-    simd_float3x3 rotation = simd_matrix(Rt.columns[0], Rt.columns[1], Rt.columns[2]);
-    simd_float3 translation = Rt.columns[3];
+    int size = pow(resolution, 3.0);
+    int square = pow(resolution, 2.0);
+    simd::float3 dimensions = simd_make_float3(dimension[0], dimension[1], dimension[2]);
+    simd::float3 offset = dimensions * 0.5;
+    simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
+    simd_float4x4 Kinv = simd_inverse(K);
+    simd_float4x4 Rt = ((simd_float4x4 *) extrinsics)[0];
+    simd_float4x4 Rtinv = simd_inverse(Rt);
+    
+    simd::float3 translation = simd_make_float3(Rt.columns[3].x, Rt.columns[3].y, Rt.columns[3].z);
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             float depth = depthmap[ i*width + j];
             if (std::isnan(depth) || depth < 1e-6) continue;
-            simd::float3 uv = simd_make_float3(i, j, 1);
-            simd::float3 global  = simd_mul(simd_transpose(rotation), simd_mul(Kinv, depth * uv) - translation);
-            simd_int3 end = simd_make_int3(
-                                           global_to_integer(global.x + offset, dimension, resolution[0]),
-                                           global_to_integer(global.y + offset, dimension, resolution[1]),
-                                           global_to_integer(global.z + offset, dimension, resolution[2])
-                                           );
-            simd_int3 current = simd_make_int3(
-                                             global_to_integer(translation.x + offset, dimension, resolution[0]),
-                                             global_to_integer(translation.y + offset, dimension, resolution[1]),
-                                             global_to_integer(translation.z + offset, dimension, resolution[2])
-                                             );
+            simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
+            simd::float4 global     = simd_mul(simd_mul(Rtinv, Kinv), uv);
+            simd::float3 rglobal    = simd_make_float3(global.x, global.y, global.z);
+            simd_int3 end           = global_to_integer(rglobal + offset, resolution, dimensions);
+            simd_int3 current       = global_to_integer(translation + offset, resolution, dimensions);
             //float maxDist = simd_length(direction);
             float dx = global.x - translation.x;
             float dy = global.y - translation.y;
@@ -420,11 +402,11 @@ int bridge_raycastDepthMap(float* depthmap,
             if (stepX == 0 && stepY == 0 && stepZ == 0) return 0;
             while (true) {
                 if (current.x == end.x && current.y == end.y && current.z == end.z) break;
-                int k = hash_function(current, dimension);
+                int k = hash_function(current, resolution);
                 if (k <= size && k >= 0) {
-                    simd::float3 c = create_centroid(k, dimension, 4.0, square, 2.0);
+                    simd::float3 c = create_centroid(k, resolution, 4.0, square, 2.0);
                     float distance = c.z - global.z;
-                    float w = constant_weighting(distance, delta, lambda);
+                    float w = constant_weighting(distance, delta);
                     if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, w, k);
                 }
                 if (current.x != end.x)

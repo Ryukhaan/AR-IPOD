@@ -56,11 +56,11 @@ struct Tables {
  * @volume : Volume to be "marched"
  * @isolovel : isovalue according to Lorensen & Clide paper (1987)
  */
-func extractMesh(volume: inout Model, isolevel: Float) -> [Vector] {
-    let count = volume.totalOfVoxels()
+func extractMesh(model: inout Model, isolevel: Float) -> [Vector] {
+    let count = model.totalOfVoxels()
     let stride = MemoryLayout<Vector>.stride
     // Why i can't allocate more than around "count" bytes ?
-    let byteCount = 3 * stride * volume.resolution * volume.resolution
+    let byteCount = 3 * stride * model.resolution * model.resolution
     //let byteCount = 3 * stride
     let triangles = UnsafeMutablePointer<Vector>.allocate(capacity: byteCount)
     defer {
@@ -70,13 +70,14 @@ func extractMesh(volume: inout Model, isolevel: Float) -> [Vector] {
     var tempTri = Tables.triTable.flatMap { $0 }
     let numberOfTriangles = bridge_extractMesh(
         triangles,
-        &(volume.voxels),
+        &(model.voxels),
         //&sdfs,
         //&volume.centroids,
         &Tables.edgeTable,
         &tempTri,
-        Int32(volume.resolution),
-        isolevel)
+        Int32(model.resolution),
+        isolevel,
+        model.getDimensions())
     let buffer = UnsafeBufferPointer(start: triangles, count: Int(numberOfTriangles))
     return Array(buffer)
 }

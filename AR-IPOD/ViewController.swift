@@ -46,9 +46,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var myCIImage: CIImage?
     
     // Isolevel parameters UI
-    @IBOutlet var lambdaLabel: UILabel!
-    @IBOutlet var lambdaStepper: UIStepper!
-    let lambdaTick = 0.02
+    @IBOutlet var dimensionLabel: UILabel!
+    @IBOutlet var dimensionStepper: UIStepper!
+    let lambdaTick = 1.0
     // Delta parameters UI
     @IBOutlet var deltaStepper: UIStepper!
     @IBOutlet var deltaLabel: UILabel!
@@ -162,7 +162,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             //ty.text = "\(frame.camera.intrinsics.columns.2.y)"//"\(self.myCamera.extrinsics.columns.3.y)"
             //tz.text = "\(frame.camera.intrinsics.columns.2.z)"//"\(self.myCamera.extrinsics.columns.3.z)"
             //let camera = frame.camera.trackingState
-            self.myModel.update(extrinsics: frame.camera.transform)
+            self.myModel.update(extrinsics: frame.camera.transform, onlyRotation: true)
             self.myModel.update(intrinsics: frame.camera.intrinsics)
             /*
              if let points = frame.rawFeaturePoints {
@@ -210,7 +210,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 var K   = self.myModel.camera.intrinsics
                 var Rt  = self.myModel.camera.extrinsics
                 bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
-                self.myModel.update(extrinsics: Rt)
+                self.myModel.update(extrinsics: Rt, onlyRotation: false)
                 
                 /* Another Way : Save all depth maps and pose then do it offline */
                 //save(model: self.myModel, atTime: k)
@@ -271,75 +271,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         integrationProgress.isHidden = false
         inRealTime = false
         self.myModel.switchTo(realTime: inRealTime)
-        //var itDone = 0
-        //var itRead = 0
-        /*
-        let integrateItem = DispatchWorkItem {
-            // Compute TSDF
-            let extrinsics = importCameraPose(from: "frame-\(itRead).pose", at: self.nameOfDataset)
-            let depthmap = importDepthMapFromTXT(from: "frame-\(itRead).depth", at: self.nameOfDataset)
-            self.myCamera.update(extrinsics: extrinsics)
-
-            let last_points = self.myDepthImage.data
-            self.myDepthImage.update(_data: depthmap)
-            let current_points = self.myDepthImage.data
-            var K = self.myCamera.intrinsics
-            var Rt = self.myCamera.extrinsics
-            // Before
-            bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
-            // After
-            DispatchQueue.main.async {
-                self.tx.text = "\(Rt.columns.3.x) vs \(extrinsics.columns.3.x)"
-                self.ty.text = "\(Rt.columns.3.y) vs \(extrinsics.columns.3.y)"
-                self.tz.text = "\(Rt.columns.3.z) vs \(extrinsics.columns.3.z)"
-            }
-            self.myCamera.extrinsics = Rt
-            self.myVolume.integrateDepthMap(image: self.myDepthImage,
-                                            camera: self.myCamera,
-                                            parameters: [Float(delta), Float(epsilon), Float(lambda)])
-            itDone += 1
-            // Update UI
-            /*
-            DispatchQueue.main.async {
-                self.integrationProgress.progress = Float(itDone) / Float(self.sizeOfDataset)
-                let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
-                if itDone == self.sizeOfDataset {
-                    self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in
-                        self.integrationProgress.isHidden = true
-                        self.integrationProgress.progress = 0.0
-                    })
-                }
-            }
-            */
-        }
-        if datasetChoice.selectedSegmentIndex != DataAcquisition.InRealTime {
-            timer = Double(CFAbsoluteTimeGetCurrent())
-            for i in 0..<self.sizeOfDataset {
-                //group.enter()
-                DispatchQueue.global().asyncAfter(deadline: .now()+0.1+Double(3*i)) {
-                    itRead = i
-                    integrateItem.perform()
-                //    group.leave()
-                }
-                //itRead = i
-                //integrateItem.perform()
-                //sleep(1)
-            }
-            group.wait()
-            self.displayAlertMessage(title: "Fin Algorithme", message: "", handler: {_ in
-                self.integrationProgress.isHidden = true
-                self.integrationProgress.progress = 0.0
-            })
-        }
-        */
-        
+        //self.myModel.reinit()
         timer = Double(CFAbsoluteTimeGetCurrent())
         for i in 0..<self.sizeOfDataset {
             let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
             var depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.nameOfDataset)
-            //bridge_median_filter(&depthmap, 2, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
+            bridge_median_filter(&depthmap, 2, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
             
-            self.myModel.update(extrinsics: extrinsics)
+            self.myModel.update(extrinsics: extrinsics, onlyRotation: true)
             let last_points = self.myModel.image.data
             self.myModel.update(data: depthmap)
             if i > 0 {
@@ -352,6 +291,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                 &Rt,
                                 Int32(self.myModel.camera.width),
                                 Int32(self.myModel.camera.height))
+                DispatchQueue.main.async {
+                    self.tx.text = "\(Rt.columns.3.x) vs \(extrinsics.columns.3.x)"
+                    self.ty.text = "\(Rt.columns.3.y) vs \(extrinsics.columns.3.y)"
+                    self.tz.text = "\(Rt.columns.3.z) vs \(extrinsics.columns.3.z)"
+                }
                 /*
                 bridge_drift_correction(current_points,
                                         &K,
@@ -362,8 +306,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                         Int32(self.myModel.camera.width),
                                         Int32(self.myModel.camera.height))
                 */
-                self.myModel.update(extrinsics: Rt)
+                self.myModel.update(extrinsics: Rt, onlyRotation: false)
             }
+            
             self.myModel.integrate()
             self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
         }
@@ -372,18 +317,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             self.integrationProgress.isHidden = true
             self.integrationProgress.progress = 0.0
         })
-        /*
-        else {
-            self.numberOfIterations = 0
-            self.displayAlertMessage(
-                title: "Acquisition en temps réel",
-                message: "Veuillez mettre la front-caméra face de l'objet",
-                handler: { _ in
-                    self.hasIntegratingStarted = true
-                    AudioServicesPlaySystemSound (self.systemSoundID)
-            })
-        }
-         */
     }
     
     @IBAction func updateEpsilon(_ sender: Any) {
@@ -404,10 +337,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         myModel.reallocateVoxels(with: Int(quantity))
     }
     
-    @IBAction func updateLambda(_ sender: Any) {
-        let quantity = lambdaStepper.value * lambdaTick
-        lambdaLabel.text = "Lambda: \(quantity)"
-        myModel.parameters["Lambda"] = Float(quantity)
+    @IBAction func updateDimension(_ sender: Any) {
+        let quantity = dimensionStepper.value * lambdaTick
+        dimensionLabel.text = "Dimension: \(quantity)"
+        myModel.dimension = Float(quantity)
     }
     
     @IBAction func changeDataset(_ sender: Any) {

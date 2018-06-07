@@ -75,16 +75,16 @@
                                     <action selector="increaseVolume:" destination="BV1-FR-VrT" eventType="valueChanged" id="Arm-yo-sqQ"/>
                                 </connections>
                             </stepper>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lambda: 0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nDE-z5-0Dt">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dimension: 8.0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nDE-z5-0Dt">
                                 <rect key="frame" x="20" y="570" width="240" height="29"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="E3V-rD-SAV">
+                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="8" maximumValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="E3V-rD-SAV">
                                 <rect key="frame" x="265" y="570" width="94" height="29"/>
                                 <connections>
-                                    <action selector="updateLambda:" destination="BV1-FR-VrT" eventType="valueChanged" id="eNC-YF-B0U"/>
+                                    <action selector="updateDimension:" destination="BV1-FR-VrT" eventType="valueChanged" id="eNC-YF-B0U"/>
                                 </connections>
                             </stepper>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Delta: 0.3" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MRJ-Kk-xJJ">
@@ -238,11 +238,11 @@
                         <outlet property="datasetSizeField" destination="ds4-bn-c2c" id="vlN-M1-81h"/>
                         <outlet property="deltaLabel" destination="MRJ-Kk-xJJ" id="KSt-D8-JkQ"/>
                         <outlet property="deltaStepper" destination="bM2-3c-gd0" id="qMz-mI-cwc"/>
+                        <outlet property="dimensionLabel" destination="nDE-z5-0Dt" id="FBG-RZ-lfV"/>
+                        <outlet property="dimensionStepper" destination="E3V-rD-SAV" id="weq-bB-eAx"/>
                         <outlet property="epsilonLabel" destination="lEQ-JZ-aY5" id="AGq-9A-LMl"/>
                         <outlet property="epsilonStepper" destination="gaB-Ic-cel" id="9ji-u4-MCy"/>
                         <outlet property="integrationProgress" destination="TG2-a5-Vfx" id="Wz8-cr-Ia7"/>
-                        <outlet property="lambdaLabel" destination="nDE-z5-0Dt" id="FBG-RZ-lfV"/>
-                        <outlet property="lambdaStepper" destination="E3V-rD-SAV" id="weq-bB-eAx"/>
                         <outlet property="sceneView" destination="N2L-IP-OAK" id="A9m-uE-wNz"/>
                         <outlet property="stepperSize" destination="gxn-8q-CXD" id="k3D-Wi-7v4"/>
                         <outlet property="tx" destination="Q9c-hL-Hn7" id="ift-Mq-Tci"/>

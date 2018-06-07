@@ -68,8 +68,8 @@ class Model {
         camera.update(intrinsics: intrinsics)
     }
     
-    func update(extrinsics: matrix_float4x4) {
-        camera.update(extrinsics: extrinsics)
+    func update(extrinsics: matrix_float4x4, onlyRotation: Bool) {
+        camera.update(extrinsics: extrinsics, onlyRotation: onlyRotation)
     }
     
     func switchTo(realTime: Bool) {
@@ -96,44 +96,30 @@ class Model {
         var Rt = camera.extrinsics
         var K = camera.intrinsics
         let resolve = [dimension, dimension, dimension]
-        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let cFileName = dir.appendingPathComponent("points.sdp").absoluteString.cString(using: .utf8)
-            //_ = bridge_raycastDepthMap(
-            _ = bridge_integrateDepthMap(
-                &dethmap, /*centroids,*/
-                &Rt,
-                &K,
-                &voxels,
-                Int32(width),
-                Int32(height),
-                Int32(resolution),
-                resolve,
-                parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!,
-                cFileName)
-        }
-    }
-    
-    func fullResolution() -> [Float] {
-        return [dimension, dimension, dimension]
-    }
-    /*
-    func integrateDepthMap(image: DepthImage, camera: Camera, parameters: [Float]) {
-        let width = image.width
-        let height = image.height
-        var dethmap = image.data
-        var Rt = camera.extrinsics
-        var K = camera.intrinsics
-        let resolve = [resolutionInMeter, resolutionInMeter, resolutionInMeter]
-        _ = bridge_integrateDepthMap(&dethmap, /*centroids,*/
+        //if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        //    let cFileName = dir.appendingPathComponent("points.sdp").absoluteString.cString(using: .utf8)
+        //_ = bridge_raycastDepthMap(
+        _ = bridge_integrateDepthMap(
+            &dethmap, /*centroids,*/
             &Rt,
             &K,
             &voxels,
             Int32(width),
             Int32(height),
-            Int32(numberOfVoxels),
+            Int32(resolution),
             resolve,
-            parameters[0], parameters[1], parameters[2]);
-        //let voxel2 = voxels[numberOfVoxels].sdf
+            parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
+        //cFileName)
+        //}
     }
-    */
+    
+    func getDimensions() -> [Float] {
+        return [dimension, dimension, dimension]
+    }
+    
+    func reinit() {
+        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(resolution), 3.0)))
+        camera = Camera(onRealTime: false)
+        image  = DepthImage(onRealTime: false)
+    }
 }

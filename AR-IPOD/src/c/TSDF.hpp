@@ -22,7 +22,7 @@ typedef struct Voxel {
     float weight;
 } Voxel;
 
-inline float constant_weighting(const float distance, const float delta, const float lambda) {
+inline float constant_weighting(const float distance, const float delta) {
     return 1.0;
 }
 

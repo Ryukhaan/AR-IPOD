@@ -72,7 +72,7 @@ class SceneViewController: UIViewController {
     @IBAction func update(_ sender: Any) {
         let iso = Float(isolevel.text!)
         DispatchQueue.global().async {
-            let points = extractMesh(volume: &self.volume, isolevel: iso!)
+            let points = extractMesh(model: &self.volume, isolevel: iso!)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
             let pointCloudNode = UIFactory.createMeshNode(points: points)
             let scnView = self.view as! SCNView
@@ -102,13 +102,13 @@ class SceneViewController: UIViewController {
     }
     @IBAction func export(_ sender: Any) {
         let iso = Float(isolevel.text!)
-        let points = extractMesh(volume: &self.volume, isolevel: iso!)
+        let points = extractMesh(model: &self.volume, isolevel: iso!)
         exportToPLY(mesh: points, at: "meshing.ply")
     }
     
     @IBAction func display(_ sender: Any) {
         DispatchQueue.global().async {
-            let points = extractMesh(volume: &self.volume, isolevel: 0.02)
+            let points = extractMesh(model: &self.volume, isolevel: 0.02)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
             let pointCloudNode = UIFactory.createMeshNode(points: points)
             let scnView = self.view as! SCNView
