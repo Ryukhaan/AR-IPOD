@@ -131,9 +131,6 @@ class SceneViewController: UIViewController {
                 destination.myModel = self.volume
                 destination.datasetChoice.selectedSegmentIndex  = savedDatasetIndex
                 destination.datasetSize.selectedSegmentIndex    = savedFramesIndex
-                destination.deltaStepper.value                  = savedDeltaIndex
-                destination.epsilonStepper.value                = savedEpsilonIndex
-                destination.stepperSize.value                   = savedVolumeSizeIndex
             }
         }
     }

@@ -32,8 +32,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var inRealTime: Bool            = false
     
     @IBOutlet var datasetSizeField: UITextField!
-    @IBOutlet var volumeSize: UILabel!
-    @IBOutlet var stepperSize: UIStepper!
     @IBOutlet var integrationProgress: UIProgressView!
     
     @IBOutlet weak var depthView: UIImageView!
@@ -44,19 +42,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var myDepthData: AVDepthData?
     var myDepthDataRaw: AVDepthData?
     var myCIImage: CIImage?
-    
-    // Isolevel parameters UI
-    @IBOutlet var dimensionLabel: UILabel!
-    @IBOutlet var dimensionStepper: UIStepper!
-    let lambdaTick = 1.0
-    // Delta parameters UI
-    @IBOutlet var deltaStepper: UIStepper!
-    @IBOutlet var deltaLabel: UILabel!
-    let deltaTick = 0.05
-    // Epsilon parameters UI
-    @IBOutlet var epsilonStepper: UIStepper!
-    @IBOutlet var epsilonLabel: UILabel!
-    let epsilonTick = 0.02
     
     @IBOutlet var datasetChoice: UISegmentedControl!
     @IBOutlet var datasetSize: UISegmentedControl!
@@ -222,7 +207,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 /* Another Way : Save all depth maps and pose then do it offline */
                 //save(model: self.myModel, atTime: k)
                 //k += 1
-                
             }
             if self.numberOfIterations >= 6
             {
@@ -284,18 +268,32 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         for i in 0..<self.sizeOfDataset {
             //DispatchQueue.main.asyncAfter(deadline: .now() + Double(3*i)) {
             let extrinsics = importCameraPose(
-                from: "frame-\(i).pose",
+                from: "frame-\(6*i+3).pose",
                 at: self.nameOfDataset)
-            var depthmap = importDepthMapFromTXT(
-                from: "frame-\(i).depth",
-                at: self.nameOfDataset)
-            bridge_median_filter(&depthmap,
-                                 2,
-                                 Int32(self.myModel.camera.width),
-                                 Int32(self.myModel.camera.height))
+            var depthmap: [Float] = [Float](repeating: 0.0, count: Constant.Kinect.Width * Constant.Kinect.Height)
+            var median: [[Float]] = [[Float]]()
+            for j in 0..<6 {
+                var temp = importDepthMapFromTXT(
+                    from: "frame-\(6*i+j).depth",
+                    at: self.nameOfDataset)
+                bridge_median_filter(&temp,
+                                     2,
+                                     Int32(self.myModel.camera.width),
+                                     Int32(self.myModel.camera.height))
+                median.append(temp)
+            }
+            for n in 0..<depthmap.count {
+                var tmp: [Float] = [median[0][n], median[1][n], median[2][n], median[3][n], median[4][n], median[5][n]]
+                tmp = tmp.sorted()
+                let size = tmp.count
+                if ( size % 2 == 0 ) { depthmap[n] = tmp[size/2] }
+                else {
+                    depthmap[n] = (tmp[(size+1)/2] + tmp[(size-1)/2]) / 2.0;
+                }
+            }
             
             if self.myModel.cameraPoseEstimationEnable {
-                self.myModel.update(extrinsics: extrinsics, onlyRotation: false)
+                self.myModel.update(extrinsics: extrinsics, onlyRotation: true)
                 let last_points = self.myModel.image.data
                 self.myModel.update(data: depthmap)
                 if i > 0 {
@@ -310,23 +308,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                     Int32(self.myModel.resolution),
                                     self.myModel.getDimensions(),
                                     Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
-                    DispatchQueue.main.async {
-                        self.tx.text = "\(Rt.columns.3.x) vs \(extrinsics.columns.3.x)"
-                        self.ty.text = "\(Rt.columns.3.y) vs \(extrinsics.columns.3.y)"
-                        self.tz.text = "\(Rt.columns.3.z) vs \(extrinsics.columns.3.z)"
-                    }
-                    /*
-                     bridge_drift_correction(current_points,
-                     &K,
-                     &Rt,
-                     myModel.voxels,
-                     Int32(self.myModel.numberOfVoxels),
-                     myModel.fullResolution(),
-                     Int32(self.myModel.camera.width),
-                     Int32(self.myModel.camera.height))
-                     */
                     self.myModel.camera.extrinsics.columns.3 = Rt.columns.3
-                    //self.myModel.update(extrinsics: Rt, onlyRotation: false)
                 }
             }
             else {
@@ -341,30 +323,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             self.integrationProgress.isHidden = true
             self.integrationProgress.progress = 0.0
         })
-    }
-    
-    @IBAction func updateEpsilon(_ sender: Any) {
-        let quantity = epsilonStepper.value * epsilonTick
-        epsilonLabel.text = "Epsilon: \(quantity)"
-        myModel.parameters["Epsilon"] = Float(quantity)
-    }
-    
-    @IBAction func updateDelta(_ sender: Any) {
-        let quantity = deltaStepper.value * deltaTick
-        deltaLabel.text = "Delta: \(quantity)"
-        myModel.parameters["Delta"] = Float(quantity)
-    }
-    
-    @IBAction func increaseVolume(_ sender: Any) {
-        let quantity = pow(2.0, stepperSize.value)
-        volumeSize.text = "Volume Size : \(quantity)"
-        myModel.reallocateVoxels(with: Int(quantity))
-    }
-    
-    @IBAction func updateDimension(_ sender: Any) {
-        let quantity = dimensionStepper.value * lambdaTick
-        dimensionLabel.text = "Vision Max: \(quantity / 2.0)"
-        myModel.dimension = Float(quantity)
     }
     
     @IBAction func changeDataset(_ sender: Any) {
@@ -413,9 +371,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 destination.volume = self.myModel
                 destination.savedDatasetIndex       = datasetChoice.selectedSegmentIndex
                 destination.savedFramesIndex        = datasetSize.selectedSegmentIndex
-                destination.savedDeltaIndex         = deltaStepper.value
-                destination.savedEpsilonIndex       = epsilonStepper.value
-                destination.savedVolumeSizeIndex    = stepperSize.value
             }
         }
     }

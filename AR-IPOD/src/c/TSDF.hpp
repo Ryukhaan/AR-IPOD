@@ -62,11 +62,4 @@ inline void carving_voxel(Voxel * voxels, const int i) {
         voxels[i].weight = 0;
     }
 };
-
-/*
-inline void olding_voxel(Voxel * voxels, const int i, const unsigned char time_constant) {
-    if (voxels[i].time >= time_constant) carving_voxel(voxels, i);
-    else voxels[i].time ++;
-}
-*/
 #endif /* TSDF_hpp */

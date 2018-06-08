@@ -17,13 +17,14 @@
 #include <vector>
 
 simd::float3 interpolate(float isolevel, simd::float3 a, simd::float3 b, float alpha, float beta) {
-    /*
+    /* First Version --
     if (abs(isolevel-alpha) < 0.00001)  { return a; }
     if (abs(isolevel-beta) < 0.00001)   { return b; }
     if (abs(alpha-beta) < 0.00001)      { return a; }
     float mu = (isolevel - alpha) / (beta - alpha);
     return a + mu * (b - a);
     */
+    // Chisel & Bylow Version --
     const float min_diff = 1e-6;
     const float sdf_diff = alpha - beta;
     const float mu = alpha / sdf_diff;

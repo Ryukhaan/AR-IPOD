@@ -26,12 +26,12 @@ class Model {
     
     private init() {
         resolution  = 256
-        dimension   = 4.0
+        dimension   = 5.0
         voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(resolution), 3.0)))
         camera = Camera(onRealTime: false)
         image  = DepthImage(onRealTime: false)
         parameters["Lambda"]    = 0.0
-        parameters["Delta"]     = 0.01
+        parameters["Delta"]     = 0.03
         parameters["Epsilon"]   = 0.02
     }
     

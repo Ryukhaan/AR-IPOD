@@ -19,12 +19,15 @@
 #include <vector>
 #include <algorithm>
 
+#define KINECT_WIDTH 640
+#define KINECT_HEIGHT 480
+
 void median_filter(float* depthmap,
                    const int window_size,
                    const int width,
                    const int height) {
     float* tmp_depth = (float*) malloc(sizeof(float) * width * height);
-    //float tmp_depth[width*height];
+    //float tmp_depth[ KINECT_WIDTH * KINECT_HEIGHT ];
     for (int i = 0; i<height; i++) {
         int iMin = fmax(i-window_size, 0);
         int iMax = fmin(i+window_size, height-1);
@@ -45,9 +48,13 @@ void median_filter(float* depthmap,
                 tmp_depth[i*width + j] = (tmp_array[(size+1)/2.0] + tmp_array[(size-1)/2.0])/2.0;
         }
     }
-    depthmap = tmp_depth;
+    for (int i = 0; i< height * width ; i++)
+        depthmap[i] = tmp_depth[i];
+    free(tmp_depth);
+    
 }
 
+/*
 void local_median(float* depthmap,
                   const int window_size,
                   const int width,
@@ -69,4 +76,5 @@ void local_median(float* depthmap,
     else
         depthmap[i*width + j] = (tmp_array[(size+1)/2.0] + tmp_array[(size-1)/2.0])/2.0;
 }
+*/
 #endif /* filtering_hpp */

@@ -301,11 +301,10 @@ void bridge_fast_icp(const float* previous_points,
     simd::float3 translation = simd_make_float3(Rt.columns[3].x, Rt.columns[3].y, Rt.columns[3].z);
     simd_float4x4 Kinv = simd_inverse(K);
     simd_float4x4 Rtinv = simd_inverse(Rt);
-    simd::float3 dimensions = simd_make_float3(dimension[0], dimension[1], dimension[2]);
-    int size = pow(resolution, 3.0);
-    int square = pow(resolution, 2.0);
+    //simd::float3 dimensions = simd_make_float3(dimension[0], dimension[1], dimension[2]);
+    //int size = pow(resolution, 3.0);
+    //int square = pow(resolution, 2.0);
     // Calculate mass center of last point cloud and current point cloud
-    /*
     int previous_count  = 0;
     int current_count   = 0;
     simd::float3 previous_mass_centre   = simd_make_float3(0, 0, 0);
@@ -337,7 +336,8 @@ void bridge_fast_icp(const float* previous_points,
     // Add translation vector between current and previous points to previous transalation
     translation  += (previous_mass_centre - current_mass_centre);
     ((simd_float4x4 *) extrinsics)[0].columns[3] = simd_make_float4(translation.x, translation.y, translation.z, 1);
-     */
+    /*
+    simd::float3 offset = 0.5 * dimensions;
     simd_float3x3 A = simd_diagonal_matrix(simd_make_float3(0,0,0));
     simd::float3 b  = simd_make_float3(0, 0, 0);
     for (int i = 0; i < height; i++) {
@@ -347,7 +347,7 @@ void bridge_fast_icp(const float* previous_points,
             simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
             simd::float4 point  = simd_mul(simd_mul(Rtinv, Kinv), uv);
             simd::float3 rpoint = simd_make_float3(point.x, point.y, point.z);
-            simd_int3 V_ijk = global_to_integer(rpoint, resolution, dimensions);
+            simd_int3 V_ijk = global_to_integer(rpoint + offset, resolution, dimensions);
             int k = hash_function(V_ijk, resolution);
             int dkx = k + 1;
             int dky = k + resolution;
@@ -366,8 +366,9 @@ void bridge_fast_icp(const float* previous_points,
             b += ((Voxel *) voxels)[k].sdf * gradient;
         }
     }
-    translation += simd_mul(simd_inverse(A), b);
+    translation -= simd_mul(simd_inverse(A), b);
     ((simd_float4x4 *) extrinsics)[0].columns[3] = simd_make_float4(translation.x, translation.y, translation.z, 1);
+     */
 }
 
 

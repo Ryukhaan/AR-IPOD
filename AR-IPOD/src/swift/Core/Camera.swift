@@ -74,7 +74,7 @@ struct Camera {
             self.extrinsics.columns.1.y = 1
             self.extrinsics.columns.1.z = extrinsics.columns.1.z
             // Third column
-            self.extrinsics.columns.2.x = extrinsics.columns.2.z
+            self.extrinsics.columns.2.x = extrinsics.columns.2.x
             self.extrinsics.columns.2.y = extrinsics.columns.2.y
             self.extrinsics.columns.2.z = 1
             

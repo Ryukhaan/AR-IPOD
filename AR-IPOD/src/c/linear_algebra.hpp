@@ -51,30 +51,34 @@ inline simd_float3 create_centroid(const int i,
     centroid.z = integer_to_global(z, resolution, dimensions.z) - offset.z;
     return centroid;
 }
+
 /**
  * Project. A 3D point is projected into the image plane (2D)
  */
+/*
 inline simd_int2 project(simd::float3 vector, simd_float3x3 K) {
     simd::float3 temp = simd_make_float3(vector.x / vector.z, vector.y / vector.z, 1);
     simd::float3 all  = simd_mul(K, temp);
     return simd_make_int2( static_cast<int>(all.x), static_cast<int>(all.y));
 }
-
+*/
+/*
 inline simd::float3 projectWithZ(simd::float3 vector, simd_float3x3 K) {
     simd::float3 temp = simd_make_float3(vector.x, vector.y , vector.z);
     simd::float3 all  = simd_mul(K, temp);
     return simd_make_float3(all.x / all.z , all.y / all.z, all.z);
 }
-
+*/
 /**
  * Unproject. A pixel correspond to a 3D point
  */
+/*
 inline simd_float3 unproject(simd_int2 pixel, float depth, simd_float3x3 K) {
     simd_float3 temp = simd_make_float3(pixel.x, pixel.y, 1);
     simd_float3 all = simd_mul(K, temp);
     return simd_make_float3(all.x * depth, all.y * depth, depth);
 }
-
+*/
 
 inline simd_float3 linear_interpolation(simd::float3 x, simd::float3 y, double mu) {
     return (1-mu) * x  + mu * y;

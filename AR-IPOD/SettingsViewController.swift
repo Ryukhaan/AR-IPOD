@@ -33,7 +33,7 @@ class SettingsViewController: UIViewController {
     @IBAction func setVolumeResolution(_ sender: Any) {
         if let text = volumeSize.text {
             if let value = Int(text) {
-                model.resolution = value
+                model.reallocateVoxels(with: value)
             }
         }
     }
