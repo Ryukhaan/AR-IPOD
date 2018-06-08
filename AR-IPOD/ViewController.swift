@@ -209,7 +209,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 let current_points = self.myModel.image.data
                 var K   = self.myModel.camera.intrinsics
                 var Rt  = self.myModel.camera.extrinsics
-                bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
+                bridge_fast_icp(last_points,
+                                current_points,
+                                &K,
+                                &Rt,
+                                &(self.myModel.voxels),
+                                Int32(self.myModel.resolution),
+                                self.myModel.getDimensions(),
+                                Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
                 self.myModel.update(extrinsics: Rt, onlyRotation: false)
                 
                 /* Another Way : Save all depth maps and pose then do it offline */
@@ -299,9 +306,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                     current_points,
                                     &K,
                                     &Rt,
-                                    Int32(self.myModel.camera.width),
-                                    Int32(self.myModel.camera.height))
-                    
+                                    &(self.myModel.voxels),
+                                    Int32(self.myModel.resolution),
+                                    self.myModel.getDimensions(),
+                                    Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
                     DispatchQueue.main.async {
                         self.tx.text = "\(Rt.columns.3.x) vs \(extrinsics.columns.3.x)"
                         self.ty.text = "\(Rt.columns.3.y) vs \(extrinsics.columns.3.y)"

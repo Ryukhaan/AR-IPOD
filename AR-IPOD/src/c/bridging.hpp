@@ -45,10 +45,13 @@ void bridge_exportVolumeToPLY(const void* centroids,
                               const char* file_name,
                               int size);
 
-void bridge_fast_icp(const float* last_points,
+void bridge_fast_icp(const float* previous_points,
                      const float* current_points,
                      const void* intrinsics,
                      void* extrinsics,
+                     void* voxels,
+                     const int resolution,
+                     const float dimension[3],
                      const int width,
                      const int height);
 
