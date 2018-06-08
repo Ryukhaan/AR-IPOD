@@ -26,6 +26,12 @@ inline float constant_weighting(const float distance, const float delta) {
     return 1.0;
 }
 
+inline float weighting(const float distance, const float delta, const float epsilon) {
+    float sigma = - log(1e-6) / pow(delta - epsilon, 2.0);
+    float w = expf(-sigma * pow((distance - epsilon), 2.0));
+    return distance <= epsilon ? 1 : distance > delta ? 0 : w;
+}
+
 inline void update_voxel(Voxel* voxels,
                          const float sdf,
                          const float weight,
@@ -51,7 +57,7 @@ inline void update_voxel(Voxel* voxels,
 };
 
 inline void carving_voxel(Voxel * voxels, const int i) {
-    if (voxels[i].sdf <= 0.0) {
+    if (voxels[i].sdf < 1e-5 && voxels[i].weight > 0) {
         voxels[i].sdf = 9999;
         voxels[i].weight = 0;
     }

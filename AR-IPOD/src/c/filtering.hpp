@@ -24,6 +24,7 @@ void median_filter(float* depthmap,
                    const int width,
                    const int height) {
     float* tmp_depth = (float*) malloc(sizeof(float) * width * height);
+    //float tmp_depth[width*height];
     for (int i = 0; i<height; i++) {
         int iMin = fmax(i-window_size, 0);
         int iMax = fmin(i+window_size, height-1);

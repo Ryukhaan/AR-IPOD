@@ -108,7 +108,7 @@ unsigned long bridge_extractMesh(void* triangles,
                     fabs( ((Voxel*) voxels)[i5].sdf ),
                     fabs( ((Voxel*) voxels)[i6].sdf ),
                     fabs( ((Voxel*) voxels)[i7].sdf )
-                     */
+                    */
                     ( ((Voxel*) voxels)[i0].sdf ),
                     ( ((Voxel*) voxels)[i1].sdf ),
                     ( ((Voxel*) voxels)[i2].sdf ),
@@ -167,11 +167,11 @@ int bridge_integrateDepthMap(float* depthmap,
     simd::float3 offset = 0.5 * dimensions;
     
     // Relative camera variables
-    simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
-    simd_float4x4 Rt = ((simd_float4x4 *) extrinsics)[0];
-    simd_float4x4 Kinv = simd_inverse(K);
+    simd_float4x4 K     = ((simd_float4x4 *) intrinsics)[0];
+    simd_float4x4 Rt    = ((simd_float4x4 *) extrinsics)[0];
+    simd_float4x4 Kinv  = simd_inverse(K);
     simd_float4x4 Rtinv = simd_inverse(Rt);
-    
+    simd::float3 ot     = simd_make_float3(Rt.columns[3].x, Rt.columns[3].y, Rt.columns[3].z);
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
     /*
@@ -202,27 +202,27 @@ int bridge_integrateDepthMap(float* depthmap,
     */
     
     //for( int i = mini; i<maxi; i++)
+    /*
     for (int i = 0; i<size; i++)
     {
-        if (i >= size || i < 0) continue;
         simd::float3 centroid = create_centroid(i, resolution, dimensions, square, offset);
-
+        
         simd::float4 homogene_3d = simd_make_float4(centroid.x, centroid.y, centroid.z, 1);
+        float z = simd_length(ot - centroid);
         //simd::float3 local = simd_mul(rotation, centroid + translation);
-        simd::float4 local = simd_mul(Rt, homogene_3d);
+        //simd::float4 local = simd_mul(Rt, homogene_3d);
         //simd::float3 local = simd_mul(simd_transpose(rotation), centroid-translation);
         
-        simd::float4 temp = simd_mul(K, local);
-        simd::float3 project = simd_make_float3(temp.x, temp.y, local.z);
-        int u = (int) (project.x / local.z); //(unhomogene_2d.x / unhomogene_2d.z);
-        int v = (int) (project.y / local.z); //(unhomogene_2d.y / unhomogene_2d.z);
+        //simd::float4 temp = simd_mul(K, local);
+        simd::float4 project = simd_mul(K, simd_mul(Rt, homogene_3d));
+        int u = (int) (project.x / project.z); //(unhomogene_2d.x / unhomogene_2d.z);
+        int v = (int) (project.y / project.z); //(unhomogene_2d.y / unhomogene_2d.z);
         //if (local.z < 0)            continue;
         if (u < 0 || u >= height)   continue;
         if (v < 0 || v >= width)    continue;
+        float zp = depthmap[u * width + v];
         
         //float z = local.z;
-        float z = local.z;
-        float zp = depthmap[u * width + v];
         // Depth invalid
         if (std::isnan(zp)) continue;
         //if (zp > 1.0) continue;
@@ -232,10 +232,43 @@ int bridge_integrateDepthMap(float* depthmap,
         float w = 1.0;
         //float w = constant_weighting(distance, delta);
         
-        if (fabs(distance) >= delta + epsilon) carving_voxel((Voxel *)voxels, i);
+        if (distance >= delta + epsilon && distance < zp) carving_voxel((Voxel *)voxels, i);
         if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, w, i);
         //else if (distance > delta) update_voxel((Voxel *)voxels, delta, 1, i);
         //else update_voxel((Voxel *)voxels, -delta, 1, i);
+    }
+    */
+    for (int i = 0; i<size; i++)
+    {
+        simd::float3 centroid = create_centroid(i, resolution, dimensions, square, offset);
+        simd::float4 homogene_3d = simd_make_float4(centroid.x, centroid.y, centroid.z, 1);
+        simd::float4 X_L      = simd_mul(Rt, homogene_3d);
+        simd::float4 project = simd_mul(K, X_L);
+        
+        int u = (int) (project.x / project.z); //(unhomogene_2d.x / unhomogene_2d.z);
+        int v = (int) (project.y / project.z); //(unhomogene_2d.y / unhomogene_2d.z);
+        //if (local.z < 0)            continue;
+        if (u < 0 || u >= height)   continue;
+        if (v < 0 || v >= width)    continue;
+        
+        float z = depthmap[u * width + v];
+        // Depth invalid
+        if (std::isnan(z)) continue;
+        
+        simd::float4 X      = simd_make_float4(u * z, v * z, z, 1);
+        simd::float4 X_S    = simd_mul(Kinv, X);
+        //float distance = X_L.z - X_S.z;
+        //float distance = simd_length(X_S - X_L);
+        float distance = z - X_L.z;
+        
+        float weight = weighting(distance, delta, epsilon);
+        //distance = distance < -delta ? -delta : distance > delta ? delta : distance;
+        //update_voxel((Voxel *)voxels, distance, weight, i);
+        if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, weight, i);
+        else if (distance > delta + epsilon)  carving_voxel((Voxel *)voxels, i);
+        //else if (fabs(distance) >= delta + epsilon && distance <= X_S.z) carving_voxel((Voxel *)voxels, i);
+        //else if (distance > delta) update_voxel((Voxel *)voxels, delta, weight, i);
+        //else update_voxel((Voxel *)voxels, -delta, weight, i);
     }
     return number_of_changes;
 }

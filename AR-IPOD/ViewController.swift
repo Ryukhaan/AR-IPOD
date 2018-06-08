@@ -276,46 +276,55 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         timer = Double(CFAbsoluteTimeGetCurrent())
         for i in 0..<self.sizeOfDataset {
             //DispatchQueue.main.asyncAfter(deadline: .now() + Double(3*i)) {
-                let extrinsics = importCameraPose(from: "frame-\(i).pose", at: self.nameOfDataset)
-                var depthmap = importDepthMapFromTXT(from: "frame-\(i).depth", at: self.nameOfDataset)
-                bridge_median_filter(&depthmap, 2, Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
-                
-                self.myModel.update(extrinsics: extrinsics, onlyRotation: true)
-                let last_points = self.myModel.image.data
+            let extrinsics = importCameraPose(
+                from: "frame-\(i).pose",
+                at: self.nameOfDataset)
+            var depthmap = importDepthMapFromTXT(
+                from: "frame-\(i).depth",
+                at: self.nameOfDataset)
+            bridge_median_filter(&depthmap,
+                                 2,
+                                 Int32(self.myModel.camera.width),
+                                 Int32(self.myModel.camera.height))
+            
+            if self.myModel.cameraPoseEstimationEnable {
+                /*
+                 if i > 0 {
+                 let current_points = self.myModel.image.data
+                 var K = self.myModel.camera.intrinsics
+                 var Rt = self.myModel.camera.extrinsics
+                 bridge_fast_icp(last_points,
+                 current_points,
+                 &K,
+                 &Rt,
+                 Int32(self.myModel.camera.width),
+                 Int32(self.myModel.camera.height))
+                 DispatchQueue.main.async {
+                 self.tx.text = "\(Rt.columns.3.x) vs \(extrinsics.columns.3.x)"
+                 self.ty.text = "\(Rt.columns.3.y) vs \(extrinsics.columns.3.y)"
+                 self.tz.text = "\(Rt.columns.3.z) vs \(extrinsics.columns.3.z)"
+                 }
+                 /*
+                 bridge_drift_correction(current_points,
+                 &K,
+                 &Rt,
+                 myModel.voxels,
+                 Int32(self.myModel.numberOfVoxels),
+                 myModel.fullResolution(),
+                 Int32(self.myModel.camera.width),
+                 Int32(self.myModel.camera.height))
+                 */
+                 //self.myModel.camera.extrinsics.columns.3 = Rt.columns.3
+                 //self.myModel.update(extrinsics: Rt, onlyRotation: false)
+                 }
+                 */
+            }
+            else {
+                self.myModel.update(extrinsics: extrinsics, onlyRotation: false)
                 self.myModel.update(data: depthmap)
-                if i > 0 {
-                    /*
-                    let current_points = self.myModel.image.data
-                    var K = self.myModel.camera.intrinsics
-                    var Rt = self.myModel.camera.extrinsics
-                    bridge_fast_icp(last_points,
-                                    current_points,
-                                    &K,
-                                    &Rt,
-                                    Int32(self.myModel.camera.width),
-                                    Int32(self.myModel.camera.height))
-                    DispatchQueue.main.async {
-                        self.tx.text = "\(Rt.columns.3.x) vs \(extrinsics.columns.3.x)"
-                        self.ty.text = "\(Rt.columns.3.y) vs \(extrinsics.columns.3.y)"
-                        self.tz.text = "\(Rt.columns.3.z) vs \(extrinsics.columns.3.z)"
-                    }
-                    /*
-                     bridge_drift_correction(current_points,
-                     &K,
-                     &Rt,
-                     myModel.voxels,
-                     Int32(self.myModel.numberOfVoxels),
-                     myModel.fullResolution(),
-                     Int32(self.myModel.camera.width),
-                     Int32(self.myModel.camera.height))
-                     */
-                    //self.myModel.camera.extrinsics.columns.3 = Rt.columns.3
-                    //self.myModel.update(extrinsics: Rt, onlyRotation: false)
-                    */
-                }
-                self.myModel.integrate()
-                self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
-            //}
+            }
+            self.myModel.integrate()
+            self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
         }
         let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
         self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in

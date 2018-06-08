@@ -89,7 +89,7 @@ func extractTSDF(model: Model, isolevel: Float) -> [Vector] {
     let square = model.resolution * model.resolution
     var points = [Vector]()
     for (i, voxel) in model.voxels.enumerated() {
-        if voxel.sdf == isolevel {
+        if voxel.sdf <= isolevel {
             var centroid = Vector(0,0,0)
             let x = Float(i / square)
             let remainder = i % square

@@ -14,6 +14,9 @@ class Model {
     // Singleton pattern : Only one volume will be create
     static let sharedInstance = Model()
     
+    var raytracingEnable: Bool = false
+    var cameraPoseEstimationEnable: Bool = false
+    
     var dimension: Float
     var resolution:   Int
     var voxels: [Voxel]
@@ -90,27 +93,33 @@ class Model {
     }
     
     func integrate() {
-        let width = image.width
-        let height = image.height
         var dethmap = image.data
         var Rt = camera.extrinsics
         var K = camera.intrinsics
-        let resolve = [dimension, dimension, dimension]
-        //if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-        //    let cFileName = dir.appendingPathComponent("points.sdp").absoluteString.cString(using: .utf8)
-        _ = bridge_raycastDepthMap(
-        //_ = bridge_integrateDepthMap(
-            &dethmap, /*centroids,*/
-            &Rt,
-            &K,
-            &voxels,
-            Int32(width),
-            Int32(height),
-            Int32(resolution),
-            resolve,
-            parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
-        //cFileName)
-        //}
+        if raytracingEnable {
+            _ = bridge_raycastDepthMap(
+                &dethmap, /*centroids,*/
+                &Rt,
+                &K,
+                &voxels,
+                Int32(image.width),
+                Int32(image.height),
+                Int32(resolution),
+                getDimensions(),
+                parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
+        }
+        else {
+            _ = bridge_integrateDepthMap(
+                &dethmap, /*centroids,*/
+                &Rt,
+                &K,
+                &voxels,
+                Int32(image.width),
+                Int32(image.height),
+                Int32(resolution),
+                getDimensions(),
+                parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
+        }
     }
     
     func getDimensions() -> [Float] {
