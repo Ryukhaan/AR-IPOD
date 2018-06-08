@@ -26,13 +26,13 @@ class Model {
     
     private init() {
         resolution  = 256
-        dimension   = 8.0
+        dimension   = 4.0
         voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(resolution), 3.0)))
         camera = Camera(onRealTime: false)
         image  = DepthImage(onRealTime: false)
         parameters["Lambda"]    = 0.0
-        parameters["Delta"]     = 0.3
-        parameters["Epsilon"]   = 0.06
+        parameters["Delta"]     = 0.01
+        parameters["Epsilon"]   = 0.02
     }
     
     func reallocateVoxels() {

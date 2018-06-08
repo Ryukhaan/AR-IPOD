@@ -261,7 +261,8 @@ int bridge_integrateDepthMap(float* depthmap,
         //float distance = simd_length(X_S - X_L);
         float distance = z - X_L.z;
         
-        float weight = weighting(distance, delta, epsilon);
+        //float weight = weighting(distance, delta, epsilon);
+        float weight = constant_weighting();
         //distance = distance < -delta ? -delta : distance > delta ? delta : distance;
         //update_voxel((Voxel *)voxels, distance, weight, i);
         if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, weight, i);
@@ -294,42 +295,43 @@ void bridge_fast_icp(const float* previous_points,
                      const int height) {
     simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
     simd_float4x4 Rt = ((simd_float4x4 *) extrinsics)[0];
+    simd::float3 translation = simd_make_float3(Rt.columns[3].x, Rt.columns[3].y, Rt.columns[3].z);
     simd_float4x4 Kinv = simd_inverse(K);
     simd_float4x4 Rtinv = simd_inverse(Rt);
     
-    simd::float3 translation = simd_make_float3(Rt.columns[3].x, Rt.columns[3].y, Rt.columns[3].z);
+    
+    // Calculate mass center of last point cloud and current point cloud
     int previous_count  = 0;
     int current_count   = 0;
     simd::float3 previous_mass_centre   = simd_make_float3(0, 0, 0);
     simd::float3 current_mass_centre    = simd_make_float3(0, 0, 0);
-
-    // Calculate mass center of last point cloud and current point cloud
     for (int k=0; k<height*width; k++)
     {
         int i = k / width;
         int j = k % width;
         // Previous points
         float depth = previous_points[k];
-        if ( std::isnan(depth) || depth < 1e-6 ) continue;
-        simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
-        simd::float4 previous_point  = simd_mul(simd_mul(Rtinv, Kinv), uv);
-        previous_count ++;
-        previous_mass_centre += simd_make_float3(previous_point.x, previous_point.y, previous_point.z);
-        
+        if ( ! std::isnan(depth) && depth >= 1e-6 ) {
+            simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
+            simd::float4 previous_point  = simd_mul(simd_mul(Rtinv, Kinv), uv);
+            previous_count ++;
+            previous_mass_centre += simd_make_float3(previous_point.x, previous_point.y, previous_point.z);
+        }
         // Current points
-        depth = current_points[ i*width + j];
-        if ( std::isnan(depth) || depth < 1e-6 ) continue;
-        uv = simd_make_float4(depth * i, depth * j, depth, 1);
-        simd::float4 current_point   = simd_mul(simd_mul(Rtinv, Kinv), uv);
-        current_count ++;
-        current_mass_centre += simd_make_float3(current_point.x, current_point.y, current_point.z);
+        depth = current_points[k];
+        if ( ! std::isnan(depth) && depth >= 1e-6 ) {
+            simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
+            simd::float4 current_point   = simd_mul(simd_mul(Rtinv, Kinv), uv);
+            current_count ++;
+            current_mass_centre += simd_make_float3(current_point.x, current_point.y, current_point.z);
+        }
     }
     // Divide by number of points seen
     current_mass_centre     = current_mass_centre / (float) current_count;
     previous_mass_centre    = previous_mass_centre / (float) previous_count;
     // Add translation vector between current and previous points to previous transalation
-    simd::float3 t          = translation + (previous_mass_centre - current_mass_centre);
-    ((simd_float4x4 *) extrinsics)[0].columns[3] = simd_make_float4(t.x, t.y, t.z, 1);
+    translation  += (previous_mass_centre - current_mass_centre);
+    ((simd_float4x4 *) extrinsics)[0].columns[3] = simd_make_float4(translation.x, translation.y, translation.z, 1);
 }
 
 
@@ -440,7 +442,7 @@ int bridge_raycastDepthMap(float* depthmap,
                 if (k < size && k >= 0) {
                     simd::float3 c = create_centroid(k, resolution, 4.0, square, 2.0);
                     float distance = c.z - global.z;
-                    float w = constant_weighting(distance, delta);
+                    float w = constant_weighting();
                     if (fabs(distance) < delta) update_voxel((Voxel *)voxels, distance, w, k);
                 }
                 if (current.x != end.x)

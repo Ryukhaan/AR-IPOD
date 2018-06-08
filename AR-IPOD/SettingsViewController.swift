@@ -41,7 +41,7 @@ class SettingsViewController: UIViewController {
     @IBAction func setVisionRange(_ sender: Any) {
         if let text = rangeVision.text {
             if let value = Float(text) {
-                model.dimension = value
+                model.dimension = 2.0 * value
             }
         }
     }
