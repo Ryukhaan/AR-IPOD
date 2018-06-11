@@ -95,7 +95,7 @@ struct Frustrum {
      * Set up Frustum given a camra
      */
     mutating func setUp(camera: Camera) {
-        let rot         = camera.extrinsics
+        let rot         = camera.rotation
         let right       = Vector(rot[0][0], rot[1][0], rot[2][0])
         let up          = -Vector(rot[0][1], rot[1][1], rot[2][1])
         let d           = Vector(rot[0][2], rot[1][2], rot[2][2])

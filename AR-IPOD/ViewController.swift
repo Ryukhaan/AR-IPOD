@@ -144,7 +144,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         if inRealTime
         {
             //let camera = frame.camera.trackingState
-            self.myModel.update(extrinsics: frame.camera.transform, onlyRotation: true)
+            self.myModel.update(rotation: frame.camera.transform)
             self.myModel.update(intrinsics: frame.camera.intrinsics)
             /*
              if let points = frame.rawFeaturePoints {
@@ -162,6 +162,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 self.myModel.image.height = UInt16(CVPixelBufferGetHeight(depthDataMap!))
                 self.myModel.camera.width = UInt16(CVPixelBufferGetWidth(depthDataMap!))
                 self.myModel.camera.height = UInt16(CVPixelBufferGetHeight(depthDataMap!))
+                //let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
                 /*
                  * We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
                  */
@@ -171,35 +172,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 //self.myDepthImage.update(_data: depthPointer)
                 //self.myDepthImage.update(_data: depthPointer)
                 //self.myCamera.update(extrinsics: frame.camera.transform)
-                
-                //tx.text = "\(self.myDepthData?.cameraCalibrationData?.extrinsicMatrix.columns.3.x)"
-                //ty.text = "\(self.myDepthData?.cameraCalibrationData?.extrinsicMatrix.columns.3.x)"
-                //tz.text = "\(self.myDepthData?.cameraCalibrationData?.extrinsicMatrix.columns.3.x)"
-                
                 self.myModel.image.push(map: depthPointer)
                 //self.myCamera.update(extrinsics: frame.camera.transform)
                 //self.myCamera.intrinsics = frame.camera.intrinsics
                 self.numberOfIterations += 1
-                /*
-                 tx.text = "\(Rt.columns.3.x)"
-                 ty.text = "\(Rt.columns.3.y)"
-                 tz.text = "\(Rt.columns.3.z)"
-                 */
-                let last_points = self.myModel.image.data
-                //self.myDepthImage.updateDataWithSavedData()
-                self.myModel.update(data: depthPointer)
-                let current_points = self.myModel.image.data
-                var K   = self.myModel.camera.intrinsics
-                var Rt  = self.myModel.camera.extrinsics
-                bridge_fast_icp(last_points,
-                                current_points,
-                                &K,
-                                &Rt,
-                                &(self.myModel.voxels),
-                                Int32(self.myModel.dimension),
-                                self.myModel.getDimensions(),
-                                Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
-                self.myModel.update(extrinsics: Rt, onlyRotation: false)
                 
                 /* Another Way : Save all depth maps and pose then do it offline */
                 //save(model: self.myModel, atTime: k)
@@ -208,12 +184,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             if self.numberOfIterations >= 6
             {
                 //let last_points = self.myDepthImage.data
+                let last_points = self.myModel.image.data
                 self.myModel.createMedianDepthMap()
-                //let current_points = self.myDepthImage.data
-                //var K = self.myCamera.intrinsics
-                //var Rt = self.myCamera.extrinsics
-                //bridge_fast_icp(last_points, current_points, &K, &Rt, Int32(self.myCamera.width), Int32(self.myCamera.height))
-                //self.myCamera.extrinsics = Rt
+                let current_points = self.myModel.image.data
+                var K  = self.myModel.camera.intrinsics
+                var R  = self.myModel.camera.rotation
+                var T  = self.myModel.camera.translation
+                bridge_fast_icp(last_points,
+                                current_points,
+                                &K,
+                                &R,
+                                &T,
+                                &(self.myModel.voxels),
+                                Int32(self.myModel.dimension),
+                                self.myModel.voxelResolution,
+                                Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
+                self.myModel.camera.translation = T
                 //DispatchQueue.global().async {
                 self.myModel.integrate()
                 //self.myVolume.integrateDepthMap(
@@ -297,26 +283,29 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             }
             */
             if self.myModel.cameraPoseEstimationEnable {
-                self.myModel.update(extrinsics: extrinsics, onlyRotation: false)
+                self.myModel.update(rotation: extrinsics)
                 let last_points = self.myModel.image.data
                 self.myModel.update(data: depthmap)
                 if i > 0 {
                     let current_points = self.myModel.image.data
-                    var K = self.myModel.camera.intrinsics
-                    var Rt = self.myModel.camera.extrinsics
+                    var K  = self.myModel.camera.intrinsics
+                    var R  = self.myModel.camera.rotation
+                    var T  = self.myModel.camera.translation
                     bridge_fast_icp(last_points,
                                     current_points,
                                     &K,
-                                    &Rt,
+                                    &R,
+                                    &T,
                                     &(self.myModel.voxels),
                                     Int32(self.myModel.dimension),
-                                    self.myModel.getDimensions(),
+                                    self.myModel.voxelResolution,
                                     Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
-                    self.myModel.camera.extrinsics.columns.3 = Rt.columns.3
+                    self.myModel.camera.translation = T
                 }
             }
             else {
-                self.myModel.update(extrinsics: extrinsics, onlyRotation: false)
+                self.myModel.update(rotation: extrinsics)
+                self.myModel.update(translation: extrinsics)
                 self.myModel.update(data: depthmap)
             }
             self.myModel.integrate()
@@ -393,4 +382,5 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         }
         catch {}
     }
+
 }

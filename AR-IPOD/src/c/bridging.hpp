@@ -11,27 +11,24 @@
 #include <stdio.h>
 #include <string.h>
 
-void bridge_initializeCentroids(void* centroids,
-                                int size,
-                                float resolution);
-
 unsigned long bridge_extractMesh(void* triangles,
                                  void* voxels,
                                  const int edgeTable[256],
                                  const int triTable[4096],
-                                 const int resolution,
+                                 const int dimension,
                                  const float isolevel,
-                                 const float dimension[3]);
+                                 const float resolution);
 
 int bridge_integrateDepthMap(float* depthmap,
                              //const void* centroids,
-                             const void* extrinsics,
+                             const void* rotation,
+                             const void* translation,
                              const void* intrinsics,
                              void* voxels,
                              const int width,
                              const int height,
                              const int dimension,
-                             const float resolution[3],
+                             const float resolution,
                              const float delta,
                              const float epsilon,
                              const float lambda);
@@ -48,10 +45,11 @@ void bridge_exportVolumeToPLY(const void* centroids,
 void bridge_fast_icp(const float* previous_points,
                      const float* current_points,
                      const void* intrinsics,
-                     void* extrinsics,
+                     void* rotation,
+                     void* translation,
                      void* voxels,
-                     const int resolution,
-                     const float dimension[3],
+                     const int dimension,
+                     const float resolution,
                      const int width,
                      const int height);
 
@@ -65,20 +63,20 @@ void bridge_drift_correction(const float* current_points,
                              void* extrinsics,
                              const void* voxels,
                              const int dimension,
-                             const float resolution[3],
+                             const float resolution,
                              const int width,
                              const int height);
 
-int bridge_raycastDepthMap(float* depthmap,
-                           //const void* centroids,
-                           const void* extrinsics,
-                           const void* intrinsics,
-                           void* voxels,
-                           const int width,
-                           const int height,
-                           const int dimension,
-                           const float resolution[3],
-                           const float delta,
-                           const float epsilon,
-                           const float lambda);
+void bridge_raycastDepthMap(float* depthmap,
+                            const void* rotation,
+                            const void* translation,
+                            const void* intrinsics,
+                            void* voxels,
+                            const int width,
+                            const int height,
+                            const int dimension,
+                            const float resolution,
+                            const float delta,
+                            const float epsilon,
+                            const float lambda);
 #endif /* volumeInit_hpp */

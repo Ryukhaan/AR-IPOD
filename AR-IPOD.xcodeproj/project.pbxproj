@@ -32,7 +32,6 @@
 		A58DCE172088B85300280CD2 /* Voxel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE162088B85300280CD2 /* Voxel.swift */; };
 		A58DCE1B2088BF5C00280CD2 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* Model.swift */; };
 		A5C589AF20AC37C3009BA18A /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = A5C589AE20AC37C3009BA18A /* beep.wav */; };
-		A5EF302220AECBD7003937A3 /* icp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5EF302020AECBD7003937A3 /* icp.cpp */; };
 		A5EF305E20C6950E003937A3 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF305D20C6950E003937A3 /* Extension.swift */; };
 		A5EF306020C6BE12003937A3 /* Alias.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF305F20C6BE12003937A3 /* Alias.swift */; };
 		A5EF306220C6BE4F003937A3 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF306120C6BE4F003937A3 /* Constant.swift */; };
@@ -96,7 +95,8 @@
 		A58DCE1A2088BF5C00280CD2 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		A5C589A120AAD29C009BA18A /* filtering.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = filtering.hpp; sourceTree = "<group>"; };
 		A5C589AE20AC37C3009BA18A /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
-		A5EF302020AECBD7003937A3 /* icp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = icp.cpp; sourceTree = "<group>"; };
+		A5D70A6B20CE81710002EE0E /* raytracing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raytracing.hpp; sourceTree = "<group>"; };
+		A5D70A6E20CE8D400002EE0E /* projection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = projection.hpp; sourceTree = "<group>"; };
 		A5EF302120AECBD7003937A3 /* icp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = icp.hpp; sourceTree = "<group>"; };
 		A5EF305D20C6950E003937A3 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		A5EF305F20C6BE12003937A3 /* Alias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alias.swift; sourceTree = "<group>"; };
@@ -283,8 +283,9 @@
 				A5F478E8209C657500CAAEC0 /* io.hpp */,
 				A5F478F120A2D18200CAAEC0 /* TSDF.hpp */,
 				A5C589A120AAD29C009BA18A /* filtering.hpp */,
-				A5EF302020AECBD7003937A3 /* icp.cpp */,
 				A5EF302120AECBD7003937A3 /* icp.hpp */,
+				A5D70A6B20CE81710002EE0E /* raytracing.hpp */,
+				A5D70A6E20CE8D400002EE0E /* projection.hpp */,
 			);
 			path = c;
 			sourceTree = "<group>";
@@ -431,7 +432,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5EF302220AECBD7003937A3 /* icp.cpp in Sources */,
 				A5494B102089E644007EA2FB /* Frustrum.swift in Sources */,
 				A5494B122089E657007EA2FB /* Geometry.swift in Sources */,
 				A5F478E3209C485200CAAEC0 /* marching_cube.cpp in Sources */,

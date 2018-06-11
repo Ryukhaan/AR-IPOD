@@ -24,7 +24,8 @@ struct Camera {
     var zNear:      Float   = 0.0   // Farther point ssen by camera
     
     var intrinsics: matrix_float4x4 // Matrix K (state-of-the-art). Converts 3D point to 2D
-    var extrinsics: matrix_float4x4 // Extrinsics camera : rotation and camera's position
+    var rotation: matrix_float3x3  // Extrinsics camera : camera's rotation
+    var translation: vector_float3 // Extrinsics camera : camera's translation
     
     init(onRealTime: Bool) {
         if onRealTime {
@@ -36,7 +37,8 @@ struct Camera {
             height = UInt16(Constant.Kinect.Height)
         }
         intrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
-        extrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
+        rotation   = matrix_float3x3(diagonal: float3(1,1,1))
+        translation = float3(0,0,0)
     }
     
     mutating func update(intrinsics: matrix_float3x3) {
@@ -62,31 +64,24 @@ struct Camera {
     /**
      * Updates extrinsics matrix (rotation and camera's position).
      */
-    mutating func update(extrinsics: matrix_float4x4, onlyRotation: Bool) {
+    mutating func update(rotation: matrix_float3x3) {
         //self.extrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
-        if onlyRotation {
-            // Beware, there is no translation in IPhone (we do "fast_icp" instead)
-            self.extrinsics.columns.0.x = 1
-            self.extrinsics.columns.0.y = extrinsics.columns.0.y
-            self.extrinsics.columns.0.z = extrinsics.columns.0.z
-            // Second column
-            self.extrinsics.columns.1.x = extrinsics.columns.1.x
-            self.extrinsics.columns.1.y = 1
-            self.extrinsics.columns.1.z = extrinsics.columns.1.z
-            // Third column
-            self.extrinsics.columns.2.x = extrinsics.columns.2.x
-            self.extrinsics.columns.2.y = extrinsics.columns.2.y
-            self.extrinsics.columns.2.z = 1
-            
-            self.extrinsics.columns.3.w = 1
-        }
-        else {
-            self.extrinsics = extrinsics
-            self.extrinsics.columns.0.x = 1
-            self.extrinsics.columns.1.y = 1
-            self.extrinsics.columns.2.z = 1
-            self.extrinsics.columns.3.w = 1
-        }
+        // Beware, there is no translation in IPhone (we do "fast_icp" instead)
+        self.rotation.columns.0.x = 1
+        self.rotation.columns.0.y = rotation.columns.0.y
+        self.rotation.columns.0.z = rotation.columns.0.z
+        // Second column
+        self.rotation.columns.1.x = rotation.columns.1.x
+        self.rotation.columns.1.y = 1
+        self.rotation.columns.1.z = rotation.columns.1.z
+        // Third column
+        self.rotation.columns.2.x = rotation.columns.2.x
+        self.rotation.columns.2.y = rotation.columns.2.y
+        self.rotation.columns.2.z = 1
+    }
+    
+    mutating func update(translation: vector_float3) {
+        self.translation = translation
     }
     
     mutating func changeTo(realTime: Bool) {
@@ -99,4 +94,5 @@ struct Camera {
             height = UInt16(Constant.Kinect.Height)
         }
     }
+    
 }

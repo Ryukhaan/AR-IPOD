@@ -64,7 +64,7 @@ inline int hash_code(simd_int3 point, int base) {
 }
 
 inline simd_int3 hash_decode(int i, int base) {
-    int square = pow(base, 2.0);
+    int square = base * base;
     int x = i / square;
     int remainder = i % square;
     int y = remainder / base;
@@ -80,34 +80,6 @@ inline simd_float3 create_centroid(const int i,
     simd::float3 centroid = integer_to_global(coord, resolution) + offset;
     return centroid;
 }
-
-/**
- * Project. A 3D point is projected into the image plane (2D)
- */
-/*
-inline simd_int2 project(simd::float3 vector, simd_float3x3 K) {
-    simd::float3 temp = simd_make_float3(vector.x / vector.z, vector.y / vector.z, 1);
-    simd::float3 all  = simd_mul(K, temp);
-    return simd_make_int2( static_cast<int>(all.x), static_cast<int>(all.y));
-}
-*/
-/*
-inline simd::float3 projectWithZ(simd::float3 vector, simd_float3x3 K) {
-    simd::float3 temp = simd_make_float3(vector.x, vector.y , vector.z);
-    simd::float3 all  = simd_mul(K, temp);
-    return simd_make_float3(all.x / all.z , all.y / all.z, all.z);
-}
-*/
-/**
- * Unproject. A pixel correspond to a 3D point
- */
-/*
-inline simd_float3 unproject(simd_int2 pixel, float depth, simd_float3x3 K) {
-    simd_float3 temp = simd_make_float3(pixel.x, pixel.y, 1);
-    simd_float3 all = simd_mul(K, temp);
-    return simd_make_float3(all.x * depth, all.y * depth, depth);
-}
-*/
 
 inline simd_float3 linear_interpolation(simd::float3 x, simd::float3 y, double mu) {
     return (1-mu) * x  + mu * y;
@@ -154,7 +126,6 @@ simd_float2x3 compute_bounding_box(float* depthmap,
                                    const simd_float4x4 Rtinv,
                                    const simd_float4x4 Kinv) {
     simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
-    //float* tmp_depth = (float*) malloc(sizeof(float) * width * height);
     for (int i=0; i<height; i++) {
         for (int j=0; j<width; j++) {
             float depth = depthmap[i*width+j];
@@ -168,10 +139,8 @@ simd_float2x3 compute_bounding_box(float* depthmap,
             box.columns[1].x = simd_max(box.columns[1].x, world_point.x);
             box.columns[1].y = simd_max(box.columns[1].y, world_point.y);
             box.columns[1].z = simd_max(box.columns[1].z, world_point.z);
-            //local_median(tmp_depth, window_size, width, height, i, j);
         }
     }
-    //depthmap = tmp_depth;
     return box;
 }
 #endif /* linear_algebra_hpp */

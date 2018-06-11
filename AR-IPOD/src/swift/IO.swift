@@ -98,7 +98,8 @@ func save(model: Model, atTime: Int) {
     let extrinsicsPath  = "frame-\(atTime).pose.txt"
     let depthmapPath    = "frame-\(atTime).depth.txt"
     let K   = model.camera.intrinsics
-    let Rt  = model.camera.extrinsics
+    let R  = model.camera.rotation
+    let T = model.camera.translation
     let Dm  = model.image.data
     let size = Int(model.image.width * model.image.height)
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
@@ -115,9 +116,9 @@ func save(model: Model, atTime: Int) {
         catch {}
         // Write Rt
         do {
-            try "\(Rt.columns.0.x) \(Rt.columns.1.x) \(Rt.columns.2.x) \(Rt.columns.3.x)\n".write(to: RtPath, atomically: false, encoding: .utf8)
-            try "\(Rt.columns.0.y) \(Rt.columns.1.y) \(Rt.columns.2.y) \(Rt.columns.3.y)\n".write(to: RtPath, atomically: false, encoding: .utf8)
-            try "\(Rt.columns.0.z) \(Rt.columns.1.z) \(Rt.columns.2.z) \(Rt.columns.3.z)\n".write(to: RtPath, atomically: false, encoding: .utf8)
+            try "\(R.columns.0.x) \(R.columns.1.x) \(R.columns.2.x) \(T.x)\n".write(to: RtPath, atomically: false, encoding: .utf8)
+            try "\(R.columns.0.y) \(R.columns.1.y) \(R.columns.2.y) \(T.y)\n".write(to: RtPath, atomically: false, encoding: .utf8)
+            try "\(R.columns.0.z) \(R.columns.1.z) \(R.columns.2.z) \(T.z)\n".write(to: RtPath, atomically: false, encoding: .utf8)
             try "0 0 0 1".write(to: KPath, atomically: false, encoding: .utf8)
         }
         catch {}

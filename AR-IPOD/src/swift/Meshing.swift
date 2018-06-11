@@ -77,7 +77,7 @@ func extractMesh(model: inout Model, isolevel: Float) -> [Vector] {
         &tempTri,
         Int32(model.dimension),
         isolevel,
-        model.getDimensions())
+        model.voxelResolution)
     let buffer = UnsafeBufferPointer(start: triangles, count: Int(numberOfTriangles))
     return Array(buffer)
 }
