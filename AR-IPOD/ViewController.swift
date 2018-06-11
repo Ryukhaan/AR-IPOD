@@ -143,9 +143,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //var k = 0
         if inRealTime
         {
-            //tx.text = "\(frame.camera.intrinsics.columns.2.x)"//"\(self.myCamera.extrinsics.columns.3.x)"
-            //ty.text = "\(frame.camera.intrinsics.columns.2.y)"//"\(self.myCamera.extrinsics.columns.3.y)"
-            //tz.text = "\(frame.camera.intrinsics.columns.2.z)"//"\(self.myCamera.extrinsics.columns.3.z)"
             //let camera = frame.camera.trackingState
             self.myModel.update(extrinsics: frame.camera.transform, onlyRotation: true)
             self.myModel.update(intrinsics: frame.camera.intrinsics)
@@ -153,7 +150,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
              if let points = frame.rawFeaturePoints {
              self.myVolume.integrate(points: points, camera: self.myCamera)
              }
-             */
+            */
             if frame.capturedDepthData != nil
             {
                 self.myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
@@ -199,7 +196,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                 &K,
                                 &Rt,
                                 &(self.myModel.voxels),
-                                Int32(self.myModel.resolution),
+                                Int32(self.myModel.dimension),
                                 self.myModel.getDimensions(),
                                 Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
                 self.myModel.update(extrinsics: Rt, onlyRotation: false)
@@ -268,9 +265,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         for i in 0..<self.sizeOfDataset {
             //DispatchQueue.main.asyncAfter(deadline: .now() + Double(3*i)) {
             let extrinsics = importCameraPose(
-                from: "frame-\(6*i+3).pose",
+                from: "frame-\(i).pose",
                 at: self.nameOfDataset)
-            var depthmap: [Float] = [Float](repeating: 0.0, count: Constant.Kinect.Width * Constant.Kinect.Height)
+            var depthmap = importDepthMapFromTXT(
+                from: "frame-\(i).depth",
+                at: self.nameOfDataset)
+            bridge_median_filter(&depthmap,
+                                 2,
+                                 Int32(self.myModel.camera.width),
+                                 Int32(self.myModel.camera.height))
+            /*var depthmap: [Float] = [Float](repeating: 0.0, count: Constant.Kinect.Width * Constant.Kinect.Height)
             var median: [[Float]] = [[Float]]()
             for j in 0..<6 {
                 var temp = importDepthMapFromTXT(
@@ -291,9 +295,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                     depthmap[n] = (tmp[(size+1)/2] + tmp[(size-1)/2]) / 2.0;
                 }
             }
-            
+            */
             if self.myModel.cameraPoseEstimationEnable {
-                self.myModel.update(extrinsics: extrinsics, onlyRotation: true)
+                self.myModel.update(extrinsics: extrinsics, onlyRotation: false)
                 let last_points = self.myModel.image.data
                 self.myModel.update(data: depthmap)
                 if i > 0 {
@@ -305,7 +309,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                     &K,
                                     &Rt,
                                     &(self.myModel.voxels),
-                                    Int32(self.myModel.resolution),
+                                    Int32(self.myModel.dimension),
                                     self.myModel.getDimensions(),
                                     Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
                     self.myModel.camera.extrinsics.columns.3 = Rt.columns.3

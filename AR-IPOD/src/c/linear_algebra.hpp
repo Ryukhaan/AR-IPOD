@@ -21,34 +21,63 @@
 /**
  * Mapping between integer to centroid coordinate.
  */
-inline float integer_to_global(float point, int dim, float resolution) {
-    return (resolution / dim) * (point + 0.5);
+inline float integer_to_global(int point, float resolution) {
+    //return (resolution / dim) * (point + 0.5);
+    return point * resolution;
 }
 
-inline int global_to_integer(float point, int dim, float resolution) {
+inline int global_to_integer(float point, float resolution) {
     //return static_cast<int>(dim * point / resolution - 0.5);
-    return static_cast<int>((dim * point / resolution) - 0.5);
+    //return static_cast<int>((dim * point / resolution) - 0.5);
+    return static_cast<int>(floor(point / resolution));
 }
 
-inline simd_int3 global_to_integer(simd::float3 point, int dim, simd::float3 resolution) {
-    return simd_make_int3(global_to_integer(point.x, dim, resolution.x),
-                          global_to_integer(point.y, dim, resolution.y),
-                          global_to_integer(point.z, dim, resolution.z));
+inline simd_int3 global_to_integer(simd::float3 point, simd::float3 resolution) {
+    return simd_make_int3(global_to_integer(point.x, resolution.x),
+                          global_to_integer(point.y, resolution.y),
+                          global_to_integer(point.z, resolution.z));
+}
+
+inline simd_float3 integer_to_global(simd_int3 point, simd::float3 resolution) {
+    return simd_make_float3(integer_to_global(point.x, resolution.x),
+                            integer_to_global(point.y, resolution.y),
+                            integer_to_global(point.z, resolution.z));
+}
+
+inline simd_int3 global_to_integer(simd::float3 point, float resolution) {
+    return simd_make_int3(global_to_integer(point.x, resolution),
+                          global_to_integer(point.y, resolution),
+                          global_to_integer(point.z, resolution));
+}
+
+inline simd_float3 integer_to_global(simd_int3 point, float resolution) {
+    return simd_make_float3(integer_to_global(point.x, resolution),
+                            integer_to_global(point.y, resolution),
+                            integer_to_global(point.z, resolution));
+}
+
+inline int hash_code(simd_int3 point, int base) {
+    int a = point.x * (base * base);
+    int b = point.y * base;
+    int c = point.z;
+    return a + b + c;
+}
+
+inline simd_int3 hash_decode(int i, int base) {
+    int square = pow(base, 2.0);
+    int x = i / square;
+    int remainder = i % square;
+    int y = remainder / base;
+    int z = remainder % base;
+    return simd_make_int3(x, y, z);
 }
 
 inline simd_float3 create_centroid(const int i,
-                                   const int resolution,
-                                   const simd::float3 dimensions,
-                                   const int square,
-                                   const simd::float3 offset) {
-    simd::float3 centroid;
-    int x = i / square;
-    int remainder = i % square;
-    int y = remainder / resolution;
-    int z = remainder % resolution;
-    centroid.x = integer_to_global(x, resolution, dimensions.x) - offset.x;
-    centroid.y = integer_to_global(y, resolution, dimensions.y) - offset.y;
-    centroid.z = integer_to_global(z, resolution, dimensions.z) - offset.z;
+                                   const float resolution,
+                                   const int dimension) {
+    float offset = resolution / 2.0;
+    simd_int3 coord = hash_decode(i, dimension);
+    simd::float3 centroid = integer_to_global(coord, resolution) + offset;
     return centroid;
 }
 
@@ -117,13 +146,6 @@ simd_float3 trilinear_interpolation(simd::float3 position) {
     simd::float3 e = bilinear_interpolation(c000, c100, c010, c110, tx, ty);
     simd::float3 f = bilinear_interpolation(c001, c101, c011, c111, tx, ty);
     return linear_interpolation(e, f, tz);
-}
-
-inline int hash_function(simd_int3 point, int base) {
-    int a = point.x * (base * base);
-    int b = point.y * base;
-    int c = point.z;
-    return a + b + c;
 }
 
 simd_float2x3 compute_bounding_box(float* depthmap,

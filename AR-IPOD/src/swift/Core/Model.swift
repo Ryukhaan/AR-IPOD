@@ -17,17 +17,17 @@ class Model {
     var raytracingEnable: Bool = false
     var cameraPoseEstimationEnable: Bool = false
     
-    var dimension: Float
-    var resolution:   Int
+    var voxelResolution: Float
+    var dimension:   Int
     var voxels: [Voxel]
     var camera: Camera
     var image: DepthImage
     var parameters: [String: Float] = [String: Float]()
     
     private init() {
-        resolution  = 256
-        dimension   = 5.0
-        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(resolution), 3.0)))
+        dimension  = 256
+        voxelResolution   = 0.01
+        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
         camera = Camera(onRealTime: false)
         image  = DepthImage(onRealTime: false)
         parameters["Lambda"]    = 0.0
@@ -55,12 +55,12 @@ class Model {
     }
     
     func reallocateVoxels(with: Int) {
-        resolution = with
+        dimension = with
         reallocateVoxels()
     }
     
     func totalOfVoxels() -> Int {
-        return resolution * resolution * resolution
+        return dimension * dimension * dimension
     }
     
     func update(intrinsics: matrix_float3x3) {
@@ -104,7 +104,7 @@ class Model {
                 &voxels,
                 Int32(image.width),
                 Int32(image.height),
-                Int32(resolution),
+                Int32(dimension),
                 getDimensions(),
                 parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
         }
@@ -116,18 +116,18 @@ class Model {
                 &voxels,
                 Int32(image.width),
                 Int32(image.height),
-                Int32(resolution),
+                Int32(dimension),
                 getDimensions(),
                 parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
         }
     }
     
     func getDimensions() -> [Float] {
-        return [dimension, dimension, dimension]
+        return [voxelResolution, voxelResolution, voxelResolution]
     }
     
     func reinitExtrinsics() {
-        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(resolution), 3.0)))
+        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
         camera.extrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
     }
 }

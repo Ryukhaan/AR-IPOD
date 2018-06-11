@@ -75,7 +75,7 @@ func importCameraIntrinsics(from: String, at: String) -> matrix_float4x4 {
 }
 
 func exportToPLY(volume: Model, at: String) {
-    let size = volume.resolution * volume.resolution * volume.resolution
+    let size = volume.dimension * volume.dimension * volume.dimension
     let sdfs = volume.voxels.map { $0.sdf }
     var v = [Vector(0,0,0)]
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
