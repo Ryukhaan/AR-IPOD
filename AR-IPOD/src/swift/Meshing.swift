@@ -57,7 +57,7 @@ struct Tables {
  * @isolovel : isovalue according to Lorensen & Clide paper (1987)
  */
 func extractMesh(model: inout Model, isolevel: Float) -> [Vector] {
-    let count = model.totalOfVoxels()
+    let count = model.numberOfVoxels()
     let stride = MemoryLayout<Vector>.stride
     // Why i can't allocate more than around "count" bytes ?
     let byteCount = 3 * stride * model.dimension * model.dimension
@@ -85,7 +85,7 @@ func extractMesh(model: inout Model, isolevel: Float) -> [Vector] {
 func extractTSDF(model: Model, isolevel: Float) -> [Vector] {
     let resolution = model.voxelResolution
     let dim = model.dimension
-    let offset = resolution * 0.5
+    let offset = resolution * Float(dim) * 0.5
     let square = model.dimension * model.dimension
     var points = [Vector]()
     for (i, voxel) in model.voxels.enumerated() {
@@ -95,12 +95,27 @@ func extractTSDF(model: Model, isolevel: Float) -> [Vector] {
             let remainder = i % square
             let y = Float(remainder / dim)
             let z = Float(remainder % dim)
-            centroid.x = ((resolution / Float(dim)) * (x + 0.5)) - offset
-            centroid.y = ((resolution / Float(dim)) * (y + 0.5)) - offset
-            centroid.z = ((resolution / Float(dim)) * (z + 0.5)) - offset
+            centroid.x = (resolution * (x + 0.5)) - offset
+            centroid.y = (resolution * (y + 0.5)) - offset
+            centroid.z = (resolution * (z + 0.5)) - offset
             points.append(centroid)
         }
     }
     return points
 }
 
+func projectDepthMap(from: Model) -> [Vector] {
+    let height = Int(from.camera.height)
+    let width = Int(from.camera.width)
+    let Kinv = simd_inverse(from.camera.intrinsics)
+    var points = [Vector]()
+    for i in 0..<height {
+        for j in 0..<width{
+            let z = from.image.data[i * width + j]
+            let uvz = vector4(z * Float(i), z * Float(j), z, 1.0)
+            let local = simd_mul(Kinv, uvz)
+            points.append(Vector(local.x, local.y, local.z))
+        }
+    }
+    return points
+}

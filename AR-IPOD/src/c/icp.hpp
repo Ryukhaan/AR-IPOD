@@ -17,6 +17,7 @@
 #include <simd/conversion.h>
 #include <simd/matrix.h>
 
+
 void fast_icp(const float* previous_points,
               const float* current_points,
               const void* intrinsics,
@@ -50,7 +51,8 @@ void fast_icp(const float* previous_points,
             simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
             simd::float4 local  = simd_mul(Kinv, uv);
             simd::float3 rlocal  = simd_make_float3(local.x, local.y, local.z);
-            simd::float3 previous_point = simd_mul(simd_transpose(R), rlocal - T);
+            //simd::float3 previous_point = simd_mul(simd_transpose(R), rlocal - T);
+            simd::float3 previous_point = simd_mul(R, rlocal + T);
             previous_count ++;
             previous_mass_centre += previous_point;
         }
@@ -60,7 +62,8 @@ void fast_icp(const float* previous_points,
             simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
             simd::float4 local  = simd_mul(Kinv, uv);
             simd::float3 rlocal  = simd_make_float3(local.x, local.y, local.z);
-            simd::float3 current_point = simd_mul(simd_transpose(R), rlocal - T);
+            //simd::float3 current_point = simd_mul(simd_transpose(R), rlocal - T);
+            simd::float3 current_point = simd_mul(R, rlocal + T);
             current_count ++;
             current_mass_centre += current_point;
         }
@@ -70,7 +73,7 @@ void fast_icp(const float* previous_points,
     previous_mass_centre    = previous_mass_centre / (float) previous_count;
     // Add translation vector between current and previous points to previous transalation
     T  += (previous_mass_centre - current_mass_centre);
-    //((simd_float4x4 *) translation)[0] = T;
+    ((simd_float3 *) translation)[0] = T;
     /*
      simd::float3 offset = 0.5 * dimensions;
      simd_float3x3 A = simd_diagonal_matrix(simd_make_float3(0,0,0));

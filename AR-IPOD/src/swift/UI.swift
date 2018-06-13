@@ -52,7 +52,7 @@ enum UIFactory {
     
     static func createSimpleNodeFrom(volume: Model, with: Float) -> SCNNode {
         let points = [Vector]()
-        let size = volume.totalOfVoxels()
+        let size = volume.numberOfVoxels()
         for i in 0..<size {
             if (abs(volume.voxels[i].sdf) <= with) {
                 //points.append(from.centroids[i])

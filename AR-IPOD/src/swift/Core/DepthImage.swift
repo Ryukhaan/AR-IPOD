@@ -13,23 +13,11 @@ import AVFoundation
 /**
  * DepthImage stores all information relative to depth map.
  */
-struct DepthImage {    
-    var width:  UInt16          // Image width  (IPhoneX : 360 pixel)
-    var height: UInt16          // Image height (IPhoneX : 480 pixel)
-    var data:   [Float]         // Stores all depths in an array
+class DepthImage : DepthImageProtocol {    
+    var width:  Int             = 0// Image width  (IPhoneX : 360 pixel)
+    var height: Int             = 0// Image height (IPhoneX : 480 pixel)
+    var data:   [Float]         = [Float]()  // Stores all depths in an array
     var savedData: [[Float]]    = [[Float]]()
-    
-    init(onRealTime: Bool) {
-        if onRealTime {
-            width = UInt16(Constant.Iphone.Width)
-            height = UInt16(Constant.Iphone.Height)
-        }
-        else {
-            width = UInt16(Constant.Kinect.Width)
-            height = UInt16(Constant.Kinect.Height)
-        }
-        data = Array<Float>(repeating: 0, count: Int(width)*Int(height))
-    }
     
     /**
      * Returns depth at index : row * width + column.
@@ -43,48 +31,43 @@ struct DepthImage {
      */
     func numberOfPixels() -> Int {
         // Need to convert width and height to Int otherwise overflow then segment fault (or something like that)
-        return Int(width) * Int(height)
+        return width * height
     }
     
     /**
      * Updates depths values stored in data.
      */
-    mutating func update(_data: UnsafeMutablePointer<Float>) {
-        let countH = Int(height)
-        let countW = Int(width)
-        for i in 0..<countH {
-            for j in 0..<countW {
-                data[i*countW+j] = _data[i*countW+j]
+    func update(_data: UnsafeMutablePointer<Float>) {
+        for i in 0..<height {
+            for j in 0..<width {
+                data[i*width+j] = _data[i*width+j]
             }
         }
     }
     
-    mutating func push(map: UnsafeMutablePointer<Float>) {
-        let countH = Int(height)
-        let countW = Int(width)
+    func push(map: UnsafeMutablePointer<Float>) {
+        let n = numberOfPixels()
         if savedData.count >= 6 {
             savedData.remove(at: 0)
         }
-        savedData.append([Float](repeating: 0.0, count: countH*countW))
-        for i in 0..<countH {
-            for j in 0..<countW {
-                savedData[savedData.count-1][i*countW+j] = map[i*countW+j]
+        savedData.append([Float](repeating: 0.0, count: n))
+        for i in 0..<height {
+            for j in 0..<width {
+                savedData[savedData.count-1][i*width+j] = map[i*width+j]
             }
         }
     }
     
-    mutating func updateDataWithSavedData() {
-        let countH = Int(height)
-        let countW = Int(width)
-        for i in 0..<countH {
-            for j in 0..<countW {
-                let index = i*countW+j
+    func updateDataWithSavedData() {
+        for i in 0..<height {
+            for j in 0..<width {
+                let index = i*width+j
                 let array  = [savedData[0][index],
-                               savedData[1][index],
-                               savedData[2][index],
-                               savedData[3][index],
-                               savedData[4][index],
-                               savedData[5][index]]
+                              savedData[1][index],
+                              savedData[2][index],
+                              savedData[3][index],
+                              savedData[4][index],
+                              savedData[5][index]]
                 let sorted = array.sorted()
                 if sorted.count % 2 == 0 {
                     data[index] = Float((sorted[(sorted.count / 2)] + sorted[(sorted.count / 2) - 1])) / 2
@@ -99,13 +82,11 @@ struct DepthImage {
     /**
      * Updates depths values stored in UInt8 Array.
      */
-    mutating func update(_data: [UInt8]) {
+    func update(_data: [UInt8]) {
         data = [Float](repeating: 0, count: numberOfPixels())
-        let countH = Int(height)
-        let countW = Int(width)
-        for i in 0..<countH {
-            for j in 0..<countW {
-                data[i*countW+j] = Float(_data[(i*countW+j) % _data.count])
+        for i in 0..<height {
+            for j in 0..<width {
+                data[i*width+j] = Float(_data[(i*width+j) % _data.count])
             }
         }
     }
@@ -113,40 +94,50 @@ struct DepthImage {
     /**
      * Updates depths values given an array
      */
-    mutating func update(_data: [Float]) {
+    func update(_data: [Float]) {
         assert(data.count == _data.count, "Dimension are not equals ! \(data.count) vs \(_data.count)")
         data = _data
     }
- 
-    mutating func changeTo(realTime: Bool) {
-        if realTime {
-            width = UInt16(Constant.Iphone.Width)
-            height = UInt16(Constant.Iphone.Height)
-        }
-        else {
-            width = UInt16(Constant.Kinect.Width)
-            height = UInt16(Constant.Kinect.Height)
-        }
-        data = Array<Float>(repeating: 0, count: Int(width)*Int(height))
-    }
     
+    func switchTo(type: CameraType) -> DepthImage {
+        switch type {
+        case .Iphone:
+            return IphoneDepthImage()
+        case .Kinect:
+            return KinectDepthImage()
+        default:
+            return self
+        }
+    }
+    /*
+     if realTime {
+     width = UInt16(Constant.Iphone.Width)
+     height = UInt16(Constant.Iphone.Height)
+     }
+     else {
+     width = UInt16(Constant.Kinect.Width)
+     height = UInt16(Constant.Kinect.Height)
+     }
+     data = Array<Float>(repeating: 0, count: Int(width)*Int(height))
+     }
+     */
     /**
      * Collects some statistics about the image (minimum, maximum and mean values).
      */
     /*
-    func getStats() -> (Float, Float, Float) {
-        var minimum: Float = 9999.0
-        var maximum: Float = -9999.0
-        var mean: Float    = 0.0
-        for pixel in self.data {
-            if pixel.isNaN { continue }
-            minimum = min(minimum, pixel)
-            maximum = max(maximum, pixel)
-            mean += pixel
-        }
-        mean /= Float(self.numberOfPixels())
-        return (minimum, maximum, mean)
-    }
-    */
+     func getStats() -> (Float, Float, Float) {
+     var minimum: Float = 9999.0
+     var maximum: Float = -9999.0
+     var mean: Float    = 0.0
+     for pixel in self.data {
+     if pixel.isNaN { continue }
+     minimum = min(minimum, pixel)
+     maximum = max(maximum, pixel)
+     mean += pixel
+     }
+     mean /= Float(self.numberOfPixels())
+     return (minimum, maximum, mean)
+     }
+     */
 }
 

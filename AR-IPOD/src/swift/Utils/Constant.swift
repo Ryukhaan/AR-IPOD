@@ -24,7 +24,13 @@ enum Sounds {
 }
 
 enum AcquisitionType {
-    static let RealTime = 2
-    static let Ikea = 1
-    static let Chair = 0
+    case RealTime
+    case Ikea
+    case Chair
+}
+
+enum CameraType {
+    case Kinect
+    case Iphone
+    case Other
 }

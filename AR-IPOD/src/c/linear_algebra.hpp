@@ -66,9 +66,9 @@ inline int hash_code(simd_int3 point, int base) {
 inline simd_int3 hash_decode(int i, int base) {
     int square = base * base;
     int x = i / square;
-    int remainder = i % square;
+    int remainder = i - square * x;
     int y = remainder / base;
-    int z = remainder % base;
+    int z = remainder - y * base;
     return simd_make_int3(x, y, z);
 }
 
@@ -123,7 +123,8 @@ simd_float3 trilinear_interpolation(simd::float3 position) {
 simd_float2x3 compute_bounding_box(float* depthmap,
                                    const int width,
                                    const int height,
-                                   const simd_float4x4 Rtinv,
+                                   const simd_float3x3 rotation,
+                                   const simd_float3 translation,
                                    const simd_float4x4 Kinv) {
     simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
     for (int i=0; i<height; i++) {
@@ -131,8 +132,10 @@ simd_float2x3 compute_bounding_box(float* depthmap,
             float depth = depthmap[i*width+j];
             if (std::isnan(depth) || depth < 1e-6) continue;
             simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
-            simd::float4 world_point = simd_mul(simd_mul(Rtinv, Kinv), uv);
-            //simd::float3 world_point = simd_mul(rot, simd_mul(simd_inverse(Kinv), depth * uv) + t);
+            simd::float4 local = simd_mul(Kinv, uv);
+            simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
+            //simd::float3 world_point = simd_mul(simd_transpose(rotation), rlocal - translation);
+            simd::float3 world_point = simd_mul(rotation, rlocal + translation);
             box.columns[0].x = simd_min(box.columns[0].x, world_point.x);
             box.columns[0].y = simd_min(box.columns[0].y, world_point.y);
             box.columns[0].z = simd_min(box.columns[0].z, world_point.z);

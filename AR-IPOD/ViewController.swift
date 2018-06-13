@@ -26,7 +26,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     let batchSize:  Int             = 3
     var sizeOfDataset: Int          = 1
-    var nameOfDataset: String       = "chair"
+    var nameOfDataset: String       = "tasse-set"
     var numberOfIterations: Int     = 0
     var timer                       = Double(CFAbsoluteTimeGetCurrent())
     var inRealTime: Bool            = false
@@ -83,7 +83,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         let group = DispatchGroup()
         group.enter()
         threads[0].async {
-            let intrinsics = importCameraIntrinsics(from: "depthIntrinsics", at: self.nameOfDataset)
+            let intrinsics = Import.intrinsics(from: "depthIntrinsics",
+                                               at: self.nameOfDataset,
+                                               type: self.myModel.type)
             self.myModel.update(intrinsics: intrinsics)
             group.leave()
         }
@@ -158,10 +160,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 let depthDataMap = self.myDepthData?.depthDataMap
                 CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
                 let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
-                self.myModel.image.width = UInt16(CVPixelBufferGetWidth(depthDataMap!))
-                self.myModel.image.height = UInt16(CVPixelBufferGetHeight(depthDataMap!))
-                self.myModel.camera.width = UInt16(CVPixelBufferGetWidth(depthDataMap!))
-                self.myModel.camera.height = UInt16(CVPixelBufferGetHeight(depthDataMap!))
+                self.myModel.image.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+                self.myModel.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
+                self.myModel.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+                self.myModel.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
                 //let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
                 /*
                  * We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
@@ -243,24 +245,27 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //let group = DispatchGroup()
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
-        inRealTime = false
-        self.myModel.switchTo(realTime: inRealTime)
-        self.myModel.reinitExtrinsics()
+        //inRealTime = false
+        //self.myModel.switchTo(realTime: inRealTime)
+        self.myModel.reinit()
         
         timer = Double(CFAbsoluteTimeGetCurrent())
         for i in 0..<self.sizeOfDataset {
             //DispatchQueue.main.asyncAfter(deadline: .now() + Double(3*i)) {
-            let extrinsics = importCameraPose(
+            let extrinsics = Import.cameraPose(
                 from: "frame-\(i).pose",
-                at: self.nameOfDataset)
-            var depthmap = importDepthMapFromTXT(
+                at: self.nameOfDataset,
+                type: self.myModel.type)
+            var depthmap = Import.depthMapFromTXT(
                 from: "frame-\(i).depth",
-                at: self.nameOfDataset)
+                at: self.nameOfDataset,
+                type: self.myModel.type)
             bridge_median_filter(&depthmap,
                                  2,
                                  Int32(self.myModel.camera.width),
                                  Int32(self.myModel.camera.height))
-            /*var depthmap: [Float] = [Float](repeating: 0.0, count: Constant.Kinect.Width * Constant.Kinect.Height)
+            /*
+            var depthmap: [Float] = [Float](repeating: 0.0, count: Constant.Kinect.Width * Constant.Kinect.Height)
             var median: [[Float]] = [[Float]]()
             for j in 0..<6 {
                 var temp = importDepthMapFromTXT(
@@ -284,6 +289,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             */
             if self.myModel.cameraPoseEstimationEnable {
                 self.myModel.update(rotation: extrinsics)
+                self.myModel.update(translation: extrinsics)
                 let last_points = self.myModel.image.data
                 self.myModel.update(data: depthmap)
                 if i > 0 {
@@ -321,17 +327,23 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBAction func changeDataset(_ sender: Any) {
         switch datasetChoice.selectedSegmentIndex {
         case 0:
-            nameOfDataset = "chair"
+            nameOfDataset = "bouchon-set"
+            myModel = Model(from: myModel, to: .Iphone)
         case 1:
             nameOfDataset = "ikea-table"
+            myModel = Model(from: myModel, to: .Kinect)
         default: break
         }
+        let intrinsic = Import.intrinsics(from: "depthIntrinsics", at: nameOfDataset, type: myModel.type)
+        myModel.update(intrinsics: intrinsic)
     }
     
     @IBAction func updateDatasetSize(_ sender: Any) {
         let size = Int(datasetSizeField.text!)
-        sizeOfDataset = size!
-        tx.text = datasetSizeField.text
+        if let newSize = size {
+            sizeOfDataset = newSize
+            tx.text = datasetSizeField.text
+        }
     }
     
     @IBAction func changeDatasetSize(_ sender: Any) {
@@ -348,7 +360,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     @IBAction func exportVolume(_ sender: Any) {
-        self.myModel.switchTo(realTime: true)
+        //self.myModel.switchTo(realTime: true)
+        self.myModel = Model(from: self.myModel, to: .Iphone)
         self.displayAlertMessage(
             title: "Acquisition en temps réel",
             message: "Veuillez mettre la caméra en face de l'objet",
@@ -361,7 +374,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ScenePoints" {
             if let destination = segue.destination as? SceneViewController {
-                destination.volume = self.myModel
+                destination.myModel = self.myModel
                 destination.savedDatasetIndex       = datasetChoice.selectedSegmentIndex
                 destination.savedFramesIndex        = datasetSize.selectedSegmentIndex
             }

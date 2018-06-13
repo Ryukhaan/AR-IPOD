@@ -12,10 +12,11 @@ import AVFoundation
 
 class Model {
     // Singleton pattern : Only one volume will be create
-    static let sharedInstance = Model()
+    static let sharedInstance = Model(type: CameraType.Other)
     
     var raytracingEnable: Bool = false
     var cameraPoseEstimationEnable: Bool = false
+    var type: CameraType = .Other
     
     var voxelResolution: Float
     var dimension:   Int
@@ -24,23 +25,52 @@ class Model {
     var image: DepthImage
     var parameters: [String: Float] = [String: Float]()
     
-    private init() {
-        dimension  = 256
-        voxelResolution   = 0.02
-        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
-        camera = Camera(onRealTime: false)
-        image  = DepthImage(onRealTime: false)
+    private init(type: CameraType) {
+        dimension       = 256
+        voxelResolution = 0.02
+        voxels          = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
+        switch type {
+        case .Kinect:
+            camera  = KinectCamera()
+            image   = KinectDepthImage()
+        case .Iphone:
+            camera  = IphoneCamera()
+            image   = IphoneDepthImage()
+        default:
+            camera  = Camera()
+            image   = DepthImage()
+        }
+        self.type               = type
         parameters["Lambda"]    = 0.0
         parameters["Delta"]     = 0.02
         parameters["Epsilon"]   = 0.01
     }
     
+    init(from: Model, to: CameraType) {
+        switch to {
+        case .Kinect:
+            camera  = KinectCamera()
+            image   = KinectDepthImage()
+        case .Iphone:
+            camera  = IphoneCamera()
+            image   = IphoneDepthImage()
+        default:
+            camera  = Camera()
+            image   = DepthImage()
+        }
+        type            = to
+        dimension       = from.dimension
+        voxelResolution = from.voxelResolution
+        voxels          = from.voxels
+        parameters      = from.parameters
+    }
+    
     func reallocateVoxels() {
         /* Sequence - serial */
-        let count = totalOfVoxels()
+        let count = numberOfVoxels()
         //let square = size * size
         voxels.removeAll()
-        voxels.reserveCapacity(totalOfVoxels())
+        voxels.reserveCapacity(numberOfVoxels())
         voxels = [Voxel](repeating: Voxel(), count: count)
         //centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
         /*
@@ -54,17 +84,22 @@ class Model {
         */
     }
     
-    func reallocateVoxels(with: Int) {
-        dimension = with
+    func reallocateVoxels(amount: Int) {
+        dimension = amount
         reallocateVoxels()
     }
     
-    func totalOfVoxels() -> Int {
+    func numberOfVoxels() -> Int {
         return dimension * dimension * dimension
     }
     
     func update(intrinsics: matrix_float3x3) {
-        camera.update(intrinsics: intrinsics)
+        var tmp = matrix_float4x4()
+        tmp.columns.0 = float4(intrinsics.columns.0.x, intrinsics.columns.0.y, intrinsics.columns.0.z, 0);
+        tmp.columns.1 = float4(intrinsics.columns.1.x, intrinsics.columns.1.y, intrinsics.columns.1.z, 0);
+        tmp.columns.2 = float4(intrinsics.columns.2.x, intrinsics.columns.2.y, intrinsics.columns.2.z, 0);
+        tmp.columns.3 = float4(0, 0, 0, 1);
+        camera.update(intrinsics: tmp)
     }
     
     func update(intrinsics: matrix_float4x4) {
@@ -81,9 +116,10 @@ class Model {
         camera.update(translation: t)
     }
     
-    func switchTo(realTime: Bool) {
-        camera.changeTo(realTime: realTime)
-        image.changeTo(realTime: realTime)
+    func switchTo(type: CameraType) {
+        self.type    = type
+        camera  = camera.switchTo(type: type)
+        image   = image.switchTo(type: type)
     }
     
     func update(data: [Float]) {
@@ -131,10 +167,9 @@ class Model {
                 parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
         }
     }
-    
-    func reinitExtrinsics() {
-        voxels = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
-        //camera.extrinsics = matrix_float4x4(diagonal: float4(1,1,1,1))
+ 
+    func reinit() {
+        reallocateVoxels()
         camera.rotation = matrix_float3x3(diagonal: float3(1,1,1))
         camera.translation = float3(0,0,0)
     }

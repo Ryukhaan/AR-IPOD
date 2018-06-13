@@ -32,6 +32,13 @@
 		A58DCE172088B85300280CD2 /* Voxel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE162088B85300280CD2 /* Voxel.swift */; };
 		A58DCE1B2088BF5C00280CD2 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* Model.swift */; };
 		A5C589AF20AC37C3009BA18A /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = A5C589AE20AC37C3009BA18A /* beep.wav */; };
+		A5D70A7920CFF6F50002EE0E /* bouchon-set in Resources */ = {isa = PBXBuildFile; fileRef = A5D70A7820CFF6F50002EE0E /* bouchon-set */; };
+		A5D70A7D20D0F8D30002EE0E /* tasse-set in Resources */ = {isa = PBXBuildFile; fileRef = A5D70A7C20D0F8D30002EE0E /* tasse-set */; };
+		A5D70A8520D0FA9F0002EE0E /* IphoneCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8420D0FA9F0002EE0E /* IphoneCamera.swift */; };
+		A5D70A8720D0FAAD0002EE0E /* IphoneDepthImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8620D0FAAD0002EE0E /* IphoneDepthImage.swift */; };
+		A5D70A8920D0FAB60002EE0E /* KinectCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8820D0FAB60002EE0E /* KinectCamera.swift */; };
+		A5D70A8B20D0FAC30002EE0E /* KinectDepthImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8A20D0FAC30002EE0E /* KinectDepthImage.swift */; };
+		A5D70A8E20D0FAFF0002EE0E /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8D20D0FAFF0002EE0E /* Protocol.swift */; };
 		A5EF305E20C6950E003937A3 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF305D20C6950E003937A3 /* Extension.swift */; };
 		A5EF306020C6BE12003937A3 /* Alias.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF305F20C6BE12003937A3 /* Alias.swift */; };
 		A5EF306220C6BE4F003937A3 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF306120C6BE4F003937A3 /* Constant.swift */; };
@@ -97,6 +104,14 @@
 		A5C589AE20AC37C3009BA18A /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
 		A5D70A6B20CE81710002EE0E /* raytracing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raytracing.hpp; sourceTree = "<group>"; };
 		A5D70A6E20CE8D400002EE0E /* projection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = projection.hpp; sourceTree = "<group>"; };
+		A5D70A7020CFA8420002EE0E /* pcl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = pcl.framework; path = ../../../Downloads/pcl.framework; sourceTree = "<group>"; };
+		A5D70A7820CFF6F50002EE0E /* bouchon-set */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "bouchon-set"; path = "../../../../../Downloads/bouchon/bouchon-set"; sourceTree = "<group>"; };
+		A5D70A7C20D0F8D30002EE0E /* tasse-set */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "tasse-set"; path = "../../../../../Downloads/tasse/tasse-set"; sourceTree = "<group>"; };
+		A5D70A8420D0FA9F0002EE0E /* IphoneCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IphoneCamera.swift; sourceTree = "<group>"; };
+		A5D70A8620D0FAAD0002EE0E /* IphoneDepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IphoneDepthImage.swift; sourceTree = "<group>"; };
+		A5D70A8820D0FAB60002EE0E /* KinectCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectCamera.swift; sourceTree = "<group>"; };
+		A5D70A8A20D0FAC30002EE0E /* KinectDepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectDepthImage.swift; sourceTree = "<group>"; };
+		A5D70A8D20D0FAFF0002EE0E /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		A5EF302120AECBD7003937A3 /* icp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = icp.hpp; sourceTree = "<group>"; };
 		A5EF305D20C6950E003937A3 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		A5EF305F20C6BE12003937A3 /* Alias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alias.swift; sourceTree = "<group>"; };
@@ -141,6 +156,7 @@
 		A52C3D6620933EAC00BA5BDC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A5D70A7020CFA8420002EE0E /* pcl.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -224,9 +240,29 @@
 			path = deprecated;
 			sourceTree = "<group>";
 		};
+		A5D70A8220D0FA110002EE0E /* Kinect */ = {
+			isa = PBXGroup;
+			children = (
+				A5D70A8820D0FAB60002EE0E /* KinectCamera.swift */,
+				A5D70A8A20D0FAC30002EE0E /* KinectDepthImage.swift */,
+			);
+			path = Kinect;
+			sourceTree = "<group>";
+		};
+		A5D70A8320D0FA170002EE0E /* Iphone */ = {
+			isa = PBXGroup;
+			children = (
+				A5D70A8420D0FA9F0002EE0E /* IphoneCamera.swift */,
+				A5D70A8620D0FAAD0002EE0E /* IphoneDepthImage.swift */,
+			);
+			path = Iphone;
+			sourceTree = "<group>";
+		};
 		A5EF306320C6C436003937A3 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				A5D70A8320D0FA170002EE0E /* Iphone */,
+				A5D70A8220D0FA110002EE0E /* Kinect */,
 				A58DCE1A2088BF5C00280CD2 /* Model.swift */,
 				A58DCE1020888D1300280CD2 /* Camera.swift */,
 				A58DCE162088B85300280CD2 /* Voxel.swift */,
@@ -238,6 +274,7 @@
 		A5EF306420C6C450003937A3 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				A5D70A8D20D0FAFF0002EE0E /* Protocol.swift */,
 				A5EF305F20C6BE12003937A3 /* Alias.swift */,
 				A5EF306120C6BE4F003937A3 /* Constant.swift */,
 				A5EF305D20C6950E003937A3 /* Extension.swift */,
@@ -248,11 +285,13 @@
 		A5F478BD2099DF5400CAAEC0 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				A5D70A7820CFF6F50002EE0E /* bouchon-set */,
 				A5C589AE20AC37C3009BA18A /* beep.wav */,
 				A5F47AF120A301EA00CAAEC0 /* chair */,
 				A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */,
 				A52C3D4E2091E00700BA5BDC /* TriTableContents */,
 				A5F478C02099E10100CAAEC0 /* pointCloudTest.sdp */,
+				A5D70A7C20D0F8D30002EE0E /* tasse-set */,
 				A5F478EC20A0700500CAAEC0 /* ikea-table */,
 			);
 			path = resources;
@@ -400,8 +439,10 @@
 			files = (
 				A58DCDE22088895500280CD2 /* art.scnassets in Resources */,
 				A5F478ED20A0700500CAAEC0 /* ikea-table in Resources */,
+				A5D70A7D20D0F8D30002EE0E /* tasse-set in Resources */,
 				A58DCDEC2088895500280CD2 /* LaunchScreen.storyboard in Resources */,
 				A5F47AF220A301EA00CAAEC0 /* chair in Resources */,
+				A5D70A7920CFF6F50002EE0E /* bouchon-set in Resources */,
 				A58DCDE92088895500280CD2 /* Assets.xcassets in Resources */,
 				A5C589AF20AC37C3009BA18A /* beep.wav in Resources */,
 				A58DCDE72088895500280CD2 /* Main.storyboard in Resources */,
@@ -438,17 +479,22 @@
 				A52C3D652093185000BA5BDC /* bridging.cpp in Sources */,
 				A544222120A5A39D00AE55C7 /* SceneViewController.swift in Sources */,
 				A52C3D452091CE4B00BA5BDC /* Meshing.swift in Sources */,
+				A5D70A8B20D0FAC30002EE0E /* KinectDepthImage.swift in Sources */,
 				A58DCE172088B85300280CD2 /* Voxel.swift in Sources */,
+				A5D70A8E20D0FAFF0002EE0E /* Protocol.swift in Sources */,
 				A5EF305E20C6950E003937A3 /* Extension.swift in Sources */,
 				A58DCE1B2088BF5C00280CD2 /* Model.swift in Sources */,
+				A5D70A8920D0FAB60002EE0E /* KinectCamera.swift in Sources */,
 				A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */,
 				A58DCE1320888F4A00280CD2 /* DepthImage.swift in Sources */,
 				A58DCDE42088895500280CD2 /* ViewController.swift in Sources */,
 				A52C3D392090630200BA5BDC /* IO.swift in Sources */,
+				A5D70A8520D0FA9F0002EE0E /* IphoneCamera.swift in Sources */,
 				A5F478E9209C657500CAAEC0 /* io.cpp in Sources */,
 				A554D20420CA677F0096DE8A /* SettingsViewController.swift in Sources */,
 				A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */,
 				A58DCE1120888D1300280CD2 /* Camera.swift in Sources */,
+				A5D70A8720D0FAAD0002EE0E /* IphoneDepthImage.swift in Sources */,
 				A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */,
 				A5F478EF20A096C900CAAEC0 /* UI.swift in Sources */,
 				A5EF306220C6BE4F003937A3 /* Constant.swift in Sources */,
@@ -634,7 +680,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Frameworks/",
+				);
 				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Frameworks/pcl.framework/Headers/pcl";
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -658,7 +709,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Frameworks/",
+				);
 				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Frameworks/pcl.framework/Headers/pcl";
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
