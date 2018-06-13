@@ -10,7 +10,8 @@ import Foundation
 import ARKit
 
 enum UIFactory {
-    static func createPointsNode(points: [Vector]) -> SCNNode {
+    
+    static func pointCloud(points: [Vector]) -> SCNNode {
         let vertexData = NSData(bytes: points, length: MemoryLayout<Vector>.stride * points.count)
         let positionSources = SCNGeometrySource(data: vertexData as Data,
                                                 semantic: SCNGeometrySource.Semantic.vertex,
@@ -30,50 +31,45 @@ enum UIFactory {
         return SCNNode(geometry: pointCloudGeometry)
     }
     
-    static func createMeshNode(points: [Vector]) -> SCNNode {
-        let vertexData = NSData(bytes: points, length: MemoryLayout<Vector>.stride * points.count)
+    static func mesh(from: [Vector]) -> SCNNode {
+        var normals = [Vector]()
+        let n = from.count / 3
+        for i in 0..<n {
+            let p0 = from[3*i]
+            let p1 = from[3*i+1]
+            let p2 = from[3*i+2]
+            let px = (p1 - p0)
+            let py = (p2 - p0)
+            let n = simd_normalize(simd_cross(px, py))
+            normals.append(n)
+            normals.append(n)
+            normals.append(n)
+        }
+        let vertexData = NSData(bytes: from, length: MemoryLayout<Vector>.stride * from.count)
         let positionSources = SCNGeometrySource(data: vertexData as Data,
                                                 semantic: SCNGeometrySource.Semantic.vertex,
-                                                vectorCount: points.count,
+                                                vectorCount: from.count,
                                                 usesFloatComponents: true,
                                                 componentsPerVector: 3,
                                                 bytesPerComponent: MemoryLayout<Float>.size,
                                                 dataOffset: 0,
                                                 dataStride: MemoryLayout<Vector>.stride)
+        let normalData = NSData(bytes: normals, length: MemoryLayout<Vector>.stride * normals.count)
+        let normalsSources = SCNGeometrySource(data: normalData as Data,
+                                               semantic: SCNGeometrySource.Semantic.normal,
+                                               vectorCount: normals.count,
+                                               usesFloatComponents: true,
+                                               componentsPerVector: 3,
+                                               bytesPerComponent: MemoryLayout<Float>.size,
+                                               dataOffset: 0,
+                                               dataStride: MemoryLayout<Vector>.stride)
         let elements = SCNGeometryElement(
             data: nil,
             primitiveType: .triangles,
-            primitiveCount: points.count / 3,
+            primitiveCount: from.count / 3,
             bytesPerIndex: MemoryLayout<Double>.size
         )
-        let pointCloudGeometry = SCNGeometry(sources: [positionSources], elements: [elements])
-        return SCNNode(geometry: pointCloudGeometry)
-    }
-    
-    static func createSimpleNodeFrom(volume: Model, with: Float) -> SCNNode {
-        let points = [Vector]()
-        let size = volume.numberOfVoxels()
-        for i in 0..<size {
-            if (abs(volume.voxels[i].sdf) <= with) {
-                //points.append(from.centroids[i])
-            }
-        }
-        let vertexData = NSData(bytes: points, length: MemoryLayout<Vector>.stride * points.count)
-        let positionSources = SCNGeometrySource(data: vertexData as Data,
-                                                semantic: SCNGeometrySource.Semantic.vertex,
-                                                vectorCount: points.count,
-                                                usesFloatComponents: true,
-                                                componentsPerVector: 3,
-                                                bytesPerComponent: MemoryLayout<Float>.size,
-                                                dataOffset: 0,
-                                                dataStride: MemoryLayout<Vector>.stride)
-        let elements = SCNGeometryElement(
-            data: nil,
-            primitiveType: .point,
-            primitiveCount: points.count,
-            bytesPerIndex: MemoryLayout<Double>.size
-        )
-        let pointCloudGeometry = SCNGeometry(sources: [positionSources], elements: [elements])
+        let pointCloudGeometry = SCNGeometry(sources: [positionSources, normalsSources], elements: [elements])
         return SCNNode(geometry: pointCloudGeometry)
     }
 }

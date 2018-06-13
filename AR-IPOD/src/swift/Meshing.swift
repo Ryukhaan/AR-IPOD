@@ -56,7 +56,7 @@ struct Tables {
  * @volume : Volume to be "marched"
  * @isolovel : isovalue according to Lorensen & Clide paper (1987)
  */
-func extractMesh(model: inout Model, isolevel: Float) -> [Vector] {
+func extractMesh(model: Model, isolevel: Float) -> [Vector] {
     let count = model.numberOfVoxels()
     let stride = MemoryLayout<Vector>.stride
     // Why i can't allocate more than around "count" bytes ?

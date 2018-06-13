@@ -72,9 +72,9 @@ class SceneViewController: UIViewController {
     @IBAction func update(_ sender: Any) {
         let iso = Float(isolevel.text!)
         DispatchQueue.global().async {
-            let points = extractMesh(model: &self.myModel, isolevel: iso!)
+            let points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
-            let pointCloudNode = UIFactory.createMeshNode(points: points)
+            let pointCloudNode = UIFactory.mesh(from: points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
                 scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
@@ -86,19 +86,25 @@ class SceneViewController: UIViewController {
     }
     
     @IBAction func displayPoints(_ sender: Any) {
-        let iso = Int(withoutMesh.text!)
+        //let iso = Int(withoutMesh.text!)
+        let iso = Float(withoutMesh.text!)
         let datasetName = "ikea-table"
         DispatchQueue.global().async {
+            // Display Porjected DepthMap
+            /*
+            Model.sharedInstance.switchTo(type: .Kinect)
+            let intrinsics = Import.intrinsics(from: "depthIntrinsics", at: datasetName, type: Model.sharedInstance.type)
+            Model.sharedInstance.update(intrinsics: intrinsics)
+            let depthmap = Import.depthMapFromTXT(from: "frame-\(iso!).depth",at: datasetName, type: Model.sharedInstance.type)
+            Model.sharedInstance.update(data: depthmap)
+            let points = projectDepthMap(from: Model.sharedInstance)
+            */
+            
+            // Display SDF withou mesh
             //let points = extractMesh(volume: &self.volume, isolevel: iso!)
-            //let points = extractTSDF(model: self.volume, isolevel: iso!)
-            self.myModel.switchTo(type: .Kinect)
-            let intrinsics = Import.intrinsics(from: "depthIntrinsics", at: datasetName, type: self.myModel.type)
-            self.myModel.update(intrinsics: intrinsics)
-            let depthmap = Import.depthMapFromTXT(from: "frame-\(iso!).depth",at: datasetName, type: self.myModel.type)
-            self.myModel.update(data: depthmap)
-            let points = projectDepthMap(from: self.myModel)
+            let points = extractTSDF(model: Model.sharedInstance, isolevel: iso!)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
-            let pointCloudNode = UIFactory.createPointsNode(points: points)
+            let pointCloudNode = UIFactory.pointCloud(points: points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
                 scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
@@ -109,15 +115,15 @@ class SceneViewController: UIViewController {
     }
     @IBAction func export(_ sender: Any) {
         let iso = Float(isolevel.text!)
-        let points = extractMesh(model: &self.myModel, isolevel: iso!)
+        let points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
         exportToPLY(mesh: points, at: "meshing.ply")
     }
     
     @IBAction func display(_ sender: Any) {
         DispatchQueue.global().async {
-            let points = extractMesh(model: &self.myModel, isolevel: 0.02)
+            let points = extractMesh(model: Model.sharedInstance, isolevel: 0.02)
             //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
-            let pointCloudNode = UIFactory.createMeshNode(points: points)
+            let pointCloudNode = UIFactory.mesh(from: points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
                 scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
@@ -135,7 +141,7 @@ class SceneViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Main" {
             if let destination = segue.destination as? ViewController {
-                destination.myModel = self.myModel
+                destination.myModel = Model.sharedInstance
                 destination.datasetChoice.selectedSegmentIndex  = savedDatasetIndex
                 destination.datasetSize.selectedSegmentIndex    = savedFramesIndex
             }

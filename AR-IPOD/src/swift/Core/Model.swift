@@ -12,7 +12,7 @@ import AVFoundation
 
 class Model {
     // Singleton pattern : Only one volume will be create
-    static let sharedInstance = Model(type: CameraType.Other)
+    static let sharedInstance = Model()
     
     var raytracingEnable: Bool = false
     var cameraPoseEstimationEnable: Bool = false
@@ -24,6 +24,18 @@ class Model {
     var camera: Camera
     var image: DepthImage
     var parameters: [String: Float] = [String: Float]()
+    
+    private init() {
+        dimension       = 256
+        voxelResolution = 0.02
+        voxels          = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
+        camera  = KinectCamera()
+        image   = KinectDepthImage()
+        type    = .Kinect
+        parameters["Lambda"]    = 0.0
+        parameters["Delta"]     = 0.02
+        parameters["Epsilon"]   = 0.01
+    }
     
     private init(type: CameraType) {
         dimension       = 256

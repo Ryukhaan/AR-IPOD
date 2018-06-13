@@ -23,17 +23,20 @@ class SettingsViewController: UIViewController {
     var model = Model.sharedInstance
     
     @IBAction func isPoseEstimated(_ sender: Any) {
-        model.cameraPoseEstimationEnable = cameraPoseSwitch.isOn
+        //model.cameraPoseEstimationEnable = cameraPoseSwitch.isOn
+        Model.sharedInstance.cameraPoseEstimationEnable = cameraPoseSwitch.isOn
     }
     
     @IBAction func isRaytracingEnable(_ sender: Any) {
-        model.raytracingEnable = raytracingSwitch.isOn
+        //model.raytracingEnable = raytracingSwitch.isOn
+        Model.sharedInstance.raytracingEnable = raytracingSwitch.isOn
     }
     
     @IBAction func setVolumeResolution(_ sender: Any) {
         if let text = volumeSize.text {
             if let value = Int(text) {
-                model.reallocateVoxels(amount: value)
+                //model.reallocateVoxels(amount: value)
+                Model.sharedInstance.reallocateVoxels(amount: value)
             }
         }
     }
@@ -41,7 +44,8 @@ class SettingsViewController: UIViewController {
     @IBAction func setVisionRange(_ sender: Any) {
         if let text = rangeVision.text {
             if let value = Float(text) {
-                model.voxelResolution = value
+                //model.voxelResolution = value
+                Model.sharedInstance.voxelResolution = value
             }
         }
     }
@@ -49,7 +53,8 @@ class SettingsViewController: UIViewController {
     @IBAction func setTruncationDistance(_ sender: Any) {
         if let text = delta.text {
             if let value = Float(text) {
-                model.parameters["Delta"] = value
+                //model.parameters["Delta"] = value
+                Model.sharedInstance.parameters["Delta"] = value
             }
         }
     }
@@ -57,7 +62,8 @@ class SettingsViewController: UIViewController {
     @IBAction func setCarvingDistance(_ sender: Any) {
         if let text = epsilon.text {
             if let value = Float(text) {
-                model.parameters["Epsilon"] = value
+                //model.parameters["Epsilon"] = value
+                Model.sharedInstance.parameters["Epsilon"] = value
             }
         }
     }
@@ -81,7 +87,7 @@ class SettingsViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Main" {
             if let destination = segue.destination as? ViewController {
-                destination.myModel = self.model
+                destination.myModel = Model.sharedInstance
             }
         }
     }

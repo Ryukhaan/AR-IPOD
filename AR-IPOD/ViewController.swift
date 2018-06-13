@@ -66,16 +66,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         super.viewWillAppear(animated)
         
         // Create a session configuration
-        //let configuration = ARWorldTrackingConfiguration()
-        let configuration = ARFaceTrackingConfiguration()
+        let configuration = ARWorldTrackingConfiguration()
+        //let configuration = ARFaceTrackingConfiguration()
         
         // Run the view's session
         sceneView.session.run(configuration)
         sceneView.session.delegate = self
         //sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
         //sceneView.session.setWorldOrigin(relativeTransform: matrix_float4x4(diagonal: [1,1,1,1]))
-        
         // Version with dataset
+        /*
         let starter = Double(CFAbsoluteTimeGetCurrent())
         let threads = [DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent),
                        DispatchQueue(label: "thread2", qos: .userInteractive, attributes: .concurrent)
@@ -95,6 +95,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             group.leave()
         }
         _ = Double(CFAbsoluteTimeGetCurrent()) - starter
+        */
         
     }
     
@@ -122,6 +123,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
      */
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
+        let R = camera.transform
+        ty.numberOfLines = 4
+        ty.text = """
+        \(R.columns.0.x) \(R.columns.1.x) \(R.columns.2.x) \(R.columns.3.x)
+        \(R.columns.0.y) \(R.columns.1.y) \(R.columns.2.y) \(R.columns.3.y)
+        \(R.columns.0.z) \(R.columns.1.z) \(R.columns.2.z) \(R.columns.3.z)
+        \(R.columns.0.w) \(R.columns.1.w) \(R.columns.2.w) \(R.columns.3.w)
+        """
         //guard let currentFrame = sceneView.session.currentFrame
         //    else { return }
     }
@@ -140,14 +149,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
-        integrationProgress.progress = 0.0
-        integrationProgress.isHidden = false
+        //integrationProgress.progress = 0.0
+        //integrationProgress.isHidden = false
         //var k = 0
+        
+        
         if inRealTime
         {
             //let camera = frame.camera.trackingState
-            self.myModel.update(rotation: frame.camera.transform)
-            self.myModel.update(intrinsics: frame.camera.intrinsics)
+            Model.sharedInstance.update(rotation: frame.camera.transform)
+            Model.sharedInstance.update(intrinsics: frame.camera.intrinsics)
             /*
              if let points = frame.rawFeaturePoints {
              self.myVolume.integrate(points: points, camera: self.myCamera)
@@ -160,10 +171,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 let depthDataMap = self.myDepthData?.depthDataMap
                 CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
                 let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
-                self.myModel.image.width = Int(CVPixelBufferGetWidth(depthDataMap!))
-                self.myModel.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
-                self.myModel.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
-                self.myModel.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
+                Model.sharedInstance.image.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+                Model.sharedInstance.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
+                Model.sharedInstance.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+                Model.sharedInstance.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
                 //let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
                 /*
                  * We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
@@ -174,7 +185,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 //self.myDepthImage.update(_data: depthPointer)
                 //self.myDepthImage.update(_data: depthPointer)
                 //self.myCamera.update(extrinsics: frame.camera.transform)
-                self.myModel.image.push(map: depthPointer)
+                Model.sharedInstance.image.push(map: depthPointer)
                 //self.myCamera.update(extrinsics: frame.camera.transform)
                 //self.myCamera.intrinsics = frame.camera.intrinsics
                 self.numberOfIterations += 1
@@ -186,24 +197,25 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             if self.numberOfIterations >= 6
             {
                 //let last_points = self.myDepthImage.data
-                let last_points = self.myModel.image.data
-                self.myModel.createMedianDepthMap()
-                let current_points = self.myModel.image.data
-                var K  = self.myModel.camera.intrinsics
-                var R  = self.myModel.camera.rotation
-                var T  = self.myModel.camera.translation
+                let last_points = Model.sharedInstance.image.data
+                Model.sharedInstance.createMedianDepthMap()
+                let current_points = Model.sharedInstance.image.data
+                var K  = Model.sharedInstance.camera.intrinsics
+                var R  = Model.sharedInstance.camera.rotation
+                var T  = Model.sharedInstance.camera.translation
                 bridge_fast_icp(last_points,
                                 current_points,
                                 &K,
                                 &R,
                                 &T,
-                                &(self.myModel.voxels),
-                                Int32(self.myModel.dimension),
-                                self.myModel.voxelResolution,
-                                Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
-                self.myModel.camera.translation = T
+                                &(Model.sharedInstance.voxels),
+                                Int32(Model.sharedInstance.dimension),
+                                Model.sharedInstance.voxelResolution,
+                                Int32(Model.sharedInstance.camera.width),
+                                Int32(Model.sharedInstance.camera.height))
+                Model.sharedInstance.camera.translation = T
                 //DispatchQueue.global().async {
-                self.myModel.integrate()
+                Model.sharedInstance.integrate()
                 //self.myVolume.integrateDepthMap(
                 //    image: self.myDepthImage,
                 //    camera: self.myCamera,
@@ -247,23 +259,26 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         integrationProgress.isHidden = false
         //inRealTime = false
         //self.myModel.switchTo(realTime: inRealTime)
-        self.myModel.reinit()
+        Model.sharedInstance.reinit()
+        //self.myModel = Model.sharedInstance
         
         timer = Double(CFAbsoluteTimeGetCurrent())
+        var depthmap: [Float]
+        var extrinsics: matrix_float4x4
         for i in 0..<self.sizeOfDataset {
             //DispatchQueue.main.asyncAfter(deadline: .now() + Double(3*i)) {
-            let extrinsics = Import.cameraPose(
+            extrinsics = Import.cameraPose(
                 from: "frame-\(i).pose",
                 at: self.nameOfDataset,
-                type: self.myModel.type)
-            var depthmap = Import.depthMapFromTXT(
+                type: Model.sharedInstance.type)
+            depthmap = Import.depthMapFromTXT(
                 from: "frame-\(i).depth",
                 at: self.nameOfDataset,
-                type: self.myModel.type)
+                type: Model.sharedInstance.type)
             bridge_median_filter(&depthmap,
                                  2,
-                                 Int32(self.myModel.camera.width),
-                                 Int32(self.myModel.camera.height))
+                                 Int32(Model.sharedInstance.camera.width),
+                                 Int32(Model.sharedInstance.camera.height))
             /*
             var depthmap: [Float] = [Float](repeating: 0.0, count: Constant.Kinect.Width * Constant.Kinect.Height)
             var median: [[Float]] = [[Float]]()
@@ -287,37 +302,39 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 }
             }
             */
-            if self.myModel.cameraPoseEstimationEnable {
-                self.myModel.update(rotation: extrinsics)
-                self.myModel.update(translation: extrinsics)
-                let last_points = self.myModel.image.data
-                self.myModel.update(data: depthmap)
+            if Model.sharedInstance.cameraPoseEstimationEnable {
+                Model.sharedInstance.update(rotation: extrinsics)
+                //Model.sharedInstance.update(translation: extrinsics)
+                let last_points = Model.sharedInstance.image.data
+                Model.sharedInstance.update(data: depthmap)
                 if i > 0 {
-                    let current_points = self.myModel.image.data
-                    var K  = self.myModel.camera.intrinsics
-                    var R  = self.myModel.camera.rotation
-                    var T  = self.myModel.camera.translation
+                    let current_points = Model.sharedInstance.image.data
+                    var K  = Model.sharedInstance.camera.intrinsics
+                    var R  = Model.sharedInstance.camera.rotation
+                    var T  = Model.sharedInstance.camera.translation
                     bridge_fast_icp(last_points,
                                     current_points,
                                     &K,
                                     &R,
                                     &T,
-                                    &(self.myModel.voxels),
-                                    Int32(self.myModel.dimension),
-                                    self.myModel.voxelResolution,
-                                    Int32(self.myModel.camera.width), Int32(self.myModel.camera.height))
-                    self.myModel.camera.translation = T
+                                    &(Model.sharedInstance.voxels),
+                                    Int32(Model.sharedInstance.dimension),
+                                    Model.sharedInstance.voxelResolution,
+                                    Int32(Model.sharedInstance.camera.width),
+                                    Int32(Model.sharedInstance.camera.height))
+                    Model.sharedInstance.camera.translation = T
                 }
             }
             else {
-                self.myModel.update(rotation: extrinsics)
-                self.myModel.update(translation: extrinsics)
-                self.myModel.update(data: depthmap)
+                Model.sharedInstance.update(rotation: extrinsics)
+                Model.sharedInstance.update(translation: extrinsics)
+                Model.sharedInstance.update(data: depthmap)
             }
-            self.myModel.integrate()
-            self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
+            Model.sharedInstance.integrate()
+            //self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
         }
-        let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+        //let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+        end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
         self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in
             self.integrationProgress.isHidden = true
             self.integrationProgress.progress = 0.0
@@ -328,14 +345,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         switch datasetChoice.selectedSegmentIndex {
         case 0:
             nameOfDataset = "bouchon-set"
-            myModel = Model(from: myModel, to: .Iphone)
+            Model.sharedInstance.switchTo(type: .Iphone)
+            //myModel = Model(from: Model.sharedInstance, to: .Iphone)
         case 1:
             nameOfDataset = "ikea-table"
-            myModel = Model(from: myModel, to: .Kinect)
+            //myModel = Model(from: Model.sharedInstance, to: .Kinect)
+            Model.sharedInstance.switchTo(type: .Kinect)
         default: break
         }
-        let intrinsic = Import.intrinsics(from: "depthIntrinsics", at: nameOfDataset, type: myModel.type)
-        myModel.update(intrinsics: intrinsic)
+        let intrinsic = Import.intrinsics(from: "depthIntrinsics", at: nameOfDataset, type: Model.sharedInstance.type)
+        Model.sharedInstance.update(intrinsics: intrinsic)
     }
     
     @IBAction func updateDatasetSize(_ sender: Any) {
@@ -361,7 +380,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBAction func exportVolume(_ sender: Any) {
         //self.myModel.switchTo(realTime: true)
-        self.myModel = Model(from: self.myModel, to: .Iphone)
+        //self.myModel = Model(from: self.myModel, to: .Iphone)
         self.displayAlertMessage(
             title: "Acquisition en temps réel",
             message: "Veuillez mettre la caméra en face de l'objet",
@@ -374,7 +393,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ScenePoints" {
             if let destination = segue.destination as? SceneViewController {
-                destination.myModel = self.myModel
+                destination.myModel = Model.sharedInstance
                 destination.savedDatasetIndex       = datasetChoice.selectedSegmentIndex
                 destination.savedFramesIndex        = datasetSize.selectedSegmentIndex
             }

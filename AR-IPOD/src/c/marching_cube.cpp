@@ -48,7 +48,7 @@ std::vector<simd::float3> polygonise(const simd::float3 points[8],
                                      const int edgeTable[256],
                                      const int triTable[4096]) {
     std::vector<simd::float3> triangles;
-    int ntriangle = 0;
+    //int ntriangle = 0;
     // int cubeindex = 0;
     int cubeindex = calculate_vertex_configuration(values, isolevel);
     simd::float3 vertexlist[12];
@@ -73,71 +73,16 @@ std::vector<simd::float3> polygonise(const simd::float3 points[8],
         if ( (values[i0] < isolevel && values[i1] >= isolevel) || (values[i0] >= isolevel && values[i1] < isolevel))
             vertexlist[i] = interpolate(isolevel , points[i0], points[i1], values[i0], values[i1]);
     }
-    /*
-    if ((values[0]) < isolevel) cubeindex |= 1;
-    if ((values[1]) < isolevel) cubeindex |= 2;
-    if ((values[2]) < isolevel) cubeindex |= 4;
-    if ((values[3]) < isolevel) cubeindex |= 8;
-    if ((values[4]) < isolevel) cubeindex |= 16;
-    if ((values[5]) < isolevel) cubeindex |= 32;
-    if ((values[6]) < isolevel) cubeindex |= 64;
-    if ((values[7]) < isolevel) cubeindex |= 128;
-    */
     
-    //for(int i = 0; i<8; i++)
-    //    if (values[i] < 0) return triangles;
-    /* Cube is entirely in/out of the surface */
-    //if (edgeTable[cubeindex] == 0) return triangles;
-    
-    /* Find the vertices where the surface intersects the cube */
-    /*
-    if (edgeTable[cubeindex] & 1) {
-        vertexlist[0] = interpolate(isolevel , points[0], points[1], values[0], values[1]);
-    }
-    if (edgeTable[cubeindex] & 2) {
-        vertexlist[1] = interpolate(isolevel, points[1], points[2], values[1], values[2]);
-    }
-    if (edgeTable[cubeindex] & 4) {
-        vertexlist[2] = interpolate( isolevel, points[2], points[3], values[2], values[3]);
-    }
-    if (edgeTable[cubeindex] & 8) {
-        vertexlist[3] = interpolate(isolevel, points[3], points[0], values[3], values[0]);
-    }
-    if (edgeTable[cubeindex] & 16) {
-        vertexlist[4] = interpolate(isolevel, points[4], points[5], values[4], values[5]);
-    }
-    if (edgeTable[cubeindex] & 32) {
-        vertexlist[5] = interpolate(isolevel, points[5], points[6], values[5], values[6]);
-    }
-    if (edgeTable[cubeindex] & 64) {
-        vertexlist[6] = interpolate(isolevel, points[6], points[7], values[6], values[7]);
-    }
-    if (edgeTable[cubeindex] & 128) {
-        vertexlist[7] = interpolate(isolevel, points[7], points[4], values[7], values[4]);
-    }
-    if (edgeTable[cubeindex] & 256) {
-        vertexlist[8] = interpolate(isolevel, points[0], points[4], values[0], values[4]);
-    }
-    if (edgeTable[cubeindex] & 512) {
-        vertexlist[9] = interpolate(isolevel, points[1], points[5], values[1], values[5]);
-    }
-    if (edgeTable[cubeindex] & 1024) {
-        vertexlist[10] = interpolate(isolevel, points[2], points[6], values[2], values[6]);
-    }
-    if (edgeTable[cubeindex] & 2048) {
-        vertexlist[11] = interpolate(isolevel, points[3], points[7], values[3], values[7]);
-    }
-    */
     int i = 0;
     while (triTable[cubeindex*16+i] != -1) {
-        simd::float3 triangle;
-        triangle = vertexlist[triTable[cubeindex*16+i+0]];
-        triangles.push_back(triangle);
-        triangle = vertexlist[triTable[cubeindex*16+i+1]];
-        triangles.push_back(triangle);
-        triangle = vertexlist[triTable[cubeindex*16+i+2]];
-        triangles.push_back(triangle);
-        ntriangle += 1;
+        const simd::float3 t1 = vertexlist[triTable[cubeindex*16+i+0]];
+        const simd::float3 t2 = vertexlist[triTable[cubeindex*16+i+1]];
+        const simd::float3 t3 = vertexlist[triTable[cubeindex*16+i+2]];
+        triangles.push_back(t1);
+        triangles.push_back(t2);
+        triangles.push_back(t3);
+        //ntriangle += 1;
         i += 3;
     }
     return triangles;

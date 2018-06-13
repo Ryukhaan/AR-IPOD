@@ -74,38 +74,69 @@ void fast_icp(const float* previous_points,
     // Add translation vector between current and previous points to previous transalation
     T  += (previous_mass_centre - current_mass_centre);
     ((simd_float3 *) translation)[0] = T;
+
     /*
-     simd::float3 offset = 0.5 * dimensions;
-     simd_float3x3 A = simd_diagonal_matrix(simd_make_float3(0,0,0));
-     simd::float3 b  = simd_make_float3(0, 0, 0);
-     for (int i = 0; i < height; i++) {
-     for (int j = 0; j < width; j ++) {
-     float depth = previous_points[ i*width + j];
-     if (std::isnan(depth) || depth < 1e-6) continue;
-     simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
-     simd::float4 point  = simd_mul(simd_mul(Rtinv, Kinv), uv);
-     simd::float3 rpoint = simd_make_float3(point.x, point.y, point.z);
-     simd_int3 V_ijk = global_to_integer(rpoint + offset, resolution, dimensions);
-     int k = hash_function(V_ijk, resolution);
-     int dkx = k + 1;
-     int dky = k + resolution;
-     int dkz = k + square;
-     if (k >= size || k < 0) continue;
-     if (dkx >= size || dkx < 0) continue;
-     if (dky >= size || dky < 0) continue;
-     if (dkz >= size || dkz < 0) continue;
-     simd::float3 gradient = simd_make_float3(((Voxel *) voxels)[dkx].sdf - ((Voxel *) voxels)[k].sdf,
-     ((Voxel *) voxels)[dky].sdf - ((Voxel *) voxels)[k].sdf,
-     ((Voxel *) voxels)[dkz].sdf - ((Voxel *) voxels)[k].sdf);
-     
-     for (int n = 0; n < 3; n++)
-     for (int m = 0; m < 3; m++)
-     A.columns[n][m] += gradient[n] * gradient[m];
-     b += ((Voxel *) voxels)[k].sdf * gradient;
-     }
-     }
-     translation -= simd_mul(simd_inverse(A), b);
-     ((simd_float4x4 *) extrinsics)[0].columns[3] = simd_make_float4(translation.x, translation.y, translation.z, 1);
-     */
+    simd::float3 offset = 0.5 * dimension * resolution;
+    int square = dimension * dimension;
+    int size = pow(dimension, 3);
+    
+    simd_float3x3 A = simd_diagonal_matrix(simd_make_float3(0,0,0));
+    simd::float3 b  = simd_make_float3(0, 0, 0);
+    
+    simd::float3 T_old = T;
+    simd::float3 T_new = T;
+    simd::float3 W_old = simd_make_float3(log(abs(R.columns[1].z)), log(abs(R.columns[2].x)), log(abs(R.columns[0].y)));
+    simd::float3 W_new = W_old;
+    simd_float3x3 R_new;
+    while (true) {
+        simd_float3x3 A = simd_diagonal_matrix(simd_make_float3(0,0,0));
+        simd::float3 b  = simd_make_float3(0, 0, 0);
+        
+        T_old = T_new;
+        W_old = W_new;
+        R_new = simd_diagonal_matrix(simd_make_float3(1, 1, 1));
+        R_new.columns[0].y = expf(W_old.z);   R_new.columns[1].x = expf(-W_old.z);  R_new.columns[2].x = expf(W_old.y);
+        R_new.columns[0].z = expf(-W_old.y);  R_new.columns[1].z = expf( W_old.x);  R_new.columns[0].y = expf(-W_old.x);
+        
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j ++) {
+                float depth = previous_points[ i*width + j];
+                if (std::isnan(depth) || depth < 1e-6) continue;
+                simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
+                simd::float4 local  = simd_mul(Kinv, uv);
+                simd::float3 global = simd_mul(R_new, simd_make_float3(local.x, local.y, local.z) + T_new);
+                simd_int3 V_ijk = global_to_integer(global + offset, resolution);
+                int k = hash_code(V_ijk, resolution);
+                int dkx = k + square;
+                int dky = k + dimension;
+                int dkz = k + 1;
+                if (k >= size || k < 0) continue;
+                if (dkx >= size || dkx < 0) continue;
+                if (dky >= size || dky < 0) continue;
+                if (dkz >= size || dkz < 0) continue;
+                simd::float3 gradient = simd_make_float3(((Voxel *) voxels)[dkx].sdf - ((Voxel *) voxels)[k].sdf,
+                                                         ((Voxel *) voxels)[dky].sdf - ((Voxel *) voxels)[k].sdf,
+                                                         ((Voxel *) voxels)[dkz].sdf - ((Voxel *) voxels)[k].sdf);
+                
+                for (int n = 0; n < 3; n++)
+                    for (int m = 0; m < 3; m++)
+                        A.columns[n][m] += gradient[n] * gradient[m];
+                b += ((Voxel *) voxels)[k].sdf * gradient;
+            }
+        }
+        T_new -= simd_mul(simd_inverse(A), b);
+        W_new -= simd_mul(simd_inverse(A), b);
+        if (std::isnan(T_new.x) || std::isnan(T_new.y) || std::isnan(T_new.z))
+            break;
+        if (simd_max(simd_norm_inf(T_new - T_old), simd_norm_inf(W_new - W_old)) < 1e-2)
+            break;
+    }
+    R_new = simd_diagonal_matrix(simd_make_float3(1, 1, 1));
+    R_new.columns[0].y = expf(W_old.z);   R_new.columns[1].x = expf(-W_old.z);  R_new.columns[2].x = expf(W_old.y);
+    R_new.columns[0].z = expf(-W_old.y);  R_new.columns[1].z = expf( W_old.x);  R_new.columns[0].y = expf(-W_old.x);
+                                                            
+    ((simd_float3x3 *) rotation)[0] = R_new;
+    ((simd_float3 *) translation)[0] = T_new;
+    */
 }
 #endif /* icp_hpp */

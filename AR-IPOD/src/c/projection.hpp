@@ -57,6 +57,7 @@ int integrate_projection(float* depthmap,
     */
     //for (int i = mini; i<maxi; i++) {
         //if (i >= size || i < 0) continue;
+    /*
     for (int i = 0; i<width*height; i++) {
         float depth = depthmap[i];
         if (depth == 0) continue;
@@ -65,7 +66,7 @@ int integrate_projection(float* depthmap,
         simd::float4 homogene = simd_make_float4(u * depth, v * depth, depth, 1);
         simd::float4 local = simd_mul(Kinv, homogene);
         simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
-        simd::float3 rglobal = simd_mul(simd_transpose(R), rlocal - T);
+        simd::float3 rglobal = simd_mul(R, rlocal + T);
         //simd::float3 rglobal = rlocal;
         if (! (rglobal.x >= -offset.x && rglobal.y >= -offset.y && rglobal.z >= -offset.z &&
                rglobal.x < offset.x && rglobal.y < offset.x && rglobal.z < offset.z))
@@ -76,7 +77,8 @@ int integrate_projection(float* depthmap,
         update_voxel((Voxel *)voxels, -0.1, 1, k);
         number_of_changes ++;
     }
-    /*
+    */
+
     for (int i = 0; i<size; i++)
     //for (int i = mini; i<maxi; i++)
     {
@@ -105,14 +107,13 @@ int integrate_projection(float* depthmap,
         float weight = constant_weighting();
         //float weight = weighting(distance, delta, epsilon);
         
-        //if (distance >= delta + epsilon)
-        //    carving_voxel((Voxel *)voxels, i);
+        if (distance >= delta + epsilon)
+            carving_voxel((Voxel *)voxels, i);
         if (fabs(distance) <= delta)
             update_voxel((Voxel *)voxels, distance, weight, i);
         //else if (distance < -delta)
         //    update_voxel((Voxel *)voxels, -delta, weight, i);
     }
-    */
     return number_of_changes;
 }
 #endif /* projection_hpp */

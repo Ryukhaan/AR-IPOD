@@ -51,7 +51,6 @@ void median_filter(float* depthmap,
     for (int i = 0; i< height * width ; i++)
         depthmap[i] = tmp_depth[i];
     free(tmp_depth);
-    
 }
 
 /*
