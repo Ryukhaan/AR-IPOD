@@ -333,8 +333,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             Model.sharedInstance.integrate()
             //self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
         }
-        //let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
-        end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+        let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
         self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in
             self.integrationProgress.isHidden = true
             self.integrationProgress.progress = 0.0
