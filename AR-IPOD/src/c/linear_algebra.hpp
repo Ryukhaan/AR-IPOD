@@ -75,10 +75,9 @@ inline simd_int3 hash_decode(int i, int base) {
 inline simd_float3 create_centroid(const int i,
                                    const float resolution,
                                    const int dimension) {
-    float offset = resolution / 2.0;
+    float offset = resolution * 0.5;
     simd_int3 coord = hash_decode(i, dimension);
-    simd::float3 centroid = integer_to_global(coord, resolution) + offset;
-    return centroid;
+    return integer_to_global(coord, resolution) + offset;
 }
 
 inline simd_float3 linear_interpolation(simd::float3 x, simd::float3 y, double mu) {

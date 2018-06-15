@@ -31,6 +31,7 @@ void raytracing(float* depthmap,
                 const float lambda) {
     int size = pow(dimension, 3.0);
     simd::float3 offset = 0.5 * (dimension * resolution);
+    simd_int3 ot        = global_to_integer(T + offset, resolution);
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             float depth = depthmap[ i*width + j];
@@ -38,13 +39,23 @@ void raytracing(float* depthmap,
             simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
             simd::float4 local      = simd_mul(Kinv,uv);
             simd::float3 rlocal     = simd_make_float3(local.x, local.y, local.z);
-            simd::float3 rglobal    = simd_mul(simd_transpose(R), rlocal - T);
+            simd::float3 rglobal    = simd_mul(R, rlocal + T);
             simd_int3 end           = global_to_integer(rglobal + offset, resolution);
-            simd_int3 current       = global_to_integer(T + offset, resolution);
+            simd_int3 current       = ot;
             //float maxDist = simd_length(direction);
             float dx = rglobal.x - T.x;
             float dy = rglobal.y - T.y;
             float dz = rglobal.z - T.z;
+            
+            /*
+            float t1 = - T.x / dx;
+            float t2 = - T.y / dy;
+            float t3 = - T.z / dz;
+            float t4 = (dimension - T.x) / dx;
+            float t5 = (dimension - T.y) / dy;
+            float t6 = (dimension - T.z) / dz;
+            */
+            
             int stepX = dx == 0 ? 0 : dx > 0 ? 1 : -1;
             int stepY = dy == 0 ? 0 : dy > 0 ? 1 : -1;
             int stepZ = dz == 0 ? 0 : dz > 0 ? 1 : -1;
@@ -54,13 +65,14 @@ void raytracing(float* depthmap,
                 if (current.x == end.x && current.y == end.y && current.z == end.z) break;
                 int k = hash_code(current, dimension);
                 if (k < size && k >= 0) {
-                    simd::float3 c = create_centroid(k, resolution, dimension) - offset;
-                    float distance = rglobal.z - c.z; //c.z - global.z;
+                    simd::float3 c = (integer_to_global(current, resolution) + resolution * 0.5) - offset;
+                    //float distance = rglobal.z - c.z; //c.z - global.z;
+                    float distance = simd_sign(rglobal.z - c.z) * simd_distance(rglobal, c);
                     float w = constant_weighting();
-                    //if (distance >= delta + epsilon)  carving_voxel(voxels, i);
+                    if (distance >= delta + epsilon)  carving_voxel(voxels, i);
                     if (fabs(distance) <= delta) update_voxel(voxels, distance, w, k);
-                    else if (distance > delta) update_voxel(voxels, delta, 1.5, k);
-                    else if (distance < -delta) update_voxel(voxels, -delta, 1.5, k);
+                    //else if (distance > delta) update_voxel(voxels, delta, 1.0, k);
+                    //else if (distance < -delta) update_voxel(voxels, -delta, 1.0, k);
                     //if (fabs(distance) <= delta) update_voxel((Voxel *)voxels, distance, w, i);
                 }
                 if (current.x != end.x)

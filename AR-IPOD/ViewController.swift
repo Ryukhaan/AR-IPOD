@@ -123,14 +123,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
      */
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
-        let R = camera.transform
-        ty.numberOfLines = 4
-        ty.text = """
-        \(R.columns.0.x) \(R.columns.1.x) \(R.columns.2.x) \(R.columns.3.x)
-        \(R.columns.0.y) \(R.columns.1.y) \(R.columns.2.y) \(R.columns.3.y)
-        \(R.columns.0.z) \(R.columns.1.z) \(R.columns.2.z) \(R.columns.3.z)
-        \(R.columns.0.w) \(R.columns.1.w) \(R.columns.2.w) \(R.columns.3.w)
-        """
         //guard let currentFrame = sceneView.session.currentFrame
         //    else { return }
     }
@@ -152,8 +144,24 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //integrationProgress.progress = 0.0
         //integrationProgress.isHidden = false
         //var k = 0
-        
-        
+        let R = frame.camera.transform
+        let K = frame.camera.intrinsics
+        let D = frame.camera.imageResolution
+        ty.numberOfLines = 4
+        /*
+        ty.text = """
+        \(R.columns.0.x) \(R.columns.1.x) \(R.columns.2.x) \(R.columns.3.x)
+        \(R.columns.0.y) \(R.columns.1.y) \(R.columns.2.y) \(R.columns.3.y)
+        \(R.columns.0.z) \(R.columns.1.z) \(R.columns.2.z) \(R.columns.3.z)
+        \(R.columns.0.w) \(R.columns.1.w) \(R.columns.2.w) \(R.columns.3.w)
+        """
+        */
+        ty.text = """
+        \(K.columns.0.x) \(K.columns.1.x) \(K.columns.2.x)
+        \(K.columns.0.y) \(K.columns.1.y) \(K.columns.2.y)
+        \(K.columns.0.z) \(K.columns.1.z) \(K.columns.2.z)
+        \(D.width) \(D.height)
+        """
         if inRealTime
         {
             //let camera = frame.camera.trackingState
@@ -201,6 +209,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 Model.sharedInstance.createMedianDepthMap()
                 let current_points = Model.sharedInstance.image.data
                 var K  = Model.sharedInstance.camera.intrinsics
+                K.columns.0.x = K.columns.0.x / Float(Model.sharedInstance.image.height) * Float(D.height)
+                K.columns.1.y = K.columns.1.y / Float(Model.sharedInstance.image.width) * Float(D.width)
                 var R  = Model.sharedInstance.camera.rotation
                 var T  = Model.sharedInstance.camera.translation
                 bridge_fast_icp(last_points,
@@ -333,7 +343,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             Model.sharedInstance.integrate()
             //self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
         }
-        let end = Double(CFAbsoluteTimeGetCurrent()) - self.timer
+        let end = Double(CFAbsoluteTimeGetCurrent()) - timer
         self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in
             self.integrationProgress.isHidden = true
             self.integrationProgress.progress = 0.0
@@ -343,8 +353,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBAction func changeDataset(_ sender: Any) {
         switch datasetChoice.selectedSegmentIndex {
         case 0:
-            nameOfDataset = "bouchon-set"
-            Model.sharedInstance.switchTo(type: .Iphone)
+            nameOfDataset = "chair"
+            Model.sharedInstance.switchTo(type: .Kinect)
             //myModel = Model(from: Model.sharedInstance, to: .Iphone)
         case 1:
             nameOfDataset = "ikea-table"

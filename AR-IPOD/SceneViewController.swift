@@ -17,6 +17,8 @@ class SceneViewController: UIViewController {
     @IBOutlet var isolevel: UITextField!
     @IBOutlet var withoutMesh: UITextField!
     
+    @IBOutlet var wireFrame: UISwitch!
+    
     var myModel: Model = Model.sharedInstance
     var indexOfPointCloud: Int = 0
     var savedDeltaIndex: Double = 0
@@ -69,11 +71,10 @@ class SceneViewController: UIViewController {
         sceneView.rendersContinuously = true
     }
 
-    @IBAction func update(_ sender: Any) {
+    @IBAction func meshWithIso(_ sender: Any) {
         let iso = Float(isolevel.text!)
         DispatchQueue.global().async {
             let points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
-            //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
             let pointCloudNode = UIFactory.mesh(from: points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
@@ -82,15 +83,14 @@ class SceneViewController: UIViewController {
             scnView.scene?.rootNode.addChildNode(pointCloudNode)
             self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
         }
-        //scnView.backgroundColor = UIColor.black
     }
     
-    @IBAction func displayPoints(_ sender: Any) {
+    @IBAction func showOnlyPoints(_ sender: Any) {
         //let iso = Int(withoutMesh.text!)
         let iso = Float(withoutMesh.text!)
         let datasetName = "ikea-table"
         DispatchQueue.global().async {
-            // Display Porjected DepthMap
+            // Display Projected DepthMap
             /*
             Model.sharedInstance.switchTo(type: .Kinect)
             let intrinsics = Import.intrinsics(from: "depthIntrinsics", at: datasetName, type: Model.sharedInstance.type)
@@ -100,10 +100,8 @@ class SceneViewController: UIViewController {
             let points = projectDepthMap(from: Model.sharedInstance)
             */
             
-            // Display SDF withou mesh
-            //let points = extractMesh(volume: &self.volume, isolevel: iso!)
+            // Display SDF without mesh
             let points = extractTSDF(model: Model.sharedInstance, isolevel: iso!)
-            //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
             let pointCloudNode = UIFactory.pointCloud(points: points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
@@ -113,16 +111,19 @@ class SceneViewController: UIViewController {
             self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
         }
     }
+    
     @IBAction func export(_ sender: Any) {
+        // Export mesh at an isolovel (need to extract mesh once again, not so logical but easiest way)
         let iso = Float(isolevel.text!)
         let points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
         exportToPLY(mesh: points, at: "meshing.ply")
     }
     
-    @IBAction func display(_ sender: Any) {
+    @IBAction func fastMeshing(_ sender: Any) {
+        // On IphoneX keyboard won't close (so meshWithIso() does not work)
+        // Extract mesh with isolevel = 0.0
         DispatchQueue.global().async {
-            let points = extractMesh(model: Model.sharedInstance, isolevel: 0.02)
-            //let pointCloudNode = createSimpleNode(from: volume, with: iso!)
+            let points = extractMesh(model: Model.sharedInstance, isolevel: 0.00)
             let pointCloudNode = UIFactory.mesh(from: points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
@@ -130,6 +131,17 @@ class SceneViewController: UIViewController {
             }
             scnView.scene?.rootNode.addChildNode(pointCloudNode)
             self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
+        }
+    }
+    
+    @IBAction func showWireFrame(_ sender: Any) {
+        // Switch between wireframe mode and texture mode
+        let scnView = self.view as! SCNView
+        if wireFrame.isOn {
+            scnView.scene?.rootNode.childNodes[indexOfPointCloud].geometry?.firstMaterial?.fillMode = .lines
+        }
+        else {
+            scnView.scene?.rootNode.childNodes[indexOfPointCloud].geometry?.firstMaterial?.fillMode = .fill
         }
     }
     

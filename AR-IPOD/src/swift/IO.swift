@@ -109,7 +109,7 @@ func exportToPLY(volume: Model, at: String) {
 }
 
 func exportToPLY(mesh: [Vector], at: String) {
-    let numberOfTriangles = mesh.count / 3
+    let numberOfTriangles = mesh.count
     if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
         let cFileName = dir.appendingPathComponent(at).absoluteString.cString(using: .utf8)
         bridge_exportMeshToPLY(mesh, cFileName, Int32(numberOfTriangles))

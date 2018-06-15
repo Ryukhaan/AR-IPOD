@@ -35,7 +35,8 @@ int integrate_projection(float* depthmap,
     int number_of_changes = 0;
     //float diag = 2.0 * sqrt(3.0f) * (resolution[0] / dimension);
     //int count = width * height;
-    int size = pow(dimension, 3.0);
+    //int square = dimension * dimension;
+    //int size = pow(dimension, 3.0);
     simd::float3 resolutions = simd_make_float3(resolution, resolution, resolution);
     simd::float3 offset = 0.5 * (dimension * resolutions);
     
@@ -48,13 +49,11 @@ int integrate_projection(float* depthmap,
     //simd::float3 ot     = simd_make_float3(Rt.columns[3].x, Rt.columns[3].y, Rt.columns[3].z);
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
-    /*
     simd_float2x3 box = compute_bounding_box(depthmap, width, height, R, T, Kinv);
     simd_int3 point_min = global_to_integer(box.columns[0] + offset, resolution);
     simd_int3 point_max = global_to_integer(box.columns[1] + offset, resolution);
     int mini = hash_code(point_min, dimension);
     int maxi = hash_code(point_max, dimension);
-    */
     //for (int i = mini; i<maxi; i++) {
         //if (i >= size || i < 0) continue;
     /*
@@ -79,12 +78,22 @@ int integrate_projection(float* depthmap,
     }
     */
 
-    for (int i = 0; i<size; i++)
+    //for (int i = 0; i<size; i++)
     //for (int i = mini; i<maxi; i++)
+    int n = -1;
+    float global_offset = 0.5 * (1.0 - dimension) * resolution;
+    for (int i = 0; i<dimension; i++)
+        for (int j = 0; j<dimension; j++)
+            for (int k = 0; k<dimension; k++)
     {
         //if (i < 0 || i >= size) continue;
-        simd::float3 centroid = create_centroid(i, resolutions.x, dimension) - offset;
-        //simd::float3 X_L      = simd_mul(R, centroid + T);
+        n ++;
+        if (n <= mini || n >= maxi) continue;
+        simd_int3   v_ijk = simd_make_int3(i, j, k);
+        //simd::float3 centroid = create_centroid(n, resolutions.x, dimension) - offset;
+        //simd::float3 centroid = (integer_to_global(v_ijk, resolution) + (resolution * 0.5)) - offset;
+        simd::float3 centroid = integer_to_global(v_ijk, resolution) + global_offset;
+        //simd::float3 X_L    = simd_mul(R, centroid + T);
         simd::float3 X_L      = simd_mul(simd_transpose(R), centroid - T);
         simd::float4 homogene = simd_make_float4(X_L.x, X_L.y, X_L.z, 1);
         simd::float4 project  = simd_mul(K, homogene);
@@ -95,24 +104,27 @@ int integrate_projection(float* depthmap,
         if (v < 0 || v >= width) continue;
         
         float z = depthmap[u * width + v];
+        if (std::isnan(z)) continue;
+        if (z < 1e-6) continue;
+        
         simd::float4 uvz = simd_make_float4(z * u, z * v, z, 1.0);
         simd::float4 X_S = simd_mul(Kinv, uvz);
         // Depth invalid
-        if (std::isnan(z)) continue;
-        if (z < 1e-6) continue;
-        float distance = simd_distance(X_S, homogene);
+        float distance = simd_sign(z - project.z) * simd_distance(X_S, homogene);
         //float distance = z - project.z;
-        distance = simd_sign(z - project.z) * distance;
         
         float weight = constant_weighting();
+        //weight = distance > delta ? 0.0 : distance <= epsilon ? 1.0 : (distance - delta) / (epsilon - delta);
         //float weight = weighting(distance, delta, epsilon);
         
         if (distance >= delta + epsilon)
-            carving_voxel((Voxel *)voxels, i);
+            carving_voxel((Voxel *)voxels, n);
         if (fabs(distance) <= delta)
-            update_voxel((Voxel *)voxels, distance, weight, i);
+            update_voxel((Voxel *)voxels, distance, weight, n);
         //else if (distance < -delta)
         //    update_voxel((Voxel *)voxels, -delta, weight, i);
+        //else if (distance > delta)
+        //    update_voxel((Voxel *)voxels, delta, weight, i);
     }
     return number_of_changes;
 }

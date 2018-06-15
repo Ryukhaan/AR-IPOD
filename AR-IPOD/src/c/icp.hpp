@@ -18,6 +18,16 @@
 #include <simd/matrix.h>
 
 
+simd::float3x3 g(simd::float3 omega, simd::float3 t, simd::float3 x) {
+    simd_float3x3 omega_tilde = simd_diagonal_matrix(simd_make_float3(0,0,0));
+    omega_tilde.columns[0].y = omega.z;
+    omega_tilde.columns[0].z = -omega.y;
+    omega_tilde.columns[1].x = -omega.z;
+    omega_tilde.columns[1].z = omega.x;
+    omega_tilde.columns[2].x = omega.y;
+    omega_tilde.columns[2].y = -omega.x;
+    return omega_tilde;
+}
 void fast_icp(const float* previous_points,
               const float* current_points,
               const void* intrinsics,
@@ -31,6 +41,7 @@ void fast_icp(const float* previous_points,
 {
     simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
     simd_float3x3 R = ((simd_float3x3 *) rotation)[0];
+    //simd::float3  R = ((simd_float3 *) rotation)[0];
     simd::float3  T = ((simd_float3 *) translation)[0];
     simd_float4x4 Kinv = simd_inverse(K);
     //simd::float3 dimensions = simd_make_float3(dimension[0], dimension[1], dimension[2]);
@@ -74,7 +85,6 @@ void fast_icp(const float* previous_points,
     // Add translation vector between current and previous points to previous transalation
     T  += (previous_mass_centre - current_mass_centre);
     ((simd_float3 *) translation)[0] = T;
-
     /*
     simd::float3 offset = 0.5 * dimension * resolution;
     int square = dimension * dimension;
@@ -85,18 +95,13 @@ void fast_icp(const float* previous_points,
     
     simd::float3 T_old = T;
     simd::float3 T_new = T;
-    simd::float3 W_old = simd_make_float3(log(abs(R.columns[1].z)), log(abs(R.columns[2].x)), log(abs(R.columns[0].y)));
-    simd::float3 W_new = W_old;
-    simd_float3x3 R_new;
+    simd::float3 W_old = R;
+    simd::float3 W_new = R;
     while (true) {
         simd_float3x3 A = simd_diagonal_matrix(simd_make_float3(0,0,0));
         simd::float3 b  = simd_make_float3(0, 0, 0);
-        
         T_old = T_new;
         W_old = W_new;
-        R_new = simd_diagonal_matrix(simd_make_float3(1, 1, 1));
-        R_new.columns[0].y = expf(W_old.z);   R_new.columns[1].x = expf(-W_old.z);  R_new.columns[2].x = expf(W_old.y);
-        R_new.columns[0].z = expf(-W_old.y);  R_new.columns[1].z = expf( W_old.x);  R_new.columns[0].y = expf(-W_old.x);
         
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j ++) {

@@ -179,7 +179,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
-                                    <action selector="update:" destination="Veu-Bj-pVo" eventType="editingDidEnd" id="ToD-tU-QUU"/>
+                                    <action selector="meshWithIso:" destination="Veu-Bj-pVo" eventType="editingDidEnd" id="ToD-tU-QUU"/>
                                 </connections>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wSb-iw-mn8">
@@ -191,11 +191,11 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cAf-Cz-cIb">
-                                <rect key="frame" x="38" y="88" width="46" height="30"/>
+                                <rect key="frame" x="32" y="88" width="59" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="Meshing"/>
                                 <connections>
-                                    <action selector="display:" destination="Veu-Bj-pVo" eventType="touchUpInside" id="Zij-9z-Rhe"/>
+                                    <action selector="fastMeshing:" destination="Veu-Bj-pVo" eventType="touchUpInside" id="Zij-9z-Rhe"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" fixedFrame="YES" text="Meshing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dFQ-gN-Uew">
@@ -212,9 +212,16 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
-                                    <action selector="displayPoints:" destination="Veu-Bj-pVo" eventType="editingDidEnd" id="bqP-xl-KLt"/>
+                                    <action selector="showOnlyPoints:" destination="Veu-Bj-pVo" eventType="editingDidEnd" id="bqP-xl-KLt"/>
                                 </connections>
                             </textField>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3hV-VI-xoO">
+                                <rect key="frame" x="32" y="126" width="49" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="showWireFrame:" destination="Veu-Bj-pVo" eventType="valueChanged" id="sqm-5P-vzC"/>
+                                </connections>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="kib-kx-Maq"/>
@@ -223,6 +230,7 @@
                     <connections>
                         <outlet property="isoLabel" destination="dFQ-gN-Uew" id="bYO-wD-kTt"/>
                         <outlet property="isolevel" destination="32c-sp-SpH" id="Bqo-l3-dU3"/>
+                        <outlet property="wireFrame" destination="3hV-VI-xoO" id="tHH-8k-yLQ"/>
                         <outlet property="withoutMesh" destination="knn-XJ-ZZq" id="s1g-aL-oYW"/>
                     </connections>
                 </viewController>

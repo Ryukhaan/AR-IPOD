@@ -86,14 +86,14 @@ class Model {
         voxels = [Voxel](repeating: Voxel(), count: count)
         //centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
         /*
-        let stride = MemoryLayout<Point3D>.stride
-        let byteCount = stride * count
-        let points = UnsafeMutablePointer<Point3D>.allocate(capacity: byteCount)
-        bridge_initializeCentroids(points, Int32(numberOfVoxels), resolutionInMeter)
-        let buffer = UnsafeBufferPointer(start: points, count: count)
-        centroids = Array(buffer)
-        points.deallocate()
-        */
+         let stride = MemoryLayout<Point3D>.stride
+         let byteCount = stride * count
+         let points = UnsafeMutablePointer<Point3D>.allocate(capacity: byteCount)
+         bridge_initializeCentroids(points, Int32(numberOfVoxels), resolutionInMeter)
+         let buffer = UnsafeBufferPointer(start: points, count: count)
+         centroids = Array(buffer)
+         points.deallocate()
+         */
     }
     
     func reallocateVoxels(amount: Int) {
@@ -178,12 +178,107 @@ class Model {
                 voxelResolution,
                 parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
         }
+        //group.wait()
+        /*
+         else {
+         // Instanciate all local variables
+         //float diag = 2.0 * sqrt(3.0f) * (resolution[0] / dimension);
+         //int count = width * height;
+         let size = numberOfVoxels()
+         let resolutions = Vector(voxelResolution, voxelResolution, voxelResolution);
+         let offset = (0.5 * Float(dimension)) * resolutions;
+         
+         // Relative camera variables
+         let K = camera.intrinsics
+         let R = camera.rotation
+         let T = camera.translation
+         let Kinv  = simd_inverse(K);
+         
+         let group = DispatchGroup()
+         DispatchQueue.concurrentPerform(iterations: size) {i in
+         //group.enter()
+         //DispatchQueue.global().async {
+         //for i in 0..<size
+         //for (int i = mini; i<maxi; i++)
+         //{
+         //if (i < 0 || i >= size) continue;
+         let centroid = self.createCentroid(i: i, voxelResolution: self.voxelResolution, dimension: self.dimension) - offset
+         //simd::float3 X_L      = simd_mul(R, centroid + T);
+         let X_L      = simd_mul(simd_transpose(R), centroid - T)
+         let homogene = simd_make_float4(X_L.x, X_L.y, X_L.z, 1)
+         let project  = simd_mul(K, homogene)
+         
+         let u = Int(project.x / project.z)
+         let v = Int(project.y / project.z)
+         if (u < 0 || u >= self.camera.height) { /*continue*/ return}
+         if (v < 0 || v >= self.camera.width) { /*continue*/ return}
+         
+         let z = self.image.data[u * self.camera.width + v]
+         let uvz = simd_make_float4(z * Float(u), z * Float(v), z, 1.0)
+         let X_S = simd_mul(Kinv, uvz)
+         // Depth invalid
+         if (z.isNaN) { /*continue*/ return }
+         if (z < 1e-6) { /*continue*/ return }
+         var distance = simd_distance(X_S, homogene)
+         //float distance = z - project.z;
+         distance = simd_sign(z - project.z) * distance
+         
+         let weight = 1.0
+         //float weight = weighting(distance, delta, epsilon);
+         
+         if (distance >= self.parameters["Delta"]! + self.parameters["Epsilon"]!) {
+         //self.carvingVoxel(i: i)
+         if self.voxels[i].sdf <= 0 && voxels[i].weight > 0 {
+         voxels[i] = Voxel()
+         }
+         }
+         if (fabs(distance) <= self.parameters["Delta"]!) {
+         //self.updateVoxel(i: i, distance: distance, weight: Float(weight))
+         self.voxels[i].update(sdf: distance, weight: Float(weight))
+         }
+         //else if (distance < -delta)
+         //    update_voxel((Voxel *)voxels, -delta, weight, i);
+         //}
+         //group.leave()
+         }
+         //group.wait()
+         }
+         */
     }
- 
+    
     func reinit() {
         reallocateVoxels()
         camera.rotation = matrix_float3x3(diagonal: float3(1,1,1))
         camera.translation = float3(0,0,0)
+    }
+    
+    private func carvingVoxel(i: Int) {
+        if voxels[i].sdf <= 0 && voxels[i].weight > 0 {
+            voxels[i] = Voxel()
+        }
+    }
+    
+    private func updateVoxel(i: Int, distance: Float, weight: Float) {
+        voxels[i].update(sdf: distance, weight: weight)
+    }
+    
+    private func createCentroid(i: Int, voxelResolution: Float, dimension: Int) -> Vector {
+        let offset = voxelResolution * 0.5
+        let coord = hash_decode(i)
+        return offset + integer_to_global(coord)
+    }
+    
+    private func hash_decode(_ i: Int) -> Id3 {
+        let square = dimension * dimension
+        let x = Int(i / square)
+        let remainder = i - square * x
+        let y = remainder / dimension
+        let z = remainder - y * dimension
+        return Id3(Int32(x), Int32(y), Int32(z))
+    }
+    
+    private func integer_to_global(_ coord: Id3) -> Vector {
+        return voxelResolution * Vector(Float(coord.x), Float(coord.y), Float(coord.z))
     }
     
     private func getRotationFrom(matrix: matrix_float4x4) -> matrix_float3x3 {
