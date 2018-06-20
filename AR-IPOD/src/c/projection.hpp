@@ -119,7 +119,7 @@ int integrate_projection(float* depthmap,
         
         if (distance >= delta + epsilon)
             carving_voxel((Voxel *)voxels, n);
-        if (fabs(distance) <= delta)
+        if (fabs(distance) > -delta)
             update_voxel((Voxel *)voxels, distance, weight, n);
         //else if (distance < -delta)
         //    update_voxel((Voxel *)voxels, -delta, weight, i);

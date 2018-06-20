@@ -102,6 +102,7 @@
 		A58DCE1A2088BF5C00280CD2 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		A5C589A120AAD29C009BA18A /* filtering.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = filtering.hpp; sourceTree = "<group>"; };
 		A5C589AE20AC37C3009BA18A /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
+		A5CD87D920D3F8DC001101E2 /* dmc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dmc.h; sourceTree = "<group>"; };
 		A5D70A6B20CE81710002EE0E /* raytracing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raytracing.hpp; sourceTree = "<group>"; };
 		A5D70A6E20CE8D400002EE0E /* projection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = projection.hpp; sourceTree = "<group>"; };
 		A5D70A7020CFA8420002EE0E /* pcl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = pcl.framework; path = ../../../Downloads/pcl.framework; sourceTree = "<group>"; };
@@ -325,6 +326,7 @@
 				A5EF302120AECBD7003937A3 /* icp.hpp */,
 				A5D70A6B20CE81710002EE0E /* raytracing.hpp */,
 				A5D70A6E20CE8D400002EE0E /* projection.hpp */,
+				A5CD87D920D3F8DC001101E2 /* dmc.h */,
 			);
 			path = c;
 			sourceTree = "<group>";

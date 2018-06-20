@@ -152,7 +152,7 @@ class Model {
         var R = camera.rotation
         var T = camera.translation
         var K = camera.intrinsics
-        if raytracingEnable {
+        if raytracingEnable { 
             _ = bridge_raycastDepthMap(
                 &dethmap, /*centroids,*/
                 &R,

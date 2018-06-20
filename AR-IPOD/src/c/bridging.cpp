@@ -31,6 +31,7 @@ extern "C" {
 #include "raytracing.hpp"
 #include "icp.hpp"
 #include "projection.hpp"
+#include "dmc.h"
 
 using namespace std;
                                           
@@ -114,18 +115,8 @@ unsigned long bridge_extractMesh(void* triangles,
                     ( ((Voxel*) voxels)[i7].sdf )
                 };
                 std::vector<simd::float3> temp = polygonise(points, values, isolevel, edgeTable, triTable);
-                if (temp.size() == 0) continue;
-                /*
-                simd::float3* more_triangles = nullptr;
-                more_triangles = (simd::float3*) realloc(triangles, (index + temp.size()) * sizeof(simd::float3));
-                if ( more_triangles != nullptr )
-                    triangles = more_triangles;
-                else {
-                    free(triangles);
-                    return index;
-                }
-                //triangles = (simd::float3*) realloc(triangles, );
-                */
+                //std::vector<simd::float3> temp = polygonise_dmc(points, values, isolevel);
+                if (temp.size() <= 0) continue;
                 for (simd::float3 triangle : temp) {
                     ((simd::float3*) triangles)[index][0] = triangle[0];
                     ((simd::float3*) triangles)[index][1] = triangle[1];
