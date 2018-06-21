@@ -17,18 +17,20 @@
 #include <simd/conversion.h>
 #include <simd/matrix.h>
 
+#include <Eigen/Dense>
+#include <unsupported/Eigen/MatrixFunctions>
+
 #include "filtering.cpp"
+#include "types.h"
+
 /**
  * Mapping between integer to centroid coordinate.
  */
 inline float integer_to_global(int point, float resolution) {
-    //return (resolution / dim) * (point + 0.5);
     return point * resolution;
 }
 
 inline int global_to_integer(float point, float resolution) {
-    //return static_cast<int>(dim * point / resolution - 0.5);
-    //return static_cast<int>((dim * point / resolution) - 0.5);
     return static_cast<int>(floor(point / resolution));
 }
 
@@ -145,4 +147,42 @@ simd_float2x3 compute_bounding_box(float* depthmap,
     }
     return box;
 }
+
+simd_float3x3 rotation_from_lie(simd::float3 omega) {
+    /*
+    simd_float3x3 R = simd_diagonal_matrix(simd_make_float3(1,1,1));
+    R.columns[0].y = expf(omega.z);
+    R.columns[0].z = expf(-omega.y);
+    R.columns[1].x = expf(-omega.z);
+    R.columns[1].z = expf(omega.x);
+    R.columns[2].x = expf(omega.y);
+    R.columns[2].y = expf(-omega.x);
+    return R;
+    */
+    Eigen::Matrix<float, 3, 3> R;
+    R(0,0) = 0;
+    R(0,1) = -omega.z;
+    R(0,2) = omega.y;
+    
+    R(1,0) = omega.z;
+    R(1,1) = 0;
+    R(1,2) = -omega.x;
+    
+    R(2,0) = -omega.y;
+    R(2,1) = omega.x;
+    R(2,2) = 0;
+    R = R.exp();
+    
+    return simd_matrix_from_rows(simd_make_float3(R(0,0), R(0,1), R(0,2)),
+                                 simd_make_float3(R(1,0), R(1,1), R(1,2)),
+                                 simd_make_float3(R(2,0), R(2,1), R(2,2)));
+}
+
+inline Vector3f project_camera_to_plane(Vector3f point,
+                                        Matrix_4x4 K)
+{
+    Vector4f tmp = Vector4f(point(0), point(1), point(2), 1);
+    return Vector3f(tmp(0), tmp(1), tmp(2));
+}
+
 #endif /* linear_algebra_hpp */

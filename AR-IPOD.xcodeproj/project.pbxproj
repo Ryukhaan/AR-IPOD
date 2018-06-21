@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A51717FB20DA793F00067B2E /* libpcl_common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717ED20DA592D00067B2E /* libpcl_common.a */; };
+		A51717FC20DA793F00067B2E /* libpcl_search.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717EE20DA592E00067B2E /* libpcl_search.a */; };
+		A517180020DA794000067B2E /* libpcl_features.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717FD20DA794000067B2E /* libpcl_features.a */; };
+		A517180120DA794000067B2E /* libpcl_filters.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717FE20DA794000067B2E /* libpcl_filters.a */; };
+		A517180220DA794000067B2E /* libpcl_registration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717FF20DA794000067B2E /* libpcl_registration.a */; };
+		A517180320DA794500067B2E /* libpcl_kdtree.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717EC20DA592D00067B2E /* libpcl_kdtree.a */; };
 		A52C3D392090630200BA5BDC /* IO.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D382090630200BA5BDC /* IO.swift */; };
 		A52C3D452091CE4B00BA5BDC /* Meshing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D442091CE4B00BA5BDC /* Meshing.swift */; };
 		A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */; };
@@ -68,6 +74,23 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A51717E920DA592D00067B2E /* libpcl_octree.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_octree.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_octree.a"; sourceTree = "<group>"; };
+		A51717EA20DA592D00067B2E /* libpcl_io_ply.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_io_ply.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_io_ply.a"; sourceTree = "<group>"; };
+		A51717EB20DA592D00067B2E /* libpcl_stereo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_stereo.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_stereo.a"; sourceTree = "<group>"; };
+		A51717EC20DA592D00067B2E /* libpcl_kdtree.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_kdtree.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_kdtree.a"; sourceTree = "<group>"; };
+		A51717ED20DA592D00067B2E /* libpcl_common.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_common.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_common.a"; sourceTree = "<group>"; };
+		A51717EE20DA592E00067B2E /* libpcl_search.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_search.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_search.a"; sourceTree = "<group>"; };
+		A51717EF20DA592E00067B2E /* libpcl_io.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_io.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_io.a"; sourceTree = "<group>"; };
+		A51717F020DA592E00067B2E /* libpcl_surface.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_surface.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_surface.a"; sourceTree = "<group>"; };
+		A51717F120DA592E00067B2E /* libpcl_ml.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_ml.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_ml.a"; sourceTree = "<group>"; };
+		A51717FD20DA794000067B2E /* libpcl_features.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_features.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_features.a"; sourceTree = "<group>"; };
+		A51717FE20DA794000067B2E /* libpcl_filters.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_filters.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_filters.a"; sourceTree = "<group>"; };
+		A51717FF20DA794000067B2E /* libpcl_registration.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_registration.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib/libpcl_registration.a"; sourceTree = "<group>"; };
+		A517180420DA7BF100067B2E /* libflann_cpp_s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libflann_cpp_s.a; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp_s.a"; sourceTree = "<group>"; };
+		A517180520DA7BF200067B2E /* libflann_cpp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libflann_cpp.dylib; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp.dylib"; sourceTree = "<group>"; };
+		A517180620DA7BF200067B2E /* libflann_cpp.1.9.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libflann_cpp.1.9.1.dylib; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp.1.9.1.dylib"; sourceTree = "<group>"; };
+		A517180720DA7BF200067B2E /* libflann_cpp.1.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libflann_cpp.1.9.dylib; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp.1.9.dylib"; sourceTree = "<group>"; };
+		A517180C20DB87DE00067B2E /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
 		A52C3D382090630200BA5BDC /* IO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IO.swift; sourceTree = "<group>"; };
 		A52C3D442091CE4B00BA5BDC /* Meshing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meshing.swift; sourceTree = "<group>"; };
 		A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */ = {isa = PBXFileReference; lastKnownFileType = text; path = EdgeTableContents; sourceTree = "<group>"; };
@@ -102,10 +125,8 @@
 		A58DCE1A2088BF5C00280CD2 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		A5C589A120AAD29C009BA18A /* filtering.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = filtering.hpp; sourceTree = "<group>"; };
 		A5C589AE20AC37C3009BA18A /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
-		A5CD87D920D3F8DC001101E2 /* dmc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dmc.h; sourceTree = "<group>"; };
 		A5D70A6B20CE81710002EE0E /* raytracing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raytracing.hpp; sourceTree = "<group>"; };
 		A5D70A6E20CE8D400002EE0E /* projection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = projection.hpp; sourceTree = "<group>"; };
-		A5D70A7020CFA8420002EE0E /* pcl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = pcl.framework; path = ../../../Downloads/pcl.framework; sourceTree = "<group>"; };
 		A5D70A7820CFF6F50002EE0E /* bouchon-set */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "bouchon-set"; path = "../../../../../Downloads/bouchon/bouchon-set"; sourceTree = "<group>"; };
 		A5D70A7C20D0F8D30002EE0E /* tasse-set */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "tasse-set"; path = "../../../../../Downloads/tasse/tasse-set"; sourceTree = "<group>"; };
 		A5D70A8420D0FA9F0002EE0E /* IphoneCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IphoneCamera.swift; sourceTree = "<group>"; };
@@ -125,7 +146,7 @@
 		A5F478E8209C657500CAAEC0 /* io.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = io.hpp; sourceTree = "<group>"; };
 		A5F478EC20A0700500CAAEC0 /* ikea-table */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "ikea-table"; sourceTree = "<group>"; };
 		A5F478EE20A096C900CAAEC0 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
-		A5F478F120A2D18200CAAEC0 /* TSDF.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TSDF.hpp; sourceTree = "<group>"; };
+		A5F478F120A2D18200CAAEC0 /* tsdf.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tsdf.hpp; sourceTree = "<group>"; };
 		A5F47AF120A301EA00CAAEC0 /* chair */ = {isa = PBXFileReference; lastKnownFileType = folder; name = chair; path = ../../../../../Downloads/chair; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -134,6 +155,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A517180020DA794000067B2E /* libpcl_features.a in Frameworks */,
+				A517180120DA794000067B2E /* libpcl_filters.a in Frameworks */,
+				A517180220DA794000067B2E /* libpcl_registration.a in Frameworks */,
+				A51717FB20DA793F00067B2E /* libpcl_common.a in Frameworks */,
+				A51717FC20DA793F00067B2E /* libpcl_search.a in Frameworks */,
+				A517180320DA794500067B2E /* libpcl_kdtree.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,10 +181,52 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A517180D20DB946600067B2E /* include */ = {
+			isa = PBXGroup;
+			children = (
+				A5F478E2209C485200CAAEC0 /* marching_cube.hpp */,
+				A52C3D642093185000BA5BDC /* bridging.hpp */,
+				A5F478E5209C498700CAAEC0 /* linear_algebra.hpp */,
+				A5F478E8209C657500CAAEC0 /* io.hpp */,
+				A5F478F120A2D18200CAAEC0 /* tsdf.hpp */,
+				A5C589A120AAD29C009BA18A /* filtering.hpp */,
+				A5EF302120AECBD7003937A3 /* icp.hpp */,
+				A5D70A6B20CE81710002EE0E /* raytracing.hpp */,
+				A5D70A6E20CE8D400002EE0E /* projection.hpp */,
+				A517180C20DB87DE00067B2E /* types.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		A517180E20DB947B00067B2E /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A5F478E1209C485200CAAEC0 /* marching_cube.cpp */,
+				A52C3D632093185000BA5BDC /* bridging.cpp */,
+				A5F478E7209C657500CAAEC0 /* io.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		A52C3D6620933EAC00BA5BDC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A5D70A7020CFA8420002EE0E /* pcl.framework */,
+				A517180420DA7BF100067B2E /* libflann_cpp_s.a */,
+				A517180620DA7BF200067B2E /* libflann_cpp.1.9.1.dylib */,
+				A517180720DA7BF200067B2E /* libflann_cpp.1.9.dylib */,
+				A517180520DA7BF200067B2E /* libflann_cpp.dylib */,
+				A51717FD20DA794000067B2E /* libpcl_features.a */,
+				A51717FE20DA794000067B2E /* libpcl_filters.a */,
+				A51717FF20DA794000067B2E /* libpcl_registration.a */,
+				A51717ED20DA592D00067B2E /* libpcl_common.a */,
+				A51717EA20DA592D00067B2E /* libpcl_io_ply.a */,
+				A51717EF20DA592E00067B2E /* libpcl_io.a */,
+				A51717EC20DA592D00067B2E /* libpcl_kdtree.a */,
+				A51717F120DA592E00067B2E /* libpcl_ml.a */,
+				A51717E920DA592D00067B2E /* libpcl_octree.a */,
+				A51717EE20DA592E00067B2E /* libpcl_search.a */,
+				A51717EB20DA592D00067B2E /* libpcl_stereo.a */,
+				A51717F020DA592E00067B2E /* libpcl_surface.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -314,19 +383,8 @@
 		A5F478EB209C6D6E00CAAEC0 /* c */ = {
 			isa = PBXGroup;
 			children = (
-				A5F478E1209C485200CAAEC0 /* marching_cube.cpp */,
-				A5F478E2209C485200CAAEC0 /* marching_cube.hpp */,
-				A52C3D632093185000BA5BDC /* bridging.cpp */,
-				A52C3D642093185000BA5BDC /* bridging.hpp */,
-				A5F478E5209C498700CAAEC0 /* linear_algebra.hpp */,
-				A5F478E7209C657500CAAEC0 /* io.cpp */,
-				A5F478E8209C657500CAAEC0 /* io.hpp */,
-				A5F478F120A2D18200CAAEC0 /* TSDF.hpp */,
-				A5C589A120AAD29C009BA18A /* filtering.hpp */,
-				A5EF302120AECBD7003937A3 /* icp.hpp */,
-				A5D70A6B20CE81710002EE0E /* raytracing.hpp */,
-				A5D70A6E20CE8D400002EE0E /* projection.hpp */,
-				A5CD87D920D3F8DC001101E2 /* dmc.h */,
+				A517180E20DB947B00067B2E /* src */,
+				A517180D20DB946600067B2E /* include */,
 			);
 			path = c;
 			sourceTree = "<group>";
@@ -682,15 +740,25 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Frameworks/",
 				);
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/Frameworks/pcl.framework/Headers/pcl";
+				HEADER_SEARCH_PATHS = (
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/include/pcl-1.8/",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/boost-ios-device-arm64/include/",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/eigen/",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/include",
+				);
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -711,15 +779,25 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Frameworks/",
 				);
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/Frameworks/pcl.framework/Headers/pcl";
+				HEADER_SEARCH_PATHS = (
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/include/pcl-1.8/",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/boost-ios-device-arm64/include/",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/eigen/",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/include",
+				);
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";

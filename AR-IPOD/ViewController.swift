@@ -211,12 +211,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 var K  = Model.sharedInstance.camera.intrinsics
                 K.columns.0.x = K.columns.0.x / Float(Model.sharedInstance.image.height) * Float(D.height)
                 K.columns.1.y = K.columns.1.y / Float(Model.sharedInstance.image.width) * Float(D.width)
-                var R  = Model.sharedInstance.camera.rotation
-                var T  = Model.sharedInstance.camera.translation
+                var R   = Model.sharedInstance.camera.rotation
+                var T   = Model.sharedInstance.camera.translation
+                var W   = Model.sharedInstance.camera.rotationLie
                 bridge_fast_icp(last_points,
                                 current_points,
                                 &K,
                                 &R,
+                                &W,
                                 &T,
                                 &(Model.sharedInstance.voxels),
                                 Int32(Model.sharedInstance.dimension),
@@ -319,13 +321,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 Model.sharedInstance.update(data: depthmap)
                 if i > 0 {
                     let current_points = Model.sharedInstance.image.data
-                    var K  = Model.sharedInstance.camera.intrinsics
-                    var R  = Model.sharedInstance.camera.rotation
-                    var T  = Model.sharedInstance.camera.translation
+                    var K   = Model.sharedInstance.camera.intrinsics
+                    var R   = Model.sharedInstance.camera.rotation
+                    var W   = Model.sharedInstance.camera.rotationLie
+                    var T   = Model.sharedInstance.camera.translation
                     bridge_fast_icp(last_points,
                                     current_points,
                                     &K,
                                     &R,
+                                    &W,
                                     &T,
                                     &(Model.sharedInstance.voxels),
                                     Int32(Model.sharedInstance.dimension),
@@ -333,6 +337,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                     Int32(Model.sharedInstance.camera.width),
                                     Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.camera.translation = T
+                    Model.sharedInstance.camera.rotation    = R
+                    Model.sharedInstance.camera.rotationLie = W
                 }
             }
             else {

@@ -163,13 +163,14 @@ void bridge_fast_icp(const float* previous_points,
                      const float* current_points,
                      const void* intrinsics,
                      void* rotation,
+                     void* lie_rotation,
                      void* translation,
                      void* voxels,
                      const int dimension,
                      const float resolution,
                      const int width,
                      const int height) {
-    fast_icp(previous_points, current_points, intrinsics, rotation, translation, voxels, dimension, resolution, width, height);
+    fast_icp(previous_points, current_points, intrinsics, rotation, lie_rotation, translation, voxels, dimension, resolution, width, height);
 }
 
 

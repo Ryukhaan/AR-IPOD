@@ -94,16 +94,24 @@ int integrate_projection(float* depthmap,
         //simd::float3 centroid = (integer_to_global(v_ijk, resolution) + (resolution * 0.5)) - offset;
         simd::float3 centroid = integer_to_global(v_ijk, resolution) + global_offset;
         //simd::float3 X_L    = simd_mul(R, centroid + T);
+        
+        // Project World to Camera
         simd::float3 X_L      = simd_mul(simd_transpose(R), centroid - T);
         simd::float4 homogene = simd_make_float4(X_L.x, X_L.y, X_L.z, 1);
+        // Behind camera
+        if (X_L.z < 0) continue;
+            
+        // Project Camera to Image
         simd::float4 project  = simd_mul(K, homogene);
-        
         int u = (int) (project.x / project.z);
         int v = (int) (project.y / project.z);
+        // Depthmap OOB
         if (u < 0 || u >= height) continue;
         if (v < 0 || v >= width) continue;
         
+        // Depthmap value
         float z = depthmap[u * width + v];
+        // Invalid depth
         if (std::isnan(z)) continue;
         if (z < 1e-6) continue;
         
@@ -113,14 +121,24 @@ int integrate_projection(float* depthmap,
         float distance = simd_sign(z - project.z) * simd_distance(X_S, homogene);
         //float distance = z - project.z;
         
-        float weight = constant_weighting();
         //weight = distance > delta ? 0.0 : distance <= epsilon ? 1.0 : (distance - delta) / (epsilon - delta);
-        //float weight = weighting(distance, delta, epsilon);
+        float weight = weighting(distance, delta, epsilon);
+        if (weight == 0.0) continue;
         
         if (distance >= delta + epsilon)
-            carving_voxel((Voxel *)voxels, n);
-        if (fabs(distance) > -delta)
-            update_voxel((Voxel *)voxels, distance, weight, n);
+            //carving_voxel_at((Voxel *)voxels, n);
+            ((Voxel *)voxels)[n] = carving_voxel_at(((Voxel *)voxels)[n]);
+        if (fabs(distance) < delta)
+            //update_voxel_at((Voxel *)voxels, distance, weight, n);
+            ((Voxel *)voxels)[n] = update_voxel_at(((Voxel *)voxels)[n], distance, weight);
+        /*
+        if (distance < -delta) {
+            ((Voxel *)voxels)[n] = update_voxel_at(((Voxel *)voxels)[n], -delta, weight);
+        }
+        else {
+            ((Voxel *)voxels)[n] = update_voxel_at(((Voxel *)voxels)[n], distance, weight);
+        }
+        */
         //else if (distance < -delta)
         //    update_voxel((Voxel *)voxels, -delta, weight, i);
         //else if (distance > delta)
