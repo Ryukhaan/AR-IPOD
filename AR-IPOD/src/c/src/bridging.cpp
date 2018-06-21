@@ -23,15 +23,14 @@ extern "C" {
 #include <fstream>
 //#include <omp.h>
 
-#include "linear_algebra.hpp"
+#include "linalg.hpp"
 #include "marching_cube.hpp"
 #include "io.hpp"
-#include "TSDF.hpp"
+#include "tsdf.hpp"
 #include "filtering.hpp"
 #include "raytracing.hpp"
 #include "icp.hpp"
 #include "projection.hpp"
-#include "dmc.h"
 
 using namespace std;
                                           

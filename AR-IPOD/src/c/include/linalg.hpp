@@ -1,13 +1,13 @@
 //
-//  linear_algebra.hpp
+//  linalg.hpp
 //  AR-IPOD
 //
 //  Created by Remi Decelle on 04/05/2018.
 //  Copyright © 2018 Remi Decelle. All rights reserved.
 //
 
-#ifndef linear_algebra_hpp
-#define linear_algebra_hpp
+#ifndef linalg_hpp
+#define linalg_hpp
 
 #include <stdio.h>
 #include <simd/common.h>
@@ -17,11 +17,14 @@
 #include <simd/conversion.h>
 #include <simd/matrix.h>
 
-#include <Eigen/Dense>
-#include <unsupported/Eigen/MatrixFunctions>
+//#include <Eigen/Dense>
+//#include <unsupported/Eigen/MatrixFunctions>
 
-#include "filtering.cpp"
-#include "types.h"
+#include "filtering.hpp"
+//#include "types.h"
+
+static const double ang_min_sinc = 1.0e-8;
+static const double ang_min_mc = 2.5e-4;
 
 /**
  * Mapping between integer to centroid coordinate.
@@ -147,9 +150,9 @@ simd_float2x3 compute_bounding_box(float* depthmap,
     }
     return box;
 }
-
+/*
 simd_float3x3 rotation_from_lie(simd::float3 omega) {
-    /*
+    //
     simd_float3x3 R = simd_diagonal_matrix(simd_make_float3(1,1,1));
     R.columns[0].y = expf(omega.z);
     R.columns[0].z = expf(-omega.y);
@@ -158,8 +161,8 @@ simd_float3x3 rotation_from_lie(simd::float3 omega) {
     R.columns[2].x = expf(omega.y);
     R.columns[2].y = expf(-omega.x);
     return R;
-    */
-    Eigen::Matrix<float, 3, 3> R;
+    //
+    Eigen::Matrix3d R;
     R(0,0) = 0;
     R(0,1) = -omega.z;
     R(0,2) = omega.y;
@@ -177,12 +180,40 @@ simd_float3x3 rotation_from_lie(simd::float3 omega) {
                                  simd_make_float3(R(1,0), R(1,1), R(1,2)),
                                  simd_make_float3(R(2,0), R(2,1), R(2,2)));
 }
+*/
 
-inline Vector3f project_camera_to_plane(Vector3f point,
-                                        Matrix_4x4 K)
+
+/*
+inline Vector3f project_camera_to_plane(const Vector3f point,
+                                        const Matrix_4x4 K)
 {
     Vector4f tmp = Vector4f(point(0), point(1), point(2), 1);
-    return Vector3f(tmp(0), tmp(1), tmp(2));
+    return Vector3f(tmp(0) / tmp(2), tmp(1) / tmp(2), tmp(2));
 }
 
-#endif /* linear_algebra_hpp */
+inline Vector3f project_plane_to_camera(const Vector2i point,
+                                        const float depth,
+                                        const Matrix_4x4 K)
+{
+    Matrix_4x4 Kinv = K.inverse();
+    Vector4f tmp = Kinv * (depth * Vector3f(point(0), point(1), 1.0));
+    return Vector3f(tmp(0), tmp(1), tmp(2));
+}
+*/
+
+inline double f_sinc(double sinx, double x)
+{
+    return (fabs(x) < ang_min_sinc) ? 1.0 : (sinx / x);
+}
+
+inline double f_mcosc(double cosx, double x)
+{
+    return (fabs(x) < ang_min_mc) ? 0.5 : ((1.0 - cosx) / x / x);
+}
+
+inline double f_msinc(double sinx, double x)
+{
+    return (fabs(x) < ang_min_mc) ? (1. / 6.0) : ((1.0 - sinx / x) / x / x);
+}
+
+#endif /* linalg_hpp */

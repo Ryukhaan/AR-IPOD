@@ -17,8 +17,6 @@
 #include <simd/conversion.h>
 #include <simd/matrix.h>
 
-#include "types.h"
-
 typedef struct Voxel {
     float sdf;
     float weight;
@@ -37,6 +35,7 @@ inline float weighting(const float distance, const float delta, const float epsi
     return w;
 }
 
+/*
 inline void update_voxel(Voxel* voxels,
                          const float sdf,
                          const float weight,
@@ -48,27 +47,21 @@ inline void update_voxel(Voxel* voxels,
     float new_product  = sdf * weight;
     float new_sdf      = (new_product + old_product ) / new_weight;
     
-    // DWRAFing
-    /*
-    float delta = new_sdf - old_sdf;
-    if (delta > 0 && delta < 0.5)
-        voxels[index].sdf     = old_sdf+1;
-    else if (delta < 0 && delta > -0.5)
-        voxels[index].sdf     = old_sdf-1;
-    else
-    */
     voxels[index].sdf     = new_sdf;
     voxels[index].weight  = new_weight;
 };
+*/
 
+/*
 inline void carving_voxel(Voxel * voxels, const int i) {
     if (voxels[i].sdf < 1e-5 && voxels[i].weight > 0) {
         voxels[i].sdf = 9999;
         voxels[i].weight = 0;
     }
 };
+*/
 
-inline Voxel update_voxel_at(Voxel voxel,
+inline Voxel update_voxel(Voxel voxel,
                              const float sdf,
                              const float weight) {
     Voxel new_voxel     = Voxel();
@@ -78,10 +71,49 @@ inline Voxel update_voxel_at(Voxel voxel,
     return new_voxel;
 }
 
-inline Voxel carving_voxel_at(Voxel voxel) {
+inline Voxel carving_voxel(Voxel voxel) {
     if ( voxel.sdf < 1e-5 && voxel.weight > 0 ) {
         return Voxel();
     }
     return voxel;
+}
+
+float interpolate_distance(const Voxel* voxels,
+                           const simd::int3 voxel_coordinates,
+                           const int dimension) {
+    int squared = pow(dimension, 2.0);
+    int size    = pow(dimension, 3.0);
+    float i = voxel_coordinates.x;
+    float j = voxel_coordinates.y;
+    float k = voxel_coordinates.z;
+    float w_sum = 0.0;
+    float sum_d = 0.0;
+    simd_int3 current_voxel;
+    float w = 0;
+    float volume;
+    int a_idx;
+    for (int i_offset = 0; i_offset < 2; i_offset++)
+    {
+        for (int j_offset = 0; j_offset < 2; j_offset++)
+        {
+            for (int k_offset = 0; k_offset < 2; k_offset++)
+            {
+                current_voxel.x = ((int) i)+i_offset;
+                current_voxel.y = ((int) j)+j_offset;
+                current_voxel.z = ((int) k)+k_offset;
+                volume = fabs(current_voxel.x-i) + fabs(current_voxel.y-j)+ fabs(current_voxel.z-k);
+                a_idx = current_voxel.x * squared + current_voxel.y * dimension + current_voxel.z;
+                if (a_idx >= 0 && a_idx < size){
+                    if (voxels[a_idx].weight > 0){
+                        if (volume < 0.00001) return voxels[a_idx].sdf;
+                        w = 1.0 / volume;
+                        w_sum += w;
+                        sum_d += w * voxels[a_idx].sdf;
+                    }
+                }
+            }
+        }
+    }
+    return (w_sum == 0.0) ? 0 : sum_d / w_sum;
 }
 #endif /* tsdf_hpp */

@@ -69,8 +69,8 @@ void raytracing(float* depthmap,
                     //float distance = rglobal.z - c.z; //c.z - global.z;
                     float distance = simd_sign(rglobal.z - c.z) * simd_distance(rglobal, c);
                     float w = constant_weighting();
-                    if (distance >= delta + epsilon)  carving_voxel(voxels, i);
-                    if (fabs(distance) <= delta) update_voxel(voxels, distance, w, k);
+                    //if (distance >= delta + epsilon)  carving_voxel(voxels, i);
+                    //if (fabs(distance) <= delta) update_voxel(voxels, distance, w, k);
                     //else if (distance > delta) update_voxel(voxels, delta, 1.0, k);
                     //else if (distance < -delta) update_voxel(voxels, -delta, 1.0, k);
                     //if (fabs(distance) <= delta) update_voxel((Voxel *)voxels, distance, w, i);
