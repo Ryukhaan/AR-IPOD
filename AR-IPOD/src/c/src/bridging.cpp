@@ -129,7 +129,7 @@ unsigned long bridge_extractMesh(void* triangles,
     return index;
 }
 
-int bridge_integrateDepthMap(float* depthmap,
+void bridge_integrateDepthMap(float* depthmap,
                              //const void* centroids,
                              const void* rotation,
                              const void* translation,
@@ -142,7 +142,7 @@ int bridge_integrateDepthMap(float* depthmap,
                              const float delta,
                              const float epsilon,
                              const float lambda) {
-    return integrate_projection(depthmap, rotation, translation, intrinsics, voxels, width, height, dimension, resolution, delta, epsilon, lambda);
+    integrate_projection(depthmap, rotation, translation, intrinsics, voxels, width, height, dimension, resolution, delta, epsilon, lambda);
 }
 
 void bridge_exportMeshToPLY(const void* vectors,

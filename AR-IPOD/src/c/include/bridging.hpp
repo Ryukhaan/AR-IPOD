@@ -19,7 +19,7 @@ unsigned long bridge_extractMesh(void* triangles,
                                  const float isolevel,
                                  const float resolution);
 
-int bridge_integrateDepthMap(float* depthmap,
+void bridge_integrateDepthMap(float* depthmap,
                              //const void* centroids,
                              const void* rotation,
                              const void* translation,

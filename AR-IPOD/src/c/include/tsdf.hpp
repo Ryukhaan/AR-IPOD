@@ -62,8 +62,8 @@ inline void carving_voxel(Voxel * voxels, const int i) {
 */
 
 inline Voxel update_voxel(Voxel voxel,
-                             const float sdf,
-                             const float weight) {
+                          const float sdf,
+                          const float weight) {
     Voxel new_voxel     = Voxel();
     float new_weight    = voxel.weight + weight;
     new_voxel.weight    = new_weight;
@@ -101,16 +101,15 @@ float interpolate_distance(const Voxel* voxels,
                 current_voxel.x = ((int) i)+i_offset;
                 current_voxel.y = ((int) j)+j_offset;
                 current_voxel.z = ((int) k)+k_offset;
-                volume = fabs(current_voxel.x-i) + fabs(current_voxel.y-j)+ fabs(current_voxel.z-k);
-                a_idx = current_voxel.x * squared + current_voxel.y * dimension + current_voxel.z;
-                if (a_idx >= 0 && a_idx < size){
-                    if (voxels[a_idx].weight > 0){
-                        if (volume < 0.00001) return voxels[a_idx].sdf;
-                        w = 1.0 / volume;
-                        w_sum += w;
-                        sum_d += w * voxels[a_idx].sdf;
-                    }
-                }
+                //volume = fabs(current_voxel.x-i) + fabs(current_voxel.y-j)+ fabs(current_voxel.z-k);
+                volume  = i_offset + j_offset + k_offset;
+                a_idx   = current_voxel.x * squared + current_voxel.y * dimension + current_voxel.z;
+                if (a_idx < 0 || a_idx >= size) continue;
+                if (voxels[a_idx].weight <= 0) continue;
+                if (volume < 1e-5) return voxels[a_idx].sdf;
+                w = 1.0 / volume;
+                w_sum += w;
+                sum_d += w * voxels[a_idx].sdf;
             }
         }
     }

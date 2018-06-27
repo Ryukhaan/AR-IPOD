@@ -19,7 +19,7 @@
 
 #include <Eigen/Core>
 //#include <Eigen/Eigen>
-//#include <unsupported/Eigen/MatrixFunctions>
+#include <unsupported/Eigen/MatrixFunctions>
 
 using namespace std;
 
@@ -98,6 +98,14 @@ Eigen::Affine3d direct_exponential_map(const Eigen::VectorXd &v, double delta_t)
 }
 */
 
+Eigen::Matrix3d exponential_map(Eigen::Vector3d omega) {
+    Eigen::Matrix3d R;
+    R <<0, omega(2), -omega(1),
+        -omega(2), 0, omega(0),
+        omega(1), -omega(0), 0;
+    return R.exp();
+}
+
 Eigen::VectorXd get_partial_derivative(const Voxel* voxels,
                                                    const Eigen::Vector3d camera_point,
                                                    const simd::float3 current_world_point,
@@ -111,13 +119,15 @@ Eigen::VectorXd get_partial_derivative(const Voxel* voxels,
                                                    const Eigen::Matrix3d r3p,
                                                    const Eigen::Matrix3d r3m,
                                                    double& sdf_val) {
-    Eigen::VectorXd SDF_derivative, zeros;
+    Eigen::VectorXd SDF_derivative(6), zeros(6);
     SDF_derivative << 0, 0, 0, 0, 0, 0;
     zeros = SDF_derivative;
     Eigen::Vector3d tmp             = Eigen::Vector3d::Zero();
     //simd::float3    current_world_point;
     simd::int3      current_voxel_point;
     
+    float offset = dimension * resolution * 0.5;
+    int   max_size = pow(dimension, 3.0);
     float v_h   = 1.0;
     float w_h   = 0.01;
     float v_h2  = 2*v_h;
@@ -132,14 +142,14 @@ Eigen::VectorXd get_partial_derivative(const Voxel* voxels,
     float plus_h_sdf_value;
     float minus_h_sdf_value;
     //this->project_camera_to_world(camera_point, current_world_point);
-    current_voxel_point = global_to_integer(current_world_point, resolution);
+    current_voxel_point = global_to_integer(current_world_point + offset, resolution);
     if (current_voxel_point.x < 0
         || current_voxel_point.y < 0
         || current_voxel_point.z < 0)
         return zeros;
-    if (current_voxel_point.x >= dimension
-        || current_voxel_point.y >= dimension
-        || current_voxel_point.z >= dimension)
+    if (current_voxel_point.x >= max_size
+        || current_voxel_point.y >= max_size
+        || current_voxel_point.z >= max_size)
         return zeros;
     
     sdf_val = interpolate_distance(voxels, current_voxel_point, dimension);
@@ -180,12 +190,12 @@ Eigen::VectorXd get_partial_derivative(const Voxel* voxels,
     
     //wx derivative
     tmp  = r1p * camera_point +  T;
-    plus_h_voxel_point  = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)), resolution);
+    plus_h_voxel_point  = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)) + offset, resolution);
     plus_h_sdf_value    = interpolate_distance(voxels, plus_h_voxel_point, dimension);
     if (plus_h_sdf_value == 0.0)    return zeros;
     
     tmp = r1m * camera_point +  T;
-    minus_voxel_point   = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)), resolution);
+    minus_voxel_point   = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)) + offset, resolution);
     minus_h_sdf_value   = interpolate_distance(voxels, minus_voxel_point, dimension);
     if (minus_h_sdf_value == 0.0)   return zeros;
     
@@ -193,12 +203,12 @@ Eigen::VectorXd get_partial_derivative(const Voxel* voxels,
     
     //wy derivative
     tmp  = r2p * camera_point +  T;
-    plus_h_voxel_point  = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)), resolution);
+    plus_h_voxel_point  = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)) + offset, resolution);
     plus_h_sdf_value    = interpolate_distance(voxels, plus_h_voxel_point, dimension);
     if (plus_h_sdf_value == 0.0)    return zeros;
     
     tmp = r2m * camera_point +  T;
-    minus_voxel_point   = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)), resolution);
+    minus_voxel_point   = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)) + offset, resolution);
     minus_h_sdf_value   = interpolate_distance(voxels, minus_voxel_point, dimension);
     if (minus_h_sdf_value == 0.0)   return zeros;
     
@@ -206,12 +216,12 @@ Eigen::VectorXd get_partial_derivative(const Voxel* voxels,
     
     //wz derivative
     tmp = r3p * camera_point +  T;
-    plus_h_voxel_point  = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)), resolution);
+    plus_h_voxel_point  = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)) + offset, resolution);
     plus_h_sdf_value    = interpolate_distance(voxels, plus_h_voxel_point, dimension);
     if (plus_h_sdf_value == 0.0)    return zeros;
     
     tmp = r3m * camera_point +  T;
-    minus_voxel_point   = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)), resolution);
+    minus_voxel_point   = global_to_integer(simd_make_float3(tmp(0), tmp(1), tmp(2)) + offset, resolution);
     minus_h_sdf_value   = interpolate_distance(voxels, minus_voxel_point, dimension);
     if (minus_h_sdf_value == 0.0)   return zeros;
     
@@ -239,7 +249,7 @@ void fast_icp(const float* previous_points,
     simd::float3  T_tmp = ((simd_float3 *) translation)[0];
     simd_float4x4 Kinv = simd_inverse(K);
     
-    Eigen::MatrixXd R;
+    Eigen::Matrix3d R;
     Eigen::Vector3d T;
     R <<    R_tmp.columns[0].x, R_tmp.columns[1].x, R_tmp.columns[2].x,
             R_tmp.columns[0].y, R_tmp.columns[1].y, R_tmp.columns[2].y,
@@ -291,12 +301,13 @@ void fast_icp(const float* previous_points,
     ((simd_float3 *) translation)[0] = T;
      */
     
+    /*
     simd::float3 offset = 0.5 * dimension * resolution;
     int square = dimension * dimension;
     int size = pow(dimension, 3);
-    
+    */
     int n_iter      = 0;
-    int max_iter    = 20;
+    int max_iter    = 15;
     float maximum_twist_diff = 1e-3;
     float v_h   = 1.0;
     float w_h   = 0.01;
@@ -306,6 +317,7 @@ void fast_icp(const float* previous_points,
     float v_h2_height   = v_h2 * resolution;
     float v_h2_depth    = v_h2 * resolution;
     
+    //twist_diff = (v1,v2,v3,w1,w2,w3)
     Eigen::VectorXd twist_diff = Eigen::VectorXd::Zero(6);
     Eigen::Matrix3d R_diff;
     Eigen::Matrix3d r1p, r1m, r2p, r2m, r3p, r3m;
@@ -314,7 +326,8 @@ void fast_icp(const float* previous_points,
         if (n_iter > max_iter) break;
         n_iter ++;
         
-        Eigen::MatrixXd  A; //= Eigen::MatrixXd::Zero(6);
+        Eigen::VectorXd  old_twist = twist_diff;
+        Eigen::MatrixXd  A(6,6); //= Eigen::MatrixXd::Zero(6);
         Eigen::VectorXd  b = Eigen::VectorXd::Zero(6);
         /*
          * We want to calculate the partial derivative of our sdf
@@ -384,6 +397,7 @@ void fast_icp(const float* previous_points,
                 simd::float4 point = simd_mul(Kinv, simd_make_float4( z * i, z * j, z, 1.0));
                 //does a good depth exist?
                 if (isnan(point.x) || isnan(point.y) || isnan(point.z)) continue;
+                if (point.x == 0 && point.y == 0 && point.z == 0) continue;
                 
                 camera_point(0) = point.x;
                 camera_point(1) = point.y;
@@ -406,11 +420,12 @@ void fast_icp(const float* previous_points,
      //}
 
         //calculate our optimized gradient
-        //twist_diff = A.inverse() * b;
+        twist_diff -= A.inverse() * b;
         
+        R = exponential_map(Eigen::Vector3d(twist_diff(3), twist_diff(4), twist_diff(5)));
+        T = Eigen::Vector3d(twist_diff(0), twist_diff(1), twist_diff(2));
         //Eigen::Affine3d aff = direct_exponential_map(twist_diff,1.0);
-        Eigen::Matrix3d r_new;
-        Eigen::Vector3d t_new;
+
         if (twist_diff(0, 0) < maximum_twist_diff
             && twist_diff(1, 0) < maximum_twist_diff
             && twist_diff(2, 0) < maximum_twist_diff
@@ -421,10 +436,12 @@ void fast_icp(const float* previous_points,
             break;
         }
         
+        if ( (twist_diff - old_twist).lpNorm<Eigen::Infinity>() < 1e-5 ) break;
+        
         //reorthomolize rotation
+        //R = R - r_new.transpose() * R;
+        //T = T - r_new.transpose() * t_new;
 
-        R = R - r_new.transpose() * R;
-        T = T - r_new.transpose() * t_new;
         //this->set_camera_transformation(R, T);
     }
      
@@ -492,13 +509,15 @@ void fast_icp(const float* previous_points,
     //cout << "Score: " << icp.getFitnessScore() << endl;
     auto Rt = icp.getFinalTransformation();
     cout << Rt << endl;
-    ((simd_float3x3 *) rotation)[0] = simd_matrix_from_rows(
-                                                            simd_make_float3(Rt(0,0), Rt(0,1), Rt(0,2)),
-                                                            simd_make_float3(Rt(1,0), Rt(1,1), Rt(1,2)),
-                                                            simd_make_float3(Rt(2,0), Rt(2,1), Rt(2,2))
-                                                            );
-    ((simd_float3 *) translation)[0] = simd_make_float3(Rt(0,3), Rt(1,3), Rt(1,3));
     */
+    R = exponential_map(Eigen::Vector3d(twist_diff(3), twist_diff(4), twist_diff(5)));
+    T = Eigen::Vector3d(twist_diff(0), twist_diff(1), twist_diff(2));
+    ((simd_float3x3 *) rotation)[0] = simd_matrix_from_rows(
+                                                            simd_make_float3(R(0,0), R(0,1), R(0,2)),
+                                                            simd_make_float3(R(1,0), R(1,1), R(1,2)),
+                                                            simd_make_float3(R(2,0), R(2,1), R(2,2))
+                                                            );
+    ((simd_float3 *) translation)[0] = simd_make_float3(T(0), T(1), T(2));
 }
 
 

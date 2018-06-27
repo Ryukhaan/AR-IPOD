@@ -166,7 +166,7 @@ class Model {
                 parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
         }
         else {
-            _ = bridge_integrateDepthMap(
+            bridge_integrateDepthMap(
                 &dethmap, /*centroids,*/
                 &R,
                 &T,
@@ -178,72 +178,6 @@ class Model {
                 voxelResolution,
                 parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
         }
-        //group.wait()
-        /*
-         else {
-         // Instanciate all local variables
-         //float diag = 2.0 * sqrt(3.0f) * (resolution[0] / dimension);
-         //int count = width * height;
-         let size = numberOfVoxels()
-         let resolutions = Vector(voxelResolution, voxelResolution, voxelResolution);
-         let offset = (0.5 * Float(dimension)) * resolutions;
-         
-         // Relative camera variables
-         let K = camera.intrinsics
-         let R = camera.rotation
-         let T = camera.translation
-         let Kinv  = simd_inverse(K);
-         
-         let group = DispatchGroup()
-         DispatchQueue.concurrentPerform(iterations: size) {i in
-         //group.enter()
-         //DispatchQueue.global().async {
-         //for i in 0..<size
-         //for (int i = mini; i<maxi; i++)
-         //{
-         //if (i < 0 || i >= size) continue;
-         let centroid = self.createCentroid(i: i, voxelResolution: self.voxelResolution, dimension: self.dimension) - offset
-         //simd::float3 X_L      = simd_mul(R, centroid + T);
-         let X_L      = simd_mul(simd_transpose(R), centroid - T)
-         let homogene = simd_make_float4(X_L.x, X_L.y, X_L.z, 1)
-         let project  = simd_mul(K, homogene)
-         
-         let u = Int(project.x / project.z)
-         let v = Int(project.y / project.z)
-         if (u < 0 || u >= self.camera.height) { /*continue*/ return}
-         if (v < 0 || v >= self.camera.width) { /*continue*/ return}
-         
-         let z = self.image.data[u * self.camera.width + v]
-         let uvz = simd_make_float4(z * Float(u), z * Float(v), z, 1.0)
-         let X_S = simd_mul(Kinv, uvz)
-         // Depth invalid
-         if (z.isNaN) { /*continue*/ return }
-         if (z < 1e-6) { /*continue*/ return }
-         var distance = simd_distance(X_S, homogene)
-         //float distance = z - project.z;
-         distance = simd_sign(z - project.z) * distance
-         
-         let weight = 1.0
-         //float weight = weighting(distance, delta, epsilon);
-         
-         if (distance >= self.parameters["Delta"]! + self.parameters["Epsilon"]!) {
-         //self.carvingVoxel(i: i)
-         if self.voxels[i].sdf <= 0 && voxels[i].weight > 0 {
-         voxels[i] = Voxel()
-         }
-         }
-         if (fabs(distance) <= self.parameters["Delta"]!) {
-         //self.updateVoxel(i: i, distance: distance, weight: Float(weight))
-         self.voxels[i].update(sdf: distance, weight: Float(weight))
-         }
-         //else if (distance < -delta)
-         //    update_voxel((Voxel *)voxels, -delta, weight, i);
-         //}
-         //group.leave()
-         }
-         //group.wait()
-         }
-         */
     }
     
     func reinit() {

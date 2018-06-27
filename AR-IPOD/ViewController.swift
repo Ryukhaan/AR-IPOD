@@ -279,10 +279,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         var extrinsics: matrix_float4x4
         for i in 0..<self.sizeOfDataset {
             //DispatchQueue.main.asyncAfter(deadline: .now() + Double(3*i)) {
+            /*
             extrinsics = Import.cameraPose(
                 from: "frame-\(i).pose",
                 at: self.nameOfDataset,
                 type: Model.sharedInstance.type)
+             */
             depthmap = Import.depthMapFromTXT(
                 from: "frame-\(i).depth",
                 at: self.nameOfDataset,
@@ -315,7 +317,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             }
             */
             if Model.sharedInstance.cameraPoseEstimationEnable {
-                Model.sharedInstance.update(rotation: extrinsics)
+                //Model.sharedInstance.update(rotation: extrinsics)
                 //Model.sharedInstance.update(translation: extrinsics)
                 let last_points = Model.sharedInstance.image.data
                 Model.sharedInstance.update(data: depthmap)
@@ -342,8 +344,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 }
             }
             else {
-                Model.sharedInstance.update(rotation: extrinsics)
-                Model.sharedInstance.update(translation: extrinsics)
+                //Model.sharedInstance.update(rotation: extrinsics)
+                //Model.sharedInstance.update(translation: extrinsics)
                 Model.sharedInstance.update(data: depthmap)
             }
             Model.sharedInstance.integrate()
@@ -359,8 +361,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBAction func changeDataset(_ sender: Any) {
         switch datasetChoice.selectedSegmentIndex {
         case 0:
-            nameOfDataset = "chair"
-            Model.sharedInstance.switchTo(type: .Kinect)
+            nameOfDataset = "dataset"
+            Model.sharedInstance.switchTo(type: .Iphone)
             //myModel = Model(from: Model.sharedInstance, to: .Iphone)
         case 1:
             nameOfDataset = "ikea-table"
