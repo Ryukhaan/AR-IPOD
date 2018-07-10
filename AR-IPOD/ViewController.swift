@@ -141,37 +141,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
-        //integrationProgress.progress = 0.0
-        //integrationProgress.isHidden = false
-        //var k = 0
-        let R = frame.camera.transform
-        let K = frame.camera.intrinsics
-        let D = frame.camera.imageResolution
-        ty.numberOfLines = 4
-        /*
-        ty.text = """
-        \(R.columns.0.x) \(R.columns.1.x) \(R.columns.2.x) \(R.columns.3.x)
-        \(R.columns.0.y) \(R.columns.1.y) \(R.columns.2.y) \(R.columns.3.y)
-        \(R.columns.0.z) \(R.columns.1.z) \(R.columns.2.z) \(R.columns.3.z)
-        \(R.columns.0.w) \(R.columns.1.w) \(R.columns.2.w) \(R.columns.3.w)
-        """
-        */
-        ty.text = """
-        \(K.columns.0.x) \(K.columns.1.x) \(K.columns.2.x)
-        \(K.columns.0.y) \(K.columns.1.y) \(K.columns.2.y)
-        \(K.columns.0.z) \(K.columns.1.z) \(K.columns.2.z)
-        \(D.width) \(D.height)
-        """
         if inRealTime
         {
             //let camera = frame.camera.trackingState
-            Model.sharedInstance.update(rotation: frame.camera.transform)
+            //Model.sharedInstance.update(rotation: frame.camera.transform)
             Model.sharedInstance.update(intrinsics: frame.camera.intrinsics)
-            /*
-             if let points = frame.rawFeaturePoints {
-             self.myVolume.integrate(points: points, camera: self.myCamera)
-             }
-            */
             if frame.capturedDepthData != nil
             {
                 self.myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
@@ -193,89 +167,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 //self.myDepthImage.update(_data: depthPointer)
                 //self.myDepthImage.update(_data: depthPointer)
                 //self.myCamera.update(extrinsics: frame.camera.transform)
-                Model.sharedInstance.image.push(map: depthPointer)
-                //self.myCamera.update(extrinsics: frame.camera.transform)
-                //self.myCamera.intrinsics = frame.camera.intrinsics
+                let last_points = Model.sharedInstance.image.data
+                //Model.sharedInstance.image.push(map: depthPointer)
+                Model.sharedInstance.update(data: depthPointer)
+                //Model.sharedInstance.createMedianDepthMap()
+                let current_points = Model.sharedInstance.image.data
+                Model.sharedInstance.globalRegistration(previous: last_points, current: current_points)
                 self.numberOfIterations += 1
-                
-                /* Another Way : Save all depth maps and pose then do it offline */
-                //save(model: self.myModel, atTime: k)
-                //k += 1
             }
             if self.numberOfIterations >= 6
             {
-                //let last_points = self.myDepthImage.data
-                let last_points = Model.sharedInstance.image.data
-                Model.sharedInstance.createMedianDepthMap()
-                let current_points = Model.sharedInstance.image.data
-                var K  = Model.sharedInstance.camera.intrinsics
-                K.columns.0.x = K.columns.0.x / Float(Model.sharedInstance.image.height) * Float(D.height)
-                K.columns.1.y = K.columns.1.y / Float(Model.sharedInstance.image.width) * Float(D.width)
-                var R   = Model.sharedInstance.camera.rotation
-                var T   = Model.sharedInstance.camera.translation
-                //var W   = Model.sharedInstance.camera.rotationLie
-                /*
-                bridge_fast_icp(last_points,
-                                current_points,
-                                &K,
-                                &R,
-                                &W,
-                                &T,
-                                &(Model.sharedInstance.voxels),
-                                Int32(Model.sharedInstance.dimension),
-                                Model.sharedInstance.voxelResolution,
-                                Int32(Model.sharedInstance.camera.width),
-                                Int32(Model.sharedInstance.camera.height))
-                 */
-                bridge_global_registration(last_points,
-                                           current_points,
-                                           &(Model.sharedInstance.voxels),
-                                           Int32(Model.sharedInstance.camera.width),
-                                           Int32(Model.sharedInstance.camera.height),
-                                           &R,
-                                           &T,
-                                           &K,
-                                           Model.sharedInstance.voxelResolution,
-                                           Int32(Model.sharedInstance.dimension))
-                Model.sharedInstance.camera.translation = T
-                Model.sharedInstance.camera.rotation    = R
-                //DispatchQueue.global().async {
                 Model.sharedInstance.integrate()
-                //self.myVolume.integrateDepthMap(
-                //    image: self.myDepthImage,
-                //    camera: self.myCamera,
-                //    parameters: [Float(delta), Float(epsilon), Float(lambda)])
-                //}
                 self.numberOfIterations = 0
             }
         }
     }
-            /*
-            if self.myDepthImage.savedData.count == 6 {
-                DispatchQueue.global().asyncAfter(deadline: .now()+Double(3*self.numberOfIterations)) {
-                    if self.numberOfIterations < 10  {
-                        self.myDepthImage.updateDataWithSavedData()
-                        self.myDepthImage.savedData.removeAll()
-                        self.myVolume.integrateDepthMap(
-                            image: self.myDepthImage,
-                            camera: self.myCamera,
-                            parameters: [Float(delta), Float(epsilon), Float(lambda)])
-                        self.numberOfIterations += 1
-                    }
-                    else {
-                        self.displayAlertMessage(
-                            title: "Fin de l'acquisition",
-                            message: "Vous pouvez visualiser avec le bouton \"Show Vol.\"",
-                            handler: { _ in
-                                self.numberOfIterations = 0
-                                self.inRealTime = false
-                                self.hasIntegratingStarted = false
-                        })
-                    }
-                }
-            }
-        }
-    }*/
     
     
     @IBAction func startCompute(_ sender: Any) {
@@ -285,11 +191,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //inRealTime = false
         //self.myModel.switchTo(realTime: inRealTime)
         Model.sharedInstance.reinit()
-        //self.myModel = Model.sharedInstance
         
         timer = Double(CFAbsoluteTimeGetCurrent())
         var depthmap: [Float]
-        var extrinsics: matrix_float4x4
         for i in 0..<self.sizeOfDataset {
             //DispatchQueue.main.asyncAfter(deadline: .now() + Double(3*i)) {
             /*
@@ -306,75 +210,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                  2,
                                  Int32(Model.sharedInstance.camera.width),
                                  Int32(Model.sharedInstance.camera.height))
-            /*
-            var depthmap: [Float] = [Float](repeating: 0.0, count: Constant.Kinect.Width * Constant.Kinect.Height)
-            var median: [[Float]] = [[Float]]()
-            for j in 0..<6 {
-                var temp = importDepthMapFromTXT(
-                    from: "frame-\(6*i+j).depth",
-                    at: self.nameOfDataset)
-                bridge_median_filter(&temp,
-                                     2,
-                                     Int32(self.myModel.camera.width),
-                                     Int32(self.myModel.camera.height))
-                median.append(temp)
-            }
-            for n in 0..<depthmap.count {
-                var tmp: [Float] = [median[0][n], median[1][n], median[2][n], median[3][n], median[4][n], median[5][n]]
-                tmp = tmp.sorted()
-                let size = tmp.count
-                if ( size % 2 == 0 ) { depthmap[n] = tmp[size/2] }
-                else {
-                    depthmap[n] = (tmp[(size+1)/2] + tmp[(size-1)/2]) / 2.0;
-                }
-            }
-            */
-            if Model.sharedInstance.cameraPoseEstimationEnable {
-                //Model.sharedInstance.update(rotation: extrinsics)
-                //Model.sharedInstance.update(translation: extrinsics)
-                let last_points = Model.sharedInstance.image.data
-                Model.sharedInstance.update(data: depthmap)
-                if i > 0 {
-                    let current_points = Model.sharedInstance.image.data
-                    var K   = Model.sharedInstance.camera.intrinsics
-                    var R   = Model.sharedInstance.camera.rotation
-                    //var W   = Model.sharedInstance.camera.rotationLie
-                    var T   = Model.sharedInstance.camera.translation
-                    /*
-                    bridge_fast_icp(last_points,
-                                    current_points,
-                                    &K,
-                                    &R,
-                                    &W,
-                                    &T,
-                                    &(Model.sharedInstance.voxels),
-                                    Int32(Model.sharedInstance.dimension),
-                                    Model.sharedInstance.voxelResolution,
-                                    Int32(Model.sharedInstance.camera.width),
-                                    Int32(Model.sharedInstance.camera.height))
-                    */
-                    bridge_global_registration(last_points,
-                                               current_points,
-                                               &(Model.sharedInstance.voxels),
-                                               Int32(Model.sharedInstance.camera.width),
-                                               Int32(Model.sharedInstance.camera.height),
-                                               &R,
-                                               &T,
-                                               &K,
-                                               Model.sharedInstance.voxelResolution,
-                                               Int32(Model.sharedInstance.dimension))
-                    Model.sharedInstance.camera.translation = T
-                    Model.sharedInstance.camera.rotation    = R
-                    //Model.sharedInstance.camera.rotationLie = W
-                }
-            }
-            else {
-                //Model.sharedInstance.update(rotation: extrinsics)
-                //Model.sharedInstance.update(translation: extrinsics)
-                Model.sharedInstance.update(data: depthmap)
+            //Model.sharedInstance.update(rotation: extrinsics)
+            //Model.sharedInstance.update(translation: extrinsics)
+            let last_points = Model.sharedInstance.image.data
+            Model.sharedInstance.update(data: depthmap)
+            if i > 0 {
+                let current_points = Model.sharedInstance.image.data
+                Model.sharedInstance.globalRegistration(previous: last_points, current: current_points)
             }
             Model.sharedInstance.integrate()
-            //self.integrationProgress.progress = Float(i) / Float(self.sizeOfDataset)
         }
         let end = Double(CFAbsoluteTimeGetCurrent()) - timer
         self.displayAlertMessage(title: "Fin Acquisition", message: "\(end)", handler: {_ in

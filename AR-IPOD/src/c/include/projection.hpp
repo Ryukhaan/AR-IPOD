@@ -17,6 +17,8 @@
 #include <simd/conversion.h>
 #include <simd/matrix.h>
 
+#include "constants.h"
+
 void integrate_projection(float* depthmap,
                          //const void* centroids,
                          const void* rotation,
@@ -34,8 +36,6 @@ void integrate_projection(float* depthmap,
     // Instanciate all local variables
     simd::float3 resolutions = simd_make_float3(resolution, resolution, resolution);
     simd::float3 offset = 0.5 * (dimension * resolutions);
-    //float cx = 1.0, cy = 1.0;
-    float cx = 2160.0 / 360.0; float cy = 3840.0 / 640.0;
     
     // Relative camera variables
     simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
@@ -95,8 +95,8 @@ void integrate_projection(float* depthmap,
                 simd::float4 homogene = simd_make_float4(X_L.x, X_L.y, X_L.z, 1);
                 simd::float4 project  = simd_mul(K, homogene);
                 
-                int u = (int) (project.x / (project.z  * cx));
-                int v = (int) (project.y / (project.z  * cy));
+                int u = (int) (project.x / (project.z  * cox));
+                int v = (int) (project.y / (project.z  * coy));
                 if (u < 0 || u >= height) continue;
                 if (v < 0 || v >= width) continue;
                 
@@ -104,7 +104,7 @@ void integrate_projection(float* depthmap,
                 if (std::isnan(zp)) continue;
                 if (zp < 1e-7) continue;
                 
-                simd::float4 uvz = simd_make_float4(zp * u * cx, zp * v * cy, zp, 1.0);
+                simd::float4 uvz = simd_make_float4(zp * u * cox, zp * v * coy, zp, 1.0);
                 simd::float4 X_S = simd_mul(Kinv, uvz);
                 // Depth invalid
                 

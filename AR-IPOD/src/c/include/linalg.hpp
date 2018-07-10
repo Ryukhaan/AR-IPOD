@@ -21,7 +21,7 @@
 //#include <unsupported/Eigen/MatrixFunctions>
 
 #include "filtering.hpp"
-//#include "types.h"
+#include "constants.h"
 
 static const double ang_min_sinc = 1.0e-8;
 static const double ang_min_mc = 2.5e-4;
@@ -131,17 +131,15 @@ simd_float2x3 compute_bounding_box(float* depthmap,
                                    const simd_float3 translation,
                                    const simd_float4x4 Kinv) {
     simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
-    //float cy = 1, cx = 1;
-    float cy = 6, cx = 6;
     for (int i=0; i<height; i++) {
         for (int j=0; j<width; j++) {
             float depth = depthmap[i*width+j];
             if (std::isnan(depth) || depth < 1e-6) continue;
-            simd::float4 uv = simd_make_float4(depth * i * cx, depth * j * cy, depth, 1);
+            simd::float4 uv = simd_make_float4(depth * i * cox, depth * j * coy, depth, 1);
             simd::float4 local = simd_mul(Kinv, uv);
             simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
             //simd::float3 world_point = simd_mul(simd_transpose(rotation), rlocal - translation);
-            simd::float3 world_point = simd_mul(rotation, rlocal + translation);
+            simd::float3 world_point = simd_mul(rotation, rlocal) + translation;
             box.columns[0].x = simd_min(box.columns[0].x, world_point.x);
             box.columns[0].y = simd_min(box.columns[0].y, world_point.y);
             box.columns[0].z = simd_min(box.columns[0].z, world_point.z);

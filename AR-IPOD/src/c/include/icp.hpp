@@ -9,6 +9,14 @@
 #ifndef icp_hpp
 #define icp_hpp
 
+#include "super4pcs.h"
+#include "logger.h"
+#include "constants.h"
+#include <Eigen/Core>
+//#include <Eigen/Eigen>
+#include <unsupported/Eigen/MatrixFunctions>
+
+
 #include <stdio.h>
 #include <simd/common.h>
 #include <simd/vector_types.h>
@@ -17,15 +25,30 @@
 #include <simd/conversion.h>
 #include <simd/matrix.h>
 
-#include <Eigen/Core>
-//#include <Eigen/Eigen>
-#include <unsupported/Eigen/MatrixFunctions>
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_representation.h>
 
-#include "super4pcs.h"
-#include "logger.h"
+#include <pcl/registration/icp.h>
+#include <pcl/registration/transformation_estimation_svd.h>
+#include <pcl/registration/icp_nl.h>
+#include <pcl/registration/transforms.h>
+#include <pcl/registration/ia_kfpcs.h>
+#include <pcl/registration/gicp.h>
 
+#include <pcl/features/normal_3d.h>
+#include <pcl/console/time.h>
+
+using namespace pcl;
 using namespace std;
 using namespace GlobalRegistration;
+
+// Typedefs, convenience.
+typedef pcl::PointXYZ PointT;
+typedef pcl::PointCloud<PointT> PointCloud;
+typedef pcl::PointNormal PointNormalT;
+typedef pcl::PointCloud<PointNormalT> PointCloudWithNormals;
+
 
 void super4PCS(const float* previous,
                const float* current,
@@ -89,7 +112,7 @@ void super4PCS(const float* previous,
             z       = current[i * width + j];
             if (z > 1e-6)
             {
-                uvz     = simd_make_float4(z * i * cy, z * j * cx, z, 1);
+                uvz     = simd_make_float4(z * i * coy, z * j * cox, z, 1);
                 local   = simd_mul(Kinv, uvz);
                 global  = simd_mul(R, simd_make_float3(local.x, local.y, local.z)) + T;
                 Q.push_back(Point3D(global.x, global.y, global.z));
@@ -604,5 +627,208 @@ void fast_icp(const float* previous_points,
     ((simd_float3 *) translation)[0] = simd_make_float3(T(0), T(1), T(2));
 }
 
+void icp(const float* previous,
+         const float* current,
+         //const void* voxels,
+         const int width,
+         const int height,
+         void* rotation,
+         void* translation,
+         const void* intrinsics,
+         const float resolution,
+         const int dimension,
+         const float thresh_depth,
+         const float corresp_dist,
+         const int max_num_iter)
+{
+    // Init all matrices : R, K and T
+    simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
+    simd_float4x4 Kinv = simd_inverse(K);
+    simd_float3x3 R = ((simd_float3x3 *) rotation)[0];
+    simd::float3  T = ((simd_float3 *) translation)[0];
+    
+    // Init camera position : Rt = old one and Rtprime = new one
+    Eigen::Matrix<Point3D::Scalar, 4, 4> Rt, Rtprime = Eigen::Matrix4f::Identity ();
+    Rt <<   R.columns[0].x  , R.columns[1].x   , R.columns[2].x, T.x  ,
+            R.columns[0].y  , R.columns[1].y   , R.columns[2].y, T.y  ,
+            R.columns[0].z  , R.columns[1].z   , R.columns[2].z, T.z  ,
+            0               , 0                , 0             , 1    ;
+    
+    simd::float4 uvz, local;
+    simd::float3 global;
+    float z;
+    console::TicToc clock = console::TicToc();
+    
+    PointCloud<PointNormalT>::Ptr cloud_in (new PointCloud<PointNormalT>);
+    PointCloud<PointNormalT>::Ptr cloud_out (new PointCloud<PointNormalT>);
+
+    // Build previous global vertex map
+    int sh = height / 2 - 100;
+    int eh = height / 2 + 100;
+    int sw = width / 2 - 60;
+    int ew = width / 2 + 60;
+    for (int i = sh; i<eh; i++)
+    {
+        for (int j = sw; j<ew; j++)
+        {
+            // Neighbors indexes
+            int x = i * width + j;
+            int rn = i * width + j + 1;
+            int dn = (i+1) * width + j;
+            
+            // Neighbors depths
+            z       = previous[x];
+            float zr = previous[rn];
+            float zd = previous[dn];
+            
+            // Append PointNormalT to Point Cloud In
+            if (z > 1e-6 && zr > 1e-6 && zd > 1e-6 && z < thresh_depth)
+            {
+                uvz     = simd_make_float4(z * i * coy, z * j * cox, z, 1);
+                local   = simd_mul(Kinv, uvz);
+                global  = simd_mul(R, simd_make_float3(local.x, local.y, local.z)) + T;
+                // Compute normal
+                simd::float4 uvz_right   = simd_make_float4(zr * i * coy, zr * j * cox, zr, 1);
+                simd::float4 local_right = simd_mul(Kinv, uvz_right);
+                simd::float4 uvz_down    = simd_make_float4(zd * i * coy, zd * j * cox, zd, 1);
+                simd::float4 local_down  = simd_mul(Kinv, uvz_down);
+                simd::float4 normal = simd_dot((local_right - local), (local_down - local));
+                normal = normal / simd_length(normal);
+                //P.push_back(Point3D(global.x, global.y, global.z));
+                PointNormalT p;
+                p.x = global.x;
+                p.y = global.y;
+                p.z = global.z;
+                p.normal_x = normal.x;
+                p.normal_y = normal.y;
+                p.normal_z = normal.z;
+    
+                cloud_in->push_back(p);
+                
+            }
+            
+            // Same for current depth map
+            z       = current[x];
+            zr = current[rn];
+            zd = current[dn];
+            if (z > 1e-6 && zr > 1e-6 && zd > 1e-6 && z < thresh_depth)
+            {
+                uvz     = simd_make_float4(z * i * coy, z * j * cox, z, 1);
+                local   = simd_mul(Kinv, uvz);
+                global  = simd_mul(R, simd_make_float3(local.x, local.y, local.z)) + T;
+                // Compute normal
+                simd::float4 uvz_right   = simd_make_float4(zr * i * coy, zr * j * cox, zr, 1);
+                simd::float4 local_right = simd_mul(Kinv, uvz_right);
+                simd::float4 uvz_down    = simd_make_float4(zd * i * coy, zd * j * cox, zd, 1);
+                simd::float4 local_down  = simd_mul(Kinv, uvz_down);
+                simd::float4 normal = simd_dot((local_right - local), (local_down - local));
+                normal = normal / simd_length(normal);
+                //Q.push_back(Point3D(global.x, global.y, global.z));
+                PointNormalT p;
+                p.x = global.x;
+                p.y = global.y;
+                p.z = global.z;
+                p.normal_x = normal.x;
+                p.normal_y = normal.y;
+                p.normal_z = normal.z;
+                
+                cloud_out->push_back(p);
+                
+            }
+        }
+    }
+    cloud_in->width     = cloud_in->points.size();
+    cloud_in->height    = 1;
+    cloud_in->is_dense  = false;
+    cloud_out->width    = cloud_out->points.size();
+    cloud_out->height   = 1;
+    cloud_out->is_dense = false;
+    cloud_in->points.resize (cloud_in->width * cloud_in->height);
+    cloud_out->points.resize (cloud_out->width * cloud_out->height);
+    
+    clock.tic();
+    // Compute surface normals and curvature
+    PointCloud<PointNormalT>::Ptr points_with_normals_src (new PointCloud<PointNormalT>);
+    PointCloud<PointNormalT>::Ptr points_with_normals_tgt (new PointCloud<PointNormalT>);
+    
+    NormalEstimation<PointNormalT, PointNormalT> norm_est;
+    search::KdTree<PointNormalT>::Ptr tree (new search::KdTree<PointNormalT> ());
+    norm_est.setSearchMethod (tree);
+    norm_est.setKSearch (4);
+    
+    norm_est.setInputCloud (cloud_out);
+    norm_est.compute (*points_with_normals_src);
+    copyPointCloud (*cloud_out, *points_with_normals_src);
+    
+    norm_est.setInputCloud (cloud_in);
+    norm_est.compute (*points_with_normals_tgt);
+    copyPointCloud (*cloud_in, *points_with_normals_tgt);
+    
+    IterativeClosestPoint<PointNormalT, PointNormalT> icp;
+    icp.setMaxCorrespondenceDistance (0.1);
+    icp.setMaximumIterations (1);
+    
+    icp.setInputSource(points_with_normals_src);
+    icp.setInputTarget(points_with_normals_tgt);
+    PointCloud<PointNormalT> cloud_aligned;
+    icp.align(cloud_aligned);
+    
+    /*
+     float fitness = 65536.0;
+     float proba = 1.0;
+     int max_iteration = 1, turn = 0;
+     clock.tic();
+     while (true)
+     {
+     if (turn > max_iteration) break;
+     // Choose new points
+     PointCloud<PointNormalT>::Ptr sub_points_src (new PointCloud<PointNormalT>);
+     PointCloud<PointNormalT>::Ptr sub_points_tgt (new PointCloud<PointNormalT>);
+     for (PointNormalT p : cloud_in->points) {
+     float x = (rand() % 1000) / 1000.0;
+     if ( x <= proba)
+     sub_points_tgt->push_back(p);
+     }
+     for (PointNormalT p : cloud_out->points) {
+     float x = (rand() % 1000) / 1000.0;
+     if ( x <= proba)
+     sub_points_src->push_back(p);
+     }
+     sub_points_src->width    = sub_points_src->points.size();
+     sub_points_src->height   = 1;
+     sub_points_src->is_dense = false;
+     sub_points_tgt->width    = sub_points_tgt->points.size();
+     sub_points_tgt->height   = 1;
+     sub_points_tgt->is_dense = false;
+     
+     sub_points_src->points.resize (sub_points_src->width * sub_points_src->height);
+     sub_points_tgt->points.resize (sub_points_tgt->width * sub_points_tgt->height);
+     
+     icp.setInputSource(sub_points_src);
+     icp.setInputTarget(sub_points_tgt);
+     PointCloud<PointNormalT> cloud_aligned;
+     icp.align(cloud_aligned);
+     
+     if (icp.getFitnessScore() < fitness)
+     {
+     fitness = icp.getFitnessScore();
+     Rtprime = icp.getFinalTransformation();
+     }
+     turn++;
+     }
+     */
+    cout << clock.toc() << endl;
+    
+    // Get the transformation that aligned cloud_in to cloud_out
+    Rt = icp.getFinalTransformation() * Rt;
+    cout << Rt << endl;
+    
+    ((simd_float3 *) translation)[0]   = simd_make_float3(Rt(0, 3), Rt(1, 3), Rt(2, 3));
+    ((simd_float3x3 *) rotation)[0]    = simd_matrix_from_rows(
+                                                               simd_make_float3(Rt(0,0), Rt(0,1), Rt(0,2)),
+                                                               simd_make_float3(Rt(1,0), Rt(1,1), Rt(1,2)),
+                                                               simd_make_float3(Rt(2,0), Rt(2,1), Rt(2,2))
+                                                               );
+}
 
 #endif /* icp_hpp */

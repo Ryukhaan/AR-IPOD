@@ -7,12 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A51717FB20DA793F00067B2E /* libpcl_common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717ED20DA592D00067B2E /* libpcl_common.a */; };
-		A51717FC20DA793F00067B2E /* libpcl_search.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717EE20DA592E00067B2E /* libpcl_search.a */; };
-		A517180020DA794000067B2E /* libpcl_features.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717FD20DA794000067B2E /* libpcl_features.a */; };
-		A517180120DA794000067B2E /* libpcl_filters.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717FE20DA794000067B2E /* libpcl_filters.a */; };
-		A517180220DA794000067B2E /* libpcl_registration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717FF20DA794000067B2E /* libpcl_registration.a */; };
-		A517180320DA794500067B2E /* libpcl_kdtree.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717EC20DA592D00067B2E /* libpcl_kdtree.a */; };
 		A517189020E3C1B600067B2E /* super4pcs.cc in Sources */ = {isa = PBXBuildFile; fileRef = A517188D20E3C1B500067B2E /* super4pcs.cc */; };
 		A517189120E3C1B600067B2E /* match4pcsBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = A517188E20E3C1B500067B2E /* match4pcsBase.cc */; };
 		A517189220E3C1B600067B2E /* 4pcs.cc in Sources */ = {isa = PBXBuildFile; fileRef = A517188F20E3C1B500067B2E /* 4pcs.cc */; };
@@ -28,6 +22,12 @@
 		A5494B102089E644007EA2FB /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0F2089E644007EA2FB /* Frustrum.swift */; };
 		A5494B122089E657007EA2FB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B112089E657007EA2FB /* Geometry.swift */; };
 		A554D20420CA677F0096DE8A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A554D20320CA677F0096DE8A /* SettingsViewController.swift */; };
+		A57BF46920F4E56F0017B09C /* libpcl_search.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46320F4E56E0017B09C /* libpcl_search.a */; };
+		A57BF46A20F4E56F0017B09C /* libpcl_common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46420F4E56E0017B09C /* libpcl_common.a */; };
+		A57BF46B20F4E56F0017B09C /* libpcl_filters.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46520F4E56E0017B09C /* libpcl_filters.a */; };
+		A57BF46C20F4E56F0017B09C /* libpcl_registration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46620F4E56E0017B09C /* libpcl_registration.a */; };
+		A57BF46D20F4E56F0017B09C /* libpcl_features.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46720F4E56E0017B09C /* libpcl_features.a */; };
+		A57BF46E20F4E56F0017B09C /* libpcl_kdtree.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46820F4E56F0017B09C /* libpcl_kdtree.a */; };
 		A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDDF2088895500280CD2 /* AppDelegate.swift */; };
 		A58DCDE22088895500280CD2 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = A58DCDE12088895500280CD2 /* art.scnassets */; };
 		A58DCDE42088895500280CD2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDE32088895500280CD2 /* ViewController.swift */; };
@@ -130,6 +130,13 @@
 		A5494B0F2089E644007EA2FB /* Frustrum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustrum.swift; sourceTree = "<group>"; };
 		A5494B112089E657007EA2FB /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		A554D20320CA677F0096DE8A /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		A57BF46220F4D09A0017B09C /* constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
+		A57BF46320F4E56E0017B09C /* libpcl_search.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_search.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_search.a"; sourceTree = "<group>"; };
+		A57BF46420F4E56E0017B09C /* libpcl_common.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_common.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_common.a"; sourceTree = "<group>"; };
+		A57BF46520F4E56E0017B09C /* libpcl_filters.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_filters.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_filters.a"; sourceTree = "<group>"; };
+		A57BF46620F4E56E0017B09C /* libpcl_registration.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_registration.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_registration.a"; sourceTree = "<group>"; };
+		A57BF46720F4E56E0017B09C /* libpcl_features.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_features.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_features.a"; sourceTree = "<group>"; };
+		A57BF46820F4E56F0017B09C /* libpcl_kdtree.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_kdtree.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_kdtree.a"; sourceTree = "<group>"; };
 		A58DCDDC2088895500280CD2 /* AR-IPOD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-IPOD.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A58DCDDF2088895500280CD2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A58DCDE12088895500280CD2 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -179,12 +186,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A517180020DA794000067B2E /* libpcl_features.a in Frameworks */,
-				A517180120DA794000067B2E /* libpcl_filters.a in Frameworks */,
-				A517180220DA794000067B2E /* libpcl_registration.a in Frameworks */,
-				A51717FB20DA793F00067B2E /* libpcl_common.a in Frameworks */,
-				A51717FC20DA793F00067B2E /* libpcl_search.a in Frameworks */,
-				A517180320DA794500067B2E /* libpcl_kdtree.a in Frameworks */,
+				A57BF46920F4E56F0017B09C /* libpcl_search.a in Frameworks */,
+				A57BF46A20F4E56F0017B09C /* libpcl_common.a in Frameworks */,
+				A57BF46B20F4E56F0017B09C /* libpcl_filters.a in Frameworks */,
+				A57BF46C20F4E56F0017B09C /* libpcl_registration.a in Frameworks */,
+				A57BF46D20F4E56F0017B09C /* libpcl_features.a in Frameworks */,
+				A57BF46E20F4E56F0017B09C /* libpcl_kdtree.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +225,7 @@
 				A5EF302120AECBD7003937A3 /* icp.hpp */,
 				A5D70A6B20CE81710002EE0E /* raytracing.hpp */,
 				A5D70A6E20CE8D400002EE0E /* projection.hpp */,
+				A57BF46220F4D09A0017B09C /* constants.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -274,6 +282,12 @@
 		A52C3D6620933EAC00BA5BDC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A57BF46420F4E56E0017B09C /* libpcl_common.a */,
+				A57BF46720F4E56E0017B09C /* libpcl_features.a */,
+				A57BF46520F4E56E0017B09C /* libpcl_filters.a */,
+				A57BF46820F4E56F0017B09C /* libpcl_kdtree.a */,
+				A57BF46620F4E56E0017B09C /* libpcl_registration.a */,
+				A57BF46320F4E56E0017B09C /* libpcl_search.a */,
 				A517180420DA7BF100067B2E /* libflann_cpp_s.a */,
 				A517180620DA7BF200067B2E /* libflann_cpp.1.9.1.dylib */,
 				A517180720DA7BF200067B2E /* libflann_cpp.1.9.dylib */,
@@ -804,7 +818,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Frameworks/",
@@ -820,7 +834,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Build/pcl-ios-device-arm64/lib",
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib",
 				);
 				ONLY_ACTIVE_ARCH = NO;
@@ -830,7 +844,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Debug;
 		};
@@ -843,7 +857,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Frameworks/",
@@ -859,16 +873,16 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/pcl-ios-device-arm64/lib",
+					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Build/pcl-ios-device-arm64/lib",
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "AR-IPOD/AR-IPOD-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Release;
 		};

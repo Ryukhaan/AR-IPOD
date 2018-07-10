@@ -182,6 +182,25 @@ class Model {
         }
     }
     
+    func globalRegistration(previous: [Float], current : [Float]) {
+        var R = self.camera.rotation
+        var T = self.camera.translation
+        var K = self.camera.intrinsics
+        bridge_global_registration(previous,
+                                   current,
+                                   Int32(Model.sharedInstance.camera.width),
+                                   Int32(Model.sharedInstance.camera.height),
+                                   &R,
+                                   &T,
+                                   &K,
+                                   Model.sharedInstance.voxelResolution,
+                                   Int32(Model.sharedInstance.dimension),
+                                   Model.sharedInstance.parameters["icpMaxDist"]!,
+                                   Model.sharedInstance.parameters["icpMaxCorr"]!,
+                                   Int32(Model.sharedInstance.parameters["icpMaxIter"]!))
+        self.camera.rotation    = R
+        self.camera.translation = T
+    }
     func reinit() {
         reallocateVoxels()
         camera.rotation = matrix_float3x3(diagonal: float3(1,1,1))

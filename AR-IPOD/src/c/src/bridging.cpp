@@ -49,7 +49,7 @@ unsigned long bridge_extractMesh(void* triangles,
     const int n = dimension;
     const float offset = 0.5 * (dimension * resolution);
     int n2 = n * n;
-    float cy = 1, cx = 1;
+    //float cy = 1, cx = 1;
     //float cy = 6, cx = 6;
 //  int num_threads = omp_get_num_threads();
 //#pragma omp parallel for shared(index) collapse(3) num_threads(num_threads)
@@ -188,7 +188,7 @@ void bridge_global_registration(const float* previous,
                                 const int dimension,
                                 const float thresh_depth,
                                 const float corresp_dist,
-                                const int max_num_iter);
+                                const int max_num_iter)
 {
     //super4PCS(previous, current, voxels, width, height, rotation, translation, intrinsics, resolution, dimension);
     icp(previous, current, width, height, rotation, translation, intrinsics, resolution, dimension, thresh_depth, corresp_dist, max_num_iter);
