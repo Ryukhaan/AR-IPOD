@@ -21,7 +21,91 @@
 //#include <Eigen/Eigen>
 #include <unsupported/Eigen/MatrixFunctions>
 
+#include "super4pcs.h"
+#include "logger.h"
+
 using namespace std;
+using namespace GlobalRegistration;
+
+void super4PCS(const float* previous,
+               const float* current,
+               const void* voxels,
+               const int width,
+               const int height,
+               void* rotation,
+               void* translation,
+               const void* intrinsics,
+               const float resolution,
+               const int dimension)
+{
+    simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
+    simd_float4x4 Kinv = simd_inverse(K);
+    simd_float3x3 R = ((simd_float3x3 *) rotation)[0];
+    simd::float3  T = ((simd_float3 *) translation)[0];
+    
+    Eigen::Matrix<Point3D::Scalar, 4, 4> Rt;
+    Rt << R.columns[0].x   , R.columns[1].x   , R.columns[2].x, T.x  ,
+    R.columns[0].y     , R.columns[1].y   , R.columns[2].y, T.y  ,
+    R.columns[0].z     , R.columns[1].z   , R.columns[2].z, T.z  ,
+    0                  , 0                , 0             , 1    ;
+    vector<Point3D> P, Q;
+    simd::float4 uvz, local;
+    simd::float3 global;
+    float z;
+    //float cy = 1; float cx = 1;
+    float cy = 6; float cx = 6;
+    
+    Match4PCSOptions options = Match4PCSOptions();
+    Utils::Logger log = Utils::Logger();
+    MatchSuper4PCS algo4PCS = MatchSuper4PCS(options, log);
+    
+    int squared = dimension * dimension;
+    float global_offset = 0.5 * dimension * resolution;
+    for (int i=0; i < dimension; i++)
+        for (int j=0; j<dimension; j++)
+            for (int k=0; k<dimension; k++)
+            {
+                int n   = i * squared + j * dimension + k;
+                simd_int3   v_ijk = simd_make_int3(i, j, k);
+                //simd::float3 centroid = create_centroid(n, resolutions.x, dimension) - offset;
+                simd::float3 centroid = integer_to_global(v_ijk, resolution) - global_offset;
+                if ( fabs(((Voxel *) voxels)[n].sdf) <= 1e-2)
+                    P.push_back(Point3D(centroid.x, centroid.y, centroid.z));
+            }
+    for (int i = 0; i<height; i++)
+    {
+        for (int j = 0; j<height; j++)
+        {
+            /*
+             z       = previous[i * width + j];
+             if (z > 1e-6)
+             {
+             uvz     = simd_make_float4(z * i * cy, z * j * cx, z, 1);
+             local   = simd_mul(Kinv, uvz);
+             global  = simd_mul(R, simd_make_float3(local.x, local.y, local.z)) + T;
+             P.push_back(Point3D(global.x, global.y, global.z));
+             }
+             */
+            z       = current[i * width + j];
+            if (z > 1e-6)
+            {
+                uvz     = simd_make_float4(z * i * cy, z * j * cx, z, 1);
+                local   = simd_mul(Kinv, uvz);
+                global  = simd_mul(R, simd_make_float3(local.x, local.y, local.z)) + T;
+                Q.push_back(Point3D(global.x, global.y, global.z));
+            }
+        }
+    }
+    //algo4PCS.Initialize(P, Q);
+    algo4PCS.ComputeTransformation(P, &Q, Rt);
+    ((simd_float3 *) translation)[0]    = T + simd_make_float3(Rt(0, 3), Rt(1, 3), Rt(2, 3));
+    ((simd_float3x3 *) rotation)[0]     = simd_mul(simd_matrix_from_rows(
+                                                                         simd_make_float3(Rt(0,0), Rt(0,1), Rt(0,2)),
+                                                                         simd_make_float3(Rt(1,0), Rt(1,1), Rt(1,2)),
+                                                                         simd_make_float3(Rt(2,0), Rt(2,1), Rt(2,2))
+                                                                         ),
+                                                   R);
+}
 
 /*
 simd::float3x3 UThetaToAffine3d(const simd::float3 u)

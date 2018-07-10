@@ -34,7 +34,7 @@ void integrate_projection(float* depthmap,
     // Instanciate all local variables
     simd::float3 resolutions = simd_make_float3(resolution, resolution, resolution);
     simd::float3 offset = 0.5 * (dimension * resolutions);
-    //float cx = 1.0; float cy = 1.0;
+    //float cx = 1.0, cy = 1.0;
     float cx = 2160.0 / 360.0; float cy = 3840.0 / 640.0;
     
     // Relative camera variables
@@ -104,7 +104,7 @@ void integrate_projection(float* depthmap,
                 if (std::isnan(zp)) continue;
                 if (zp < 1e-7) continue;
                 
-                simd::float4 uvz = simd_make_float4(zp * u * 6, zp * v * 6, zp, 1.0);
+                simd::float4 uvz = simd_make_float4(zp * u * cx, zp * v * cy, zp, 1.0);
                 simd::float4 X_S = simd_mul(Kinv, uvz);
                 // Depth invalid
                 

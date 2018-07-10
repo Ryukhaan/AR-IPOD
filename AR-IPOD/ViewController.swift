@@ -213,7 +213,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 K.columns.1.y = K.columns.1.y / Float(Model.sharedInstance.image.width) * Float(D.width)
                 var R   = Model.sharedInstance.camera.rotation
                 var T   = Model.sharedInstance.camera.translation
-                var W   = Model.sharedInstance.camera.rotationLie
+                //var W   = Model.sharedInstance.camera.rotationLie
+                /*
                 bridge_fast_icp(last_points,
                                 current_points,
                                 &K,
@@ -225,7 +226,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                 Model.sharedInstance.voxelResolution,
                                 Int32(Model.sharedInstance.camera.width),
                                 Int32(Model.sharedInstance.camera.height))
+                 */
+                bridge_global_registration(last_points,
+                                           current_points,
+                                           &(Model.sharedInstance.voxels),
+                                           Int32(Model.sharedInstance.camera.width),
+                                           Int32(Model.sharedInstance.camera.height),
+                                           &R,
+                                           &T,
+                                           &K,
+                                           Model.sharedInstance.voxelResolution,
+                                           Int32(Model.sharedInstance.dimension))
                 Model.sharedInstance.camera.translation = T
+                Model.sharedInstance.camera.rotation    = R
                 //DispatchQueue.global().async {
                 Model.sharedInstance.integrate()
                 //self.myVolume.integrateDepthMap(
@@ -325,8 +338,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                     let current_points = Model.sharedInstance.image.data
                     var K   = Model.sharedInstance.camera.intrinsics
                     var R   = Model.sharedInstance.camera.rotation
-                    var W   = Model.sharedInstance.camera.rotationLie
+                    //var W   = Model.sharedInstance.camera.rotationLie
                     var T   = Model.sharedInstance.camera.translation
+                    /*
                     bridge_fast_icp(last_points,
                                     current_points,
                                     &K,
@@ -338,9 +352,20 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                     Model.sharedInstance.voxelResolution,
                                     Int32(Model.sharedInstance.camera.width),
                                     Int32(Model.sharedInstance.camera.height))
+                    */
+                    bridge_global_registration(last_points,
+                                               current_points,
+                                               &(Model.sharedInstance.voxels),
+                                               Int32(Model.sharedInstance.camera.width),
+                                               Int32(Model.sharedInstance.camera.height),
+                                               &R,
+                                               &T,
+                                               &K,
+                                               Model.sharedInstance.voxelResolution,
+                                               Int32(Model.sharedInstance.dimension))
                     Model.sharedInstance.camera.translation = T
                     Model.sharedInstance.camera.rotation    = R
-                    Model.sharedInstance.camera.rotationLie = W
+                    //Model.sharedInstance.camera.rotationLie = W
                 }
             }
             else {
@@ -361,7 +386,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBAction func changeDataset(_ sender: Any) {
         switch datasetChoice.selectedSegmentIndex {
         case 0:
-            nameOfDataset = "dataset"
+            nameOfDataset = "cube-set"
             Model.sharedInstance.switchTo(type: .Iphone)
             //myModel = Model(from: Model.sharedInstance, to: .Iphone)
         case 1:

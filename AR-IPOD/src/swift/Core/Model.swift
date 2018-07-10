@@ -53,9 +53,11 @@ class Model {
             image   = DepthImage()
         }
         self.type               = type
-        parameters["Lambda"]    = 0.0
-        parameters["Delta"]     = 0.02
-        parameters["Epsilon"]   = 0.01
+        parameters["Delta"]         = 0.3
+        parameters["Epsilon"]       = 0.025
+        parameters["icpMaxIter"]    = 1
+        parameters["icpMaxDist"]    = 2.0
+        parameters["icpMaxCorr"]    = 0.2
     }
     
     init(from: Model, to: CameraType) {

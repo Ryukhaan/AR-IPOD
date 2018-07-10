@@ -49,6 +49,8 @@ unsigned long bridge_extractMesh(void* triangles,
     const int n = dimension;
     const float offset = 0.5 * (dimension * resolution);
     int n2 = n * n;
+    float cy = 1, cx = 1;
+    //float cy = 6, cx = 6;
 //  int num_threads = omp_get_num_threads();
 //#pragma omp parallel for shared(index) collapse(3) num_threads(num_threads)
     for (int i = 0; i<n-1; i++) {
@@ -158,6 +160,7 @@ void bridge_exportVolumeToPLY(const void* centroids,
     save_volume_ply_format((simd::float3 *) centroids, sdfs, file_name, size);
 }
 
+/*
 void bridge_fast_icp(const float* previous_points,
                      const float* current_points,
                      const void* intrinsics,
@@ -171,7 +174,25 @@ void bridge_fast_icp(const float* previous_points,
                      const int height) {
     fast_icp(previous_points, current_points, intrinsics, rotation, lie_rotation, translation, voxels, dimension, resolution, width, height);
 }
+*/
 
+void bridge_global_registration(const float* previous,
+                                const float* current,
+                                //const void* voxels,
+                                const int width,
+                                const int height,
+                                void* rotation,
+                                void* translation,
+                                const void* intrinsics,
+                                const float resolution,
+                                const int dimension,
+                                const float thresh_depth,
+                                const float corresp_dist,
+                                const int max_num_iter);
+{
+    //super4PCS(previous, current, voxels, width, height, rotation, translation, intrinsics, resolution, dimension);
+    icp(previous, current, width, height, rotation, translation, intrinsics, resolution, dimension, thresh_depth, corresp_dist, max_num_iter);
+}
 
 void bridge_median_filter(float* depthmap,
                           const int window_size,

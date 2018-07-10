@@ -44,11 +44,11 @@ void save_meshing_ply_format(const simd::float3* points, const char* file_name, 
     if ( ! file.is_open() ) return;
     file << "ply" << endl;
     file << "format ascii 1.0" << endl;
-    file << "element vertex " << (3*number_of_triangles) << endl;
+    file << "element vertex " << (number_of_triangles) << endl;
     file << "property float x" << endl;
     file << "property float y" << endl;
     file << "property float z" << endl;
-    file << "element face " << number_of_triangles << endl;
+    file << "element face " << (number_of_triangles/3) << endl;
     file << "property list uchar int vertex_index" << endl;
     file << "end_header" << endl;
     
@@ -64,7 +64,7 @@ void save_meshing_ply_format(const simd::float3* points, const char* file_name, 
     
     // Write triangles
     for(int i = 0; i<number_of_triangles; i+=3) {
-        file << "3 " << (i) << " " << (i+1) << " " << (i+2) << endl;
+        file << "3 " << (i+2) << " " << (i+1) << " " << (i) << endl;
     }
     file.flush();
     file.close();

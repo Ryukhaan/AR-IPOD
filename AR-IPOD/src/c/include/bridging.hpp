@@ -42,17 +42,33 @@ void bridge_exportVolumeToPLY(const void* centroids,
                               const char* file_name,
                               int size);
 
-void bridge_fast_icp(const float* previous_points,
-                     const float* current_points,
-                     const void* intrinsics,
-                     void* rotation,
-                     void* lie_rotation,
-                     void* translation,
-                     void* voxels,
-                     const int dimension,
-                     const float resolution,
-                     const int width,
-                     const int height);
+
+void bridge_global_registration(const float* previous,
+                                const float* current,
+                                //const void* voxels,
+                                const int width,
+                                const int height,
+                                void* rotation,
+                                void* translation,
+                                const void* intrinsics,
+                                const float resolution,
+                                const int dimension,
+                                const float thresh_depth,
+                                const float corresp_dist,
+                                const int max_num_iter);
+
+/*
+void bridge_global_registration(const float* previous,
+                                const float* current,
+                                const void* voxels,
+                                const int width,
+                                const int height,
+                                void* rotation,
+                                void* translation,
+                                const void* intrinsics,
+                                const float resolution,
+                                const int dimension);
+*/
 
 void bridge_median_filter(float* depthmap,
                           const int window_size,

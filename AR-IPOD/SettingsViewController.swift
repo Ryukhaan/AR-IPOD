@@ -17,15 +17,13 @@ class SettingsViewController: UIViewController {
     @IBOutlet var epsilon: UITextField!
     @IBOutlet var delta: UITextField!
     
-    @IBOutlet var cameraPoseSwitch: UISwitch!
+    @IBOutlet var icpMaxDistance: UITextField!
+    @IBOutlet var icpMaxIterations: UITextField!
+    @IBOutlet var icpCorrespondanceDist: UITextField!
+    
     @IBOutlet var raytracingSwitch: UISwitch!
     
     var model = Model.sharedInstance
-    
-    @IBAction func isPoseEstimated(_ sender: Any) {
-        //model.cameraPoseEstimationEnable = cameraPoseSwitch.isOn
-        Model.sharedInstance.cameraPoseEstimationEnable = cameraPoseSwitch.isOn
-    }
     
     @IBAction func isRaytracingEnable(_ sender: Any) {
         //model.raytracingEnable = raytracingSwitch.isOn
@@ -64,6 +62,30 @@ class SettingsViewController: UIViewController {
             if let value = Float(text) {
                 //model.parameters["Epsilon"] = value
                 Model.sharedInstance.parameters["Epsilon"] = value
+            }
+        }
+    }
+    
+    @IBAction func setICPMaximumDistance(_ sender: Any) {
+        if let text = icpMaxDistance.text {
+            if let value = Float(text) {
+                Model.sharedInstance.parameters["icpMaxDist"] = value
+            }
+        }
+    }
+    
+    @IBAction func setICPMaxIterations(_ sender: Any) {
+        if let text = icpMaxIterations.text {
+            if let value = Float(text) {
+                Model.sharedInstance.parameters["icpMaxIter"] = value
+            }
+        }
+    }
+    
+    @IBAction func setICPCorrespondanceDist(_ sender: Any) {
+        if let text = icpCorrespondanceDist.text {
+            if let value = Float(text) {
+                Model.sharedInstance.parameters["icpMaxCorr"] = value
             }
         }
     }

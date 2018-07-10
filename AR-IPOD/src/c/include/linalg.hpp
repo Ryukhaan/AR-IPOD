@@ -80,9 +80,9 @@ inline simd_int3 hash_decode(int i, int base) {
 inline simd_float3 create_centroid(const int i,
                                    const float resolution,
                                    const int dimension) {
-    float offset = resolution * 0.5;
+    //float offset = resolution * 0.5;
     simd_int3 coord = hash_decode(i, dimension);
-    return integer_to_global(coord, resolution) + offset;
+    return integer_to_global(coord, resolution); //+ offset;
 }
 
 inline simd_float3 linear_interpolation(simd::float3 x, simd::float3 y, double mu) {
@@ -131,11 +131,13 @@ simd_float2x3 compute_bounding_box(float* depthmap,
                                    const simd_float3 translation,
                                    const simd_float4x4 Kinv) {
     simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
+    //float cy = 1, cx = 1;
+    float cy = 6, cx = 6;
     for (int i=0; i<height; i++) {
         for (int j=0; j<width; j++) {
             float depth = depthmap[i*width+j];
             if (std::isnan(depth) || depth < 1e-6) continue;
-            simd::float4 uv = simd_make_float4(depth * i, depth * j, depth, 1);
+            simd::float4 uv = simd_make_float4(depth * i * cx, depth * j * cy, depth, 1);
             simd::float4 local = simd_mul(Kinv, uv);
             simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
             //simd::float3 world_point = simd_mul(simd_transpose(rotation), rlocal - translation);

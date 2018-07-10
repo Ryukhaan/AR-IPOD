@@ -13,10 +13,10 @@
 		A517180120DA794000067B2E /* libpcl_filters.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717FE20DA794000067B2E /* libpcl_filters.a */; };
 		A517180220DA794000067B2E /* libpcl_registration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717FF20DA794000067B2E /* libpcl_registration.a */; };
 		A517180320DA794500067B2E /* libpcl_kdtree.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A51717EC20DA592D00067B2E /* libpcl_kdtree.a */; };
-		A517181820DD397900067B2E /* dataset in Resources */ = {isa = PBXBuildFile; fileRef = A517181720DD397900067B2E /* dataset */; };
 		A517189020E3C1B600067B2E /* super4pcs.cc in Sources */ = {isa = PBXBuildFile; fileRef = A517188D20E3C1B500067B2E /* super4pcs.cc */; };
 		A517189120E3C1B600067B2E /* match4pcsBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = A517188E20E3C1B500067B2E /* match4pcsBase.cc */; };
 		A517189220E3C1B600067B2E /* 4pcs.cc in Sources */ = {isa = PBXBuildFile; fileRef = A517188F20E3C1B500067B2E /* 4pcs.cc */; };
+		A517189420E3D13C00067B2E /* cube-set in Resources */ = {isa = PBXBuildFile; fileRef = A517189320E3D13C00067B2E /* cube-set */; };
 		A52C3D392090630200BA5BDC /* IO.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D382090630200BA5BDC /* IO.swift */; };
 		A52C3D452091CE4B00BA5BDC /* Meshing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D442091CE4B00BA5BDC /* Meshing.swift */; };
 		A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */; };
@@ -42,8 +42,6 @@
 		A58DCE172088B85300280CD2 /* Voxel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE162088B85300280CD2 /* Voxel.swift */; };
 		A58DCE1B2088BF5C00280CD2 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* Model.swift */; };
 		A5C589AF20AC37C3009BA18A /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = A5C589AE20AC37C3009BA18A /* beep.wav */; };
-		A5D70A7920CFF6F50002EE0E /* bouchon-set in Resources */ = {isa = PBXBuildFile; fileRef = A5D70A7820CFF6F50002EE0E /* bouchon-set */; };
-		A5D70A7D20D0F8D30002EE0E /* tasse-set in Resources */ = {isa = PBXBuildFile; fileRef = A5D70A7C20D0F8D30002EE0E /* tasse-set */; };
 		A5D70A8520D0FA9F0002EE0E /* IphoneCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8420D0FA9F0002EE0E /* IphoneCamera.swift */; };
 		A5D70A8720D0FAAD0002EE0E /* IphoneDepthImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8620D0FAAD0002EE0E /* IphoneDepthImage.swift */; };
 		A5D70A8920D0FAB60002EE0E /* KinectCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8820D0FAB60002EE0E /* KinectCamera.swift */; };
@@ -94,7 +92,6 @@
 		A517180520DA7BF200067B2E /* libflann_cpp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libflann_cpp.dylib; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp.dylib"; sourceTree = "<group>"; };
 		A517180620DA7BF200067B2E /* libflann_cpp.1.9.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libflann_cpp.1.9.1.dylib; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp.1.9.1.dylib"; sourceTree = "<group>"; };
 		A517180720DA7BF200067B2E /* libflann_cpp.1.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libflann_cpp.1.9.dylib; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp.1.9.dylib"; sourceTree = "<group>"; };
-		A517181720DD397900067B2E /* dataset */ = {isa = PBXFileReference; lastKnownFileType = folder; path = dataset; sourceTree = "<group>"; };
 		A517187720E3C19800067B2E /* geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = geometry.h; sourceTree = "<group>"; };
 		A517187820E3C19900067B2E /* disablewarnings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = disablewarnings.h; sourceTree = "<group>"; };
 		A517187920E3C19900067B2E /* super4pcs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = super4pcs.h; sourceTree = "<group>"; };
@@ -119,6 +116,7 @@
 		A517188D20E3C1B500067B2E /* super4pcs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = super4pcs.cc; sourceTree = "<group>"; };
 		A517188E20E3C1B500067B2E /* match4pcsBase.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = match4pcsBase.cc; sourceTree = "<group>"; };
 		A517188F20E3C1B500067B2E /* 4pcs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = 4pcs.cc; sourceTree = "<group>"; };
+		A517189320E3D13C00067B2E /* cube-set */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "cube-set"; sourceTree = "<group>"; };
 		A52C3D382090630200BA5BDC /* IO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IO.swift; sourceTree = "<group>"; };
 		A52C3D442091CE4B00BA5BDC /* Meshing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meshing.swift; sourceTree = "<group>"; };
 		A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */ = {isa = PBXFileReference; lastKnownFileType = text; path = EdgeTableContents; sourceTree = "<group>"; };
@@ -155,8 +153,6 @@
 		A5C589AE20AC37C3009BA18A /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
 		A5D70A6B20CE81710002EE0E /* raytracing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raytracing.hpp; sourceTree = "<group>"; };
 		A5D70A6E20CE8D400002EE0E /* projection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = projection.hpp; sourceTree = "<group>"; };
-		A5D70A7820CFF6F50002EE0E /* bouchon-set */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "bouchon-set"; path = "../../../../../Downloads/bouchon/bouchon-set"; sourceTree = "<group>"; };
-		A5D70A7C20D0F8D30002EE0E /* tasse-set */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "tasse-set"; path = "../../../../../Downloads/tasse/tasse-set"; sourceTree = "<group>"; };
 		A5D70A8420D0FA9F0002EE0E /* IphoneCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IphoneCamera.swift; sourceTree = "<group>"; };
 		A5D70A8620D0FAAD0002EE0E /* IphoneDepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IphoneDepthImage.swift; sourceTree = "<group>"; };
 		A5D70A8820D0FAB60002EE0E /* KinectCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectCamera.swift; sourceTree = "<group>"; };
@@ -422,14 +418,12 @@
 		A5F478BD2099DF5400CAAEC0 /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				A517181720DD397900067B2E /* dataset */,
-				A5D70A7820CFF6F50002EE0E /* bouchon-set */,
 				A5C589AE20AC37C3009BA18A /* beep.wav */,
+				A517189320E3D13C00067B2E /* cube-set */,
 				A5F47AF120A301EA00CAAEC0 /* chair */,
 				A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */,
 				A52C3D4E2091E00700BA5BDC /* TriTableContents */,
 				A5F478C02099E10100CAAEC0 /* pointCloudTest.sdp */,
-				A5D70A7C20D0F8D30002EE0E /* tasse-set */,
 				A5F478EC20A0700500CAAEC0 /* ikea-table */,
 			);
 			path = resources;
@@ -567,14 +561,12 @@
 			files = (
 				A58DCDE22088895500280CD2 /* art.scnassets in Resources */,
 				A5F478ED20A0700500CAAEC0 /* ikea-table in Resources */,
-				A5D70A7D20D0F8D30002EE0E /* tasse-set in Resources */,
 				A58DCDEC2088895500280CD2 /* LaunchScreen.storyboard in Resources */,
 				A5F47AF220A301EA00CAAEC0 /* chair in Resources */,
-				A5D70A7920CFF6F50002EE0E /* bouchon-set in Resources */,
+				A517189420E3D13C00067B2E /* cube-set in Resources */,
 				A58DCDE92088895500280CD2 /* Assets.xcassets in Resources */,
 				A5C589AF20AC37C3009BA18A /* beep.wav in Resources */,
 				A58DCDE72088895500280CD2 /* Main.storyboard in Resources */,
-				A517181820DD397900067B2E /* dataset in Resources */,
 				A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */,
 				A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */,
 				A5F478C12099E33900CAAEC0 /* pointCloudTest.sdp in Resources */,
