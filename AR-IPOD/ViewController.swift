@@ -68,8 +68,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         super.viewWillAppear(animated)
         
         // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
-        //let configuration = ARFaceTrackingConfiguration()
+        //let configuration = ARWorldTrackingConfiguration()
+        let configuration = ARFaceTrackingConfiguration()
         
         // Run the view's session
         sceneView.session.run(configuration)
@@ -78,26 +78,26 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //sceneView.session.setWorldOrigin(relativeTransform: matrix_float4x4(diagonal: [1,1,1,1]))
         // Version with dataset
         /*
-        let starter = Double(CFAbsoluteTimeGetCurrent())
-        let threads = [DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent),
-                       DispatchQueue(label: "thread2", qos: .userInteractive, attributes: .concurrent)
-        ]
-        let group = DispatchGroup()
-        group.enter()
-        threads[0].async {
-            let intrinsics = Import.intrinsics(from: "depthIntrinsics",
-                                               at: self.nameOfDataset,
-                                               type: self.myModel.type)
-            self.myModel.update(intrinsics: intrinsics)
-            group.leave()
-        }
-        group.enter()
-        threads[1].async {
-            self.myModel.reallocateVoxels()
-            group.leave()
-        }
-        _ = Double(CFAbsoluteTimeGetCurrent()) - starter
-        */
+         let starter = Double(CFAbsoluteTimeGetCurrent())
+         let threads = [DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent),
+         DispatchQueue(label: "thread2", qos: .userInteractive, attributes: .concurrent)
+         ]
+         let group = DispatchGroup()
+         group.enter()
+         threads[0].async {
+         let intrinsics = Import.intrinsics(from: "depthIntrinsics",
+         at: self.nameOfDataset,
+         type: self.myModel.type)
+         self.myModel.update(intrinsics: intrinsics)
+         group.leave()
+         }
+         group.enter()
+         threads[1].async {
+         self.myModel.reallocateVoxels()
+         group.leave()
+         }
+         _ = Double(CFAbsoluteTimeGetCurrent()) - starter
+         */
         
     }
     
@@ -131,6 +131,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
+        let configuration = ARWorldTrackingConfiguration()
+        sceneView.session.run(configuration)
+        sceneView.session.delegate = self
+        
+        deviceType = .IPad
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
@@ -144,48 +149,49 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
         /*
-        if inRealTime
-        {
-            //let camera = frame.camera.trackingState
-            //Model.sharedInstance.update(rotation: frame.camera.transform)
-            Model.sharedInstance.update(intrinsics: frame.camera.intrinsics)
-            if frame.capturedDepthData != nil
-            {
-                self.myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
-                self.myDepthDataRaw =  frame.capturedDepthData
-                let depthDataMap = self.myDepthData?.depthDataMap
-                CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
-                let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
-                Model.sharedInstance.image.width = Int(CVPixelBufferGetWidth(depthDataMap!))
-                Model.sharedInstance.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
-                Model.sharedInstance.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
-                Model.sharedInstance.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
-                //let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
-                // We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
-                //compCIImage(depthDataMap: depthDataMap!)
-                //myDepthImage = UIImage(ciImage: myCIImage!)
-                //depthView.image = myDepthImage
-                //self.myDepthImage.update(_data: depthPointer)
-                //self.myDepthImage.update(_data: depthPointer)
-                //self.myCamera.update(extrinsics: frame.camera.transform)
-                let last_points = Model.sharedInstance.image.data
-                //Model.sharedInstance.image.push(map: depthPointer)
-                Model.sharedInstance.update(data: depthPointer)
-                //Model.sharedInstance.createMedianDepthMap()
-                let current_points = Model.sharedInstance.image.data
-                Model.sharedInstance.globalRegistration(previous: last_points, current: current_points)
-                self.numberOfIterations += 1
-            }
-            if self.numberOfIterations >= 6
-            {
-                Model.sharedInstance.integrate()
-                self.numberOfIterations = 0
-            }
-        }
-        */
+         if inRealTime
+         {
+         //let camera = frame.camera.trackingState
+         //Model.sharedInstance.update(rotation: frame.camera.transform)
+         Model.sharedInstance.update(intrinsics: frame.camera.intrinsics)
+         if frame.capturedDepthData != nil
+         {
+         self.myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
+         self.myDepthDataRaw =  frame.capturedDepthData
+         let depthDataMap = self.myDepthData?.depthDataMap
+         CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
+         let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
+         Model.sharedInstance.image.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+         Model.sharedInstance.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
+         Model.sharedInstance.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+         Model.sharedInstance.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
+         //let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
+         // We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
+         //compCIImage(depthDataMap: depthDataMap!)
+         //myDepthImage = UIImage(ciImage: myCIImage!)
+         //depthView.image = myDepthImage
+         //self.myDepthImage.update(_data: depthPointer)
+         //self.myDepthImage.update(_data: depthPointer)
+         //self.myCamera.update(extrinsics: frame.camera.transform)
+         let last_points = Model.sharedInstance.image.data
+         //Model.sharedInstance.image.push(map: depthPointer)
+         Model.sharedInstance.update(data: depthPointer)
+         //Model.sharedInstance.createMedianDepthMap()
+         let current_points = Model.sharedInstance.image.data
+         Model.sharedInstance.globalRegistration(previous: last_points, current: current_points)
+         self.numberOfIterations += 1
+         }
+         if self.numberOfIterations >= 6
+         {
+         Model.sharedInstance.integrate()
+         self.numberOfIterations = 0
+         }
+         }
+         */
         let cameraPose = frame.camera.transform
         switch self.deviceType {
         case .IPad:
+            NSLog("%@", "\(cameraPose)")
             service.send(transform: cameraPose)
         case .Iphone:
             print("\(Model.sharedInstance.camera.rotation) \n \(Model.sharedInstance.camera.translation)")
@@ -213,19 +219,38 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                     //let last_points = Model.sharedInstance.image.data
                     //Model.sharedInstance.image.push(map: depthPointer)
                     Model.sharedInstance.update(data: depthPointer)
-                    //Model.sharedInstance.createMedianDepthMap()
-                    //let current_points = Model.sharedInstance.image.data
-                    //Model.sharedInstance.globalRegistration(previous: last_points, current: current_points)
-                    self.numberOfIterations += 1
-                }
-                if self.numberOfIterations >= 10
-                {
-                    Model.sharedInstance.integrate()
-                    self.numberOfIterations = 0
+                    var depthmap = Model.sharedInstance.image.data
+                    bridge_median_filter(&depthmap,
+                                         2,
+                                         Int32(Model.sharedInstance.camera.width),
+                                         Int32(Model.sharedInstance.camera.height))
+                    Model.sharedInstance.update(data: depthmap)
+                    
+                    DispatchQueue.global().async {
+                        DispatchQueue.main.async {
+                            self.inRealTime = false
+                        }
+                        Model.sharedInstance.integrate()
+                    }
                 }
             }
         }
     }
+    /*
+     //Model.sharedInstance.createMedianDepthMap()
+     //let current_points = Model.sharedInstance.image.data
+     Model.sharedInstance.globalRegistration(previous: last_points, current: current_points)
+     self.numberOfIterations += 1
+     }
+     if self.numberOfIterations >= 10
+     {
+     Model.sharedInstance.integrate()
+     self.numberOfIterations = 0
+     }
+     }
+     }
+     }
+     */
     
     
     @IBAction func startCompute(_ sender: Any) {
@@ -241,10 +266,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         for i in 0..<self.sizeOfDataset {
             //DispatchQueue.main.asyncAfter(deadline: .now() + Double(3*i)) {
             /*
-            extrinsics = Import.cameraPose(
-                from: "frame-\(i).pose",
-                at: self.nameOfDataset,
-                type: Model.sharedInstance.type)
+             extrinsics = Import.cameraPose(
+             from: "frame-\(i).pose",
+             at: self.nameOfDataset,
+             type: Model.sharedInstance.type)
              */
             depthmap = Import.depthMapFromTXT(
                 from: "frame-\(i).depth",
@@ -276,7 +301,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         case 0:
             nameOfDataset = "cube-set"
             Model.sharedInstance.switchTo(type: .Iphone)
-            //myModel = Model(from: Model.sharedInstance, to: .Iphone)
+        //myModel = Model(from: Model.sharedInstance, to: .Iphone)
         case 1:
             nameOfDataset = "ikea-table"
             //myModel = Model(from: Model.sharedInstance, to: .Kinect)
@@ -308,16 +333,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         }
     }
     
-    @IBAction func exportVolume(_ sender: Any) {
+    @IBAction func startRealTimeIntegration(_ sender: Any) {
         //self.myModel.switchTo(realTime: true)
         //self.myModel = Model(from: self.myModel, to: .Iphone)
-        self.displayAlertMessage(
-            title: "Acquisition en temps réel",
-            message: "Veuillez mettre la caméra en face de l'objet",
-            handler: { _ in
-                AudioServicesPlaySystemSound (self.systemSoundID)
-                self.inRealTime = !self.inRealTime
-        })
+        if deviceType == .Iphone {
+            self.inRealTime = true
+        }
+        /*
+         self.displayAlertMessage(
+         title: "Acquisition en temps réel",
+         message: "Veuillez mettre la caméra en face de l'objet",
+         handler: { _ in
+         //AudioServicesPlaySystemSound (self.systemSoundID)
+         self.inRealTime = !self.inRealTime
+         })
+         */
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

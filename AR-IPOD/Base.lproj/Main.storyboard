@@ -115,7 +115,7 @@
                                     <color key="titleColor" red="0.0" green="0.16788150090000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
-                                    <action selector="exportVolume:" destination="BV1-FR-VrT" eventType="touchUpInside" id="82g-ql-E7P"/>
+                                    <action selector="startRealTimeIntegration:" destination="BV1-FR-VrT" eventType="touchUpInside" id="07x-R7-LBq"/>
                                 </connections>
                             </button>
                         </subviews>
