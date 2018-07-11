@@ -51,20 +51,15 @@ extension DOFServiceManager : MCSessionDelegate {
     // Change color background (ViewController)
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
         NSLog("%@", "didReceiveData: \(data)")
-        let str = String(data: data, encoding: .utf8)!
-        self.delegate?.colorChanged(manager: self, colorString: str)
-    }
-    
-    // Change image in UIImageView (ViewController)
-    func session(_ session: MCSession, didReceive data: UIImage, fromPeer peerID: MCPeerID) {
-        NSLog("%@", "didReceiveImage: \(data)")
-        self.delegate?.imageChanged(manager: self, image: data)
-    }
-    
-    // Change transform in Model.shared (ViewController)
-    func session(_ session: MCSession, didReceive data: matrix_float4x4, fromPeer peerID: MCPeerID) {
-        NSLog("%@", "didReceiveData: \(data)")
-        self.delegate?.transformChanged(manager: self, transform: data)
+        var buffer = [Float](repeating: Float(0.0), count: 16)
+        buffer = data.copyBytes(as: Float.FloatLiteralType.self)
+        print(buffer)
+        let M = matrix_float4x4(rows: [float4(buffer[0], buffer[1], buffer[2], buffer[3]),
+                                       float4(buffer[4], buffer[5], buffer[6], buffer[7]),
+                                       float4(buffer[8], buffer[9], buffer[10], buffer[11]),
+                                       float4(buffer[12], buffer[13], buffer[14], buffer[15])
+            ])
+        self.delegate?.transformChanged(manager: self, transform: M)
     }
     
     func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {

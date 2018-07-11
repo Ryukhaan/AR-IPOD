@@ -34,3 +34,8 @@ enum CameraType {
     case Iphone
     case Other
 }
+
+enum DeviceType {
+    case Iphone
+    case IPad
+}

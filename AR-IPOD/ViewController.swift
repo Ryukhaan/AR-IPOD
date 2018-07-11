@@ -24,6 +24,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     //var myDepthImage: DepthImage    = DepthImage(onRealTime: false)
     //var myCamera: Camera            = Camera(onRealTime: false)
     
+    let service:    DOFServiceManager   = DOFServiceManager()
+    var deviceType: DeviceType      = .Iphone
     let batchSize:  Int             = 3
     var sizeOfDataset: Int          = 1
     var nameOfDataset: String       = "tasse-set"
@@ -141,6 +143,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
+        /*
         if inRealTime
         {
             //let camera = frame.camera.trackingState
@@ -158,9 +161,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 Model.sharedInstance.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
                 Model.sharedInstance.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
                 //let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
-                /*
-                 * We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
-                 */
+                // We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
                 //compCIImage(depthDataMap: depthDataMap!)
                 //myDepthImage = UIImage(ciImage: myCIImage!)
                 //depthView.image = myDepthImage
@@ -179,6 +180,49 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             {
                 Model.sharedInstance.integrate()
                 self.numberOfIterations = 0
+            }
+        }
+        */
+        let cameraPose = frame.camera.transform
+        switch self.deviceType {
+        case .IPad:
+            service.send(transform: cameraPose)
+        case .Iphone:
+            print("\(Model.sharedInstance.camera.rotation) \n \(Model.sharedInstance.camera.translation)")
+            if inRealTime {
+                Model.sharedInstance.update(intrinsics: frame.camera.intrinsics)
+                if frame.capturedDepthData != nil
+                {
+                    self.myDepthData = frame.capturedDepthData?.converting(toDepthDataType: kCVPixelFormatType_DepthFloat32)
+                    self.myDepthDataRaw =  frame.capturedDepthData
+                    let depthDataMap = self.myDepthData?.depthDataMap
+                    CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
+                    let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
+                    Model.sharedInstance.image.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+                    Model.sharedInstance.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
+                    Model.sharedInstance.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+                    Model.sharedInstance.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
+                    //let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
+                    // We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
+                    //compCIImage(depthDataMap: depthDataMap!)
+                    //myDepthImage = UIImage(ciImage: myCIImage!)
+                    //depthView.image = myDepthImage
+                    //self.myDepthImage.update(_data: depthPointer)
+                    //self.myDepthImage.update(_data: depthPointer)
+                    //self.myCamera.update(extrinsics: frame.camera.transform)
+                    //let last_points = Model.sharedInstance.image.data
+                    //Model.sharedInstance.image.push(map: depthPointer)
+                    Model.sharedInstance.update(data: depthPointer)
+                    //Model.sharedInstance.createMedianDepthMap()
+                    //let current_points = Model.sharedInstance.image.data
+                    //Model.sharedInstance.globalRegistration(previous: last_points, current: current_points)
+                    self.numberOfIterations += 1
+                }
+                if self.numberOfIterations >= 10
+                {
+                    Model.sharedInstance.integrate()
+                    self.numberOfIterations = 0
+                }
             }
         }
     }
@@ -300,5 +344,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         }
         catch {}
     }
+}
 
+extension ViewController : DOFServiceManagerDelegate {
+    
+    func connectedDevicesChanged(manager : DOFServiceManager, connectedDevices: [String]) {
+        print("Connections: \(connectedDevices)")
+    }
+    
+    func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4) {
+        OperationQueue.main.addOperation {
+            if (self.deviceType == .Iphone) {
+                Model.sharedInstance.update(rotation: transform)
+                Model.sharedInstance.update(translation: transform)
+            }
+        }
+    }
+    
 }

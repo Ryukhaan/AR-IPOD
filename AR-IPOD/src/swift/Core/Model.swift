@@ -201,6 +201,7 @@ class Model {
         self.camera.rotation    = R
         self.camera.translation = T
     }
+    
     func reinit() {
         reallocateVoxels()
         camera.rotation = matrix_float3x3(diagonal: float3(1,1,1))

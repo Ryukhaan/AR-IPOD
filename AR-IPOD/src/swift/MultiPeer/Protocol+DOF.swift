@@ -13,8 +13,6 @@ import ARKit
 protocol DOFServiceManagerDelegate {
     
     func connectedDevicesChanged(manager : DOFServiceManager, connectedDevices: [String])
-    func colorChanged(manager : DOFServiceManager, colorString: String)
-    
-    func imageChanged(manager : DOFServiceManager, image: UIImage)
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4)
+    
 }
