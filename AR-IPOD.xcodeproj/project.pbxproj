@@ -22,12 +22,9 @@
 		A5494B102089E644007EA2FB /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0F2089E644007EA2FB /* Frustrum.swift */; };
 		A5494B122089E657007EA2FB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B112089E657007EA2FB /* Geometry.swift */; };
 		A554D20420CA677F0096DE8A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A554D20320CA677F0096DE8A /* SettingsViewController.swift */; };
-		A57BF46920F4E56F0017B09C /* libpcl_search.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46320F4E56E0017B09C /* libpcl_search.a */; };
-		A57BF46A20F4E56F0017B09C /* libpcl_common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46420F4E56E0017B09C /* libpcl_common.a */; };
-		A57BF46B20F4E56F0017B09C /* libpcl_filters.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46520F4E56E0017B09C /* libpcl_filters.a */; };
-		A57BF46C20F4E56F0017B09C /* libpcl_registration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46620F4E56E0017B09C /* libpcl_registration.a */; };
-		A57BF46D20F4E56F0017B09C /* libpcl_features.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46720F4E56E0017B09C /* libpcl_features.a */; };
-		A57BF46E20F4E56F0017B09C /* libpcl_kdtree.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A57BF46820F4E56F0017B09C /* libpcl_kdtree.a */; };
+		A57BF49B20F622380017B09C /* DOFServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57BF49A20F622380017B09C /* DOFServiceManager.swift */; };
+		A57BF49D20F6225D0017B09C /* Extension+DOF.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57BF49C20F6225D0017B09C /* Extension+DOF.swift */; };
+		A57BF49F20F622680017B09C /* Protocol+DOF.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57BF49E20F622680017B09C /* Protocol+DOF.swift */; };
 		A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDDF2088895500280CD2 /* AppDelegate.swift */; };
 		A58DCDE22088895500280CD2 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = A58DCDE12088895500280CD2 /* art.scnassets */; };
 		A58DCDE42088895500280CD2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCDE32088895500280CD2 /* ViewController.swift */; };
@@ -137,6 +134,9 @@
 		A57BF46620F4E56E0017B09C /* libpcl_registration.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_registration.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_registration.a"; sourceTree = "<group>"; };
 		A57BF46720F4E56E0017B09C /* libpcl_features.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_features.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_features.a"; sourceTree = "<group>"; };
 		A57BF46820F4E56F0017B09C /* libpcl_kdtree.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_kdtree.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_kdtree.a"; sourceTree = "<group>"; };
+		A57BF49A20F622380017B09C /* DOFServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOFServiceManager.swift; sourceTree = "<group>"; };
+		A57BF49C20F6225D0017B09C /* Extension+DOF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+DOF.swift"; sourceTree = "<group>"; };
+		A57BF49E20F622680017B09C /* Protocol+DOF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Protocol+DOF.swift"; sourceTree = "<group>"; };
 		A58DCDDC2088895500280CD2 /* AR-IPOD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR-IPOD.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A58DCDDF2088895500280CD2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A58DCDE12088895500280CD2 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -186,12 +186,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A57BF46920F4E56F0017B09C /* libpcl_search.a in Frameworks */,
-				A57BF46A20F4E56F0017B09C /* libpcl_common.a in Frameworks */,
-				A57BF46B20F4E56F0017B09C /* libpcl_filters.a in Frameworks */,
-				A57BF46C20F4E56F0017B09C /* libpcl_registration.a in Frameworks */,
-				A57BF46D20F4E56F0017B09C /* libpcl_features.a in Frameworks */,
-				A57BF46E20F4E56F0017B09C /* libpcl_kdtree.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,6 +300,16 @@
 				A51717F020DA592E00067B2E /* libpcl_surface.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A57BF49920F622200017B09C /* MultiPeer */ = {
+			isa = PBXGroup;
+			children = (
+				A57BF49A20F622380017B09C /* DOFServiceManager.swift */,
+				A57BF49C20F6225D0017B09C /* Extension+DOF.swift */,
+				A57BF49E20F622680017B09C /* Protocol+DOF.swift */,
+			);
+			path = MultiPeer;
 			sourceTree = "<group>";
 		};
 		A58DCDD32088895500280CD2 = {
@@ -446,6 +450,7 @@
 		A5F478EA209C6D6800CAAEC0 /* swift */ = {
 			isa = PBXGroup;
 			children = (
+				A57BF49920F622200017B09C /* MultiPeer */,
 				A5C5899F20AAC226009BA18A /* deprecated */,
 				A5EF306420C6C450003937A3 /* Utils */,
 				A5EF306320C6C436003937A3 /* Core */,
@@ -611,6 +616,7 @@
 				A5494B102089E644007EA2FB /* Frustrum.swift in Sources */,
 				A5494B122089E657007EA2FB /* Geometry.swift in Sources */,
 				A5F478E3209C485200CAAEC0 /* marching_cube.cpp in Sources */,
+				A57BF49F20F622680017B09C /* Protocol+DOF.swift in Sources */,
 				A517189220E3C1B600067B2E /* 4pcs.cc in Sources */,
 				A52C3D652093185000BA5BDC /* bridging.cpp in Sources */,
 				A544222120A5A39D00AE55C7 /* SceneViewController.swift in Sources */,
@@ -623,6 +629,7 @@
 				A5D70A8920D0FAB60002EE0E /* KinectCamera.swift in Sources */,
 				A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */,
 				A58DCE1320888F4A00280CD2 /* DepthImage.swift in Sources */,
+				A57BF49D20F6225D0017B09C /* Extension+DOF.swift in Sources */,
 				A58DCDE42088895500280CD2 /* ViewController.swift in Sources */,
 				A52C3D392090630200BA5BDC /* IO.swift in Sources */,
 				A5D70A8520D0FA9F0002EE0E /* IphoneCamera.swift in Sources */,
@@ -635,6 +642,7 @@
 				A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */,
 				A5F478EF20A096C900CAAEC0 /* UI.swift in Sources */,
 				A5EF306220C6BE4F003937A3 /* Constant.swift in Sources */,
+				A57BF49B20F622380017B09C /* DOFServiceManager.swift in Sources */,
 				A517189120E3C1B600067B2E /* match4pcsBase.cc in Sources */,
 				A5494B0A2089E43A007EA2FB /* Box.swift in Sources */,
 				A5EF306020C6BE12003937A3 /* Alias.swift in Sources */,
@@ -818,7 +826,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Frameworks/",
@@ -857,7 +865,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = YES;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Frameworks/",

@@ -24,7 +24,7 @@
 #include <simd/vector.h>
 #include <simd/conversion.h>
 #include <simd/matrix.h>
-
+/*
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
@@ -38,17 +38,19 @@
 
 #include <pcl/features/normal_3d.h>
 #include <pcl/console/time.h>
+*/
 
-using namespace pcl;
+//using namespace pcl;
 using namespace std;
 using namespace GlobalRegistration;
 
 // Typedefs, convenience.
+/*
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloud;
 typedef pcl::PointNormal PointNormalT;
 typedef pcl::PointCloud<PointNormalT> PointCloudWithNormals;
-
+*/
 
 void super4PCS(const float* previous,
                const float* current,
@@ -641,6 +643,7 @@ void icp(const float* previous,
          const float corresp_dist,
          const int max_num_iter)
 {
+    /*
     // Init all matrices : R, K and T
     simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
     simd_float4x4 Kinv = simd_inverse(K);
@@ -772,7 +775,7 @@ void icp(const float* previous,
     icp.setInputTarget(points_with_normals_tgt);
     PointCloud<PointNormalT> cloud_aligned;
     icp.align(cloud_aligned);
-    
+    */
     /*
      float fitness = 65536.0;
      float proba = 1.0;
@@ -817,6 +820,7 @@ void icp(const float* previous,
      turn++;
      }
      */
+    /*
     cout << clock.toc() << endl;
     
     // Get the transformation that aligned cloud_in to cloud_out
@@ -829,6 +833,7 @@ void icp(const float* previous,
                                                                simd_make_float3(Rt(1,0), Rt(1,1), Rt(1,2)),
                                                                simd_make_float3(Rt(2,0), Rt(2,1), Rt(2,2))
                                                                );
+     */
 }
 
 #endif /* icp_hpp */

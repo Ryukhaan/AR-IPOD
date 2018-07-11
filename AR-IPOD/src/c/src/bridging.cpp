@@ -191,7 +191,9 @@ void bridge_global_registration(const float* previous,
                                 const int max_num_iter)
 {
     //super4PCS(previous, current, voxels, width, height, rotation, translation, intrinsics, resolution, dimension);
+    /*
     icp(previous, current, width, height, rotation, translation, intrinsics, resolution, dimension, thresh_depth, corresp_dist, max_num_iter);
+     */
 }
 
 void bridge_median_filter(float* depthmap,
