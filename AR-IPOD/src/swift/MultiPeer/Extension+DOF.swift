@@ -59,7 +59,12 @@ extension DOFServiceManager : MCSessionDelegate {
                                        float4(buffer[8], buffer[9], buffer[10], buffer[11]),
                                        float4(buffer[12], buffer[13], buffer[14], buffer[15])
             ])
-        self.delegate?.transformChanged(manager: self, transform: M)
+        if (buffer[0] == Constant.IntegrationHasBeenFinished) {
+            self.delegate?.integrationFinished(manager: self, finished: true)
+        }
+        else {
+            self.delegate?.transformChanged(manager: self, transform: M)
+        }
     }
     
     func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {

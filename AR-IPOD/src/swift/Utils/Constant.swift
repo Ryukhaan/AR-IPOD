@@ -17,6 +17,8 @@ enum Constant {
         static let Width    = 360
         static let Height   = 640
     }
+    static let IntegrationHasBeenFinished: Float = 201
+    
 }
 
 enum Sounds {

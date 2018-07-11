@@ -46,6 +46,21 @@ class DOFServiceManager : NSObject {
     }
     
     
+    func send(alert A: String) {
+        var array: [Float] = [Float](repeating: 0, count: 16)
+        array[0] = Constant.IntegrationHasBeenFinished
+        let datas = NSData(bytes: array, length: array.count)
+        NSLog("%@", "send camera position : \n \(datas) \n to \(mySession.connectedPeers.count) peers")
+        if mySession.connectedPeers.count > 0 {
+            do {
+                try self.mySession.send(datas as Data, toPeers: mySession.connectedPeers, with: .reliable)
+            }
+            catch let error {
+                NSLog("%@", "Error for sending: \(error)")
+            }
+        }
+    }
+    
     func send(transform M: matrix_float4x4) {
         let array: [Float] = [M.columns.0.x, M.columns.1.x, M.columns.2.x, M.columns.3.x,
                                 M.columns.0.y, M.columns.1.y, M.columns.2.y, M.columns.3.y,

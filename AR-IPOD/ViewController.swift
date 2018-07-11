@@ -231,6 +231,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                             self.inRealTime = false
                         }
                         Model.sharedInstance.integrate()
+                        DispatchQueue.main.async {
+                            self.service.send(alert: "")
+                        }
                     }
                 }
             }
@@ -336,8 +339,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBAction func startRealTimeIntegration(_ sender: Any) {
         //self.myModel.switchTo(realTime: true)
         //self.myModel = Model(from: self.myModel, to: .Iphone)
-        if deviceType == .Iphone {
-            self.inRealTime = true
+        if deviceType == .IPad {
+            service.send(alert: "")
         }
         /*
          self.displayAlertMessage(
@@ -391,4 +394,14 @@ extension ViewController : DOFServiceManagerDelegate {
         }
     }
     
+    func integrationFinished(manager: DOFServiceManager, finished: Bool) {
+        OperationQueue.main.addOperation {
+            switch self.deviceType {
+            case .IPad:
+                self.ty.text = finished ? "201": "Waiting..."
+            case .Iphone:
+                self.inRealTime = true
+            }
+        }
+    }
 }
