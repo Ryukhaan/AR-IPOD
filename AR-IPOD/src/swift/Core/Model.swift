@@ -27,11 +27,11 @@ class Model {
     
     private init() {
         dimension       = 256
-        voxelResolution = 0.01
+        voxelResolution = 0.006
         voxels          = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
-        camera  = KinectCamera()
-        image   = KinectDepthImage()
-        type    = .Kinect
+        camera  = IphoneCamera()
+        image   = IphoneDepthImage()
+        type    = .Iphone
         parameters["Lambda"]    = 0.0
         parameters["Delta"]     = 0.3
         parameters["Epsilon"]   = 0.025
@@ -144,35 +144,20 @@ class Model {
         var R = camera.rotation
         var T = camera.translation
         var K = camera.intrinsics
-        if raytracingEnable { 
-            _ = bridge_raycastDepthMap(
-                &dethmap, /*centroids,*/
-                &R,
-                &T,
-                &K,
-                &voxels,
-                Int32(image.width),
-                Int32(image.height),
-                Int32(dimension),
-                voxelResolution,
-                parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
-        }
-        else {
-            bridge_integrateDepthMap(
-                &dethmap, /*centroids,*/
-                &R,
-                &T,
-                &K,
-                &voxels,
-                Int32(image.width),
-                Int32(image.height),
-                Int32(dimension),
-                voxelResolution,
-                parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!,
-                parameters["cx"]!, parameters["cy"]!)
-        }
+        bridge_integrateDepthMap(
+            &dethmap, /*centroids,*/
+            &R,
+            &T,
+            &K,
+            &voxels,
+            Int32(image.width),
+            Int32(image.height),
+            Int32(dimension),
+            voxelResolution,
+            parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!,
+            parameters["cx"]!, parameters["cy"]!)
     }
-    
+    /*
     func globalRegistration(previous: [Float], current : [Float]) {
         var R = self.camera.rotation
         var T = self.camera.translation
@@ -192,6 +177,7 @@ class Model {
         self.camera.rotation    = R
         self.camera.translation = T
     }
+    */
     
     func reinit() {
         reallocateVoxels()

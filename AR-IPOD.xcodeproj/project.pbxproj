@@ -7,20 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A517189020E3C1B600067B2E /* super4pcs.cc in Sources */ = {isa = PBXBuildFile; fileRef = A517188D20E3C1B500067B2E /* super4pcs.cc */; };
-		A517189120E3C1B600067B2E /* match4pcsBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = A517188E20E3C1B500067B2E /* match4pcsBase.cc */; };
-		A517189220E3C1B600067B2E /* 4pcs.cc in Sources */ = {isa = PBXBuildFile; fileRef = A517188F20E3C1B500067B2E /* 4pcs.cc */; };
-		A517189420E3D13C00067B2E /* cube-set in Resources */ = {isa = PBXBuildFile; fileRef = A517189320E3D13C00067B2E /* cube-set */; };
 		A52C3D392090630200BA5BDC /* IO.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D382090630200BA5BDC /* IO.swift */; };
 		A52C3D452091CE4B00BA5BDC /* Meshing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D442091CE4B00BA5BDC /* Meshing.swift */; };
 		A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */; };
 		A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4E2091E00700BA5BDC /* TriTableContents */; };
 		A52C3D652093185000BA5BDC /* bridging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D632093185000BA5BDC /* bridging.cpp */; };
 		A544222120A5A39D00AE55C7 /* SceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A544222020A5A39D00AE55C7 /* SceneViewController.swift */; };
-		A5494B0A2089E43A007EA2FB /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B092089E43A007EA2FB /* Box.swift */; };
-		A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0D2089E63D007EA2FB /* Plane.swift */; };
-		A5494B102089E644007EA2FB /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B0F2089E644007EA2FB /* Frustrum.swift */; };
-		A5494B122089E657007EA2FB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5494B112089E657007EA2FB /* Geometry.swift */; };
 		A554D20420CA677F0096DE8A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A554D20320CA677F0096DE8A /* SettingsViewController.swift */; };
 		A57BF49B20F622380017B09C /* DOFServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57BF49A20F622380017B09C /* DOFServiceManager.swift */; };
 		A57BF49D20F6225D0017B09C /* Extension+DOF.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57BF49C20F6225D0017B09C /* Extension+DOF.swift */; };
@@ -35,7 +27,6 @@
 		A58DCE022088895500280CD2 /* AR_IPODUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE012088895500280CD2 /* AR_IPODUITests.swift */; };
 		A58DCE1120888D1300280CD2 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1020888D1300280CD2 /* Camera.swift */; };
 		A58DCE1320888F4A00280CD2 /* DepthImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1220888F4A00280CD2 /* DepthImage.swift */; };
-		A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE142088A18300280CD2 /* PointCloud.swift */; };
 		A58DCE172088B85300280CD2 /* Voxel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE162088B85300280CD2 /* Voxel.swift */; };
 		A58DCE1B2088BF5C00280CD2 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58DCE1A2088BF5C00280CD2 /* Model.swift */; };
 		A5C589AF20AC37C3009BA18A /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = A5C589AE20AC37C3009BA18A /* beep.wav */; };
@@ -47,12 +38,9 @@
 		A5EF305E20C6950E003937A3 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF305D20C6950E003937A3 /* Extension.swift */; };
 		A5EF306020C6BE12003937A3 /* Alias.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF305F20C6BE12003937A3 /* Alias.swift */; };
 		A5EF306220C6BE4F003937A3 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF306120C6BE4F003937A3 /* Constant.swift */; };
-		A5F478C12099E33900CAAEC0 /* pointCloudTest.sdp in Resources */ = {isa = PBXBuildFile; fileRef = A5F478C02099E10100CAAEC0 /* pointCloudTest.sdp */; };
 		A5F478E3209C485200CAAEC0 /* marching_cube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5F478E1209C485200CAAEC0 /* marching_cube.cpp */; };
 		A5F478E9209C657500CAAEC0 /* io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5F478E7209C657500CAAEC0 /* io.cpp */; };
-		A5F478ED20A0700500CAAEC0 /* ikea-table in Resources */ = {isa = PBXBuildFile; fileRef = A5F478EC20A0700500CAAEC0 /* ikea-table */; };
 		A5F478EF20A096C900CAAEC0 /* UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F478EE20A096C900CAAEC0 /* UI.swift */; };
-		A5F47AF220A301EA00CAAEC0 /* chair in Resources */ = {isa = PBXBuildFile; fileRef = A5F47AF120A301EA00CAAEC0 /* chair */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,31 +77,6 @@
 		A517180520DA7BF200067B2E /* libflann_cpp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libflann_cpp.dylib; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp.dylib"; sourceTree = "<group>"; };
 		A517180620DA7BF200067B2E /* libflann_cpp.1.9.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libflann_cpp.1.9.1.dylib; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp.1.9.1.dylib"; sourceTree = "<group>"; };
 		A517180720DA7BF200067B2E /* libflann_cpp.1.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libflann_cpp.1.9.dylib; path = "../../Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib/libflann_cpp.1.9.dylib"; sourceTree = "<group>"; };
-		A517187720E3C19800067B2E /* geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = geometry.h; sourceTree = "<group>"; };
-		A517187820E3C19900067B2E /* disablewarnings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = disablewarnings.h; sourceTree = "<group>"; };
-		A517187920E3C19900067B2E /* super4pcs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = super4pcs.h; sourceTree = "<group>"; };
-		A517187A20E3C19900067B2E /* bbox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bbox.h; sourceTree = "<group>"; };
-		A517187B20E3C19A00067B2E /* match4pcsBase.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = match4pcsBase.hpp; sourceTree = "<group>"; };
-		A517187C20E3C19A00067B2E /* logger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = logger.h; sourceTree = "<group>"; };
-		A517187D20E3C19A00067B2E /* intersectionFunctor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = intersectionFunctor.h; sourceTree = "<group>"; };
-		A517187E20E3C19B00067B2E /* timer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
-		A517187F20E3C19B00067B2E /* 4pcs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = 4pcs.h; sourceTree = "<group>"; };
-		A517188020E3C19B00067B2E /* shared4pcs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shared4pcs.h; sourceTree = "<group>"; };
-		A517188120E3C19C00067B2E /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
-		A517188220E3C19C00067B2E /* match4pcsBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = match4pcsBase.h; sourceTree = "<group>"; };
-		A517188320E3C19C00067B2E /* normalHealSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = normalHealSet.h; sourceTree = "<group>"; };
-		A517188420E3C19D00067B2E /* normalset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = normalset.h; sourceTree = "<group>"; };
-		A517188520E3C19D00067B2E /* normalset.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = normalset.hpp; sourceTree = "<group>"; };
-		A517188620E3C19D00067B2E /* intersectionPrimitive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = intersectionPrimitive.h; sourceTree = "<group>"; };
-		A517188720E3C19E00067B2E /* bruteForceFunctor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bruteForceFunctor.h; sourceTree = "<group>"; };
-		A517188820E3C19E00067B2E /* intersectionNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = intersectionNode.h; sourceTree = "<group>"; };
-		A517188920E3C19E00067B2E /* pairCreationFunctor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pairCreationFunctor.h; sourceTree = "<group>"; };
-		A517188A20E3C19F00067B2E /* sampling.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sampling.h; sourceTree = "<group>"; };
-		A517188B20E3C19F00067B2E /* kdtree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kdtree.h; sourceTree = "<group>"; };
-		A517188D20E3C1B500067B2E /* super4pcs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = super4pcs.cc; sourceTree = "<group>"; };
-		A517188E20E3C1B500067B2E /* match4pcsBase.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = match4pcsBase.cc; sourceTree = "<group>"; };
-		A517188F20E3C1B500067B2E /* 4pcs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = 4pcs.cc; sourceTree = "<group>"; };
-		A517189320E3D13C00067B2E /* cube-set */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "cube-set"; sourceTree = "<group>"; };
 		A52C3D382090630200BA5BDC /* IO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IO.swift; sourceTree = "<group>"; };
 		A52C3D442091CE4B00BA5BDC /* Meshing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meshing.swift; sourceTree = "<group>"; };
 		A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */ = {isa = PBXFileReference; lastKnownFileType = text; path = EdgeTableContents; sourceTree = "<group>"; };
@@ -122,12 +85,7 @@
 		A52C3D632093185000BA5BDC /* bridging.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bridging.cpp; sourceTree = "<group>"; };
 		A52C3D642093185000BA5BDC /* bridging.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bridging.hpp; sourceTree = "<group>"; };
 		A544222020A5A39D00AE55C7 /* SceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneViewController.swift; sourceTree = "<group>"; };
-		A5494B092089E43A007EA2FB /* Box.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
-		A5494B0D2089E63D007EA2FB /* Plane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
-		A5494B0F2089E644007EA2FB /* Frustrum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustrum.swift; sourceTree = "<group>"; };
-		A5494B112089E657007EA2FB /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		A554D20320CA677F0096DE8A /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		A57BF46220F4D09A0017B09C /* constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		A57BF46320F4E56E0017B09C /* libpcl_search.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_search.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_search.a"; sourceTree = "<group>"; };
 		A57BF46420F4E56E0017B09C /* libpcl_common.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_common.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_common.a"; sourceTree = "<group>"; };
 		A57BF46520F4E56E0017B09C /* libpcl_filters.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_filters.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_filters.a"; sourceTree = "<group>"; };
@@ -153,32 +111,26 @@
 		A58DCE032088895500280CD2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A58DCE1020888D1300280CD2 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		A58DCE1220888F4A00280CD2 /* DepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepthImage.swift; sourceTree = "<group>"; };
-		A58DCE142088A18300280CD2 /* PointCloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointCloud.swift; sourceTree = "<group>"; };
 		A58DCE162088B85300280CD2 /* Voxel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Voxel.swift; sourceTree = "<group>"; };
 		A58DCE1A2088BF5C00280CD2 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		A5C589A120AAD29C009BA18A /* filtering.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = filtering.hpp; sourceTree = "<group>"; };
 		A5C589AE20AC37C3009BA18A /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
-		A5D70A6B20CE81710002EE0E /* raytracing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raytracing.hpp; sourceTree = "<group>"; };
 		A5D70A6E20CE8D400002EE0E /* projection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = projection.hpp; sourceTree = "<group>"; };
 		A5D70A8420D0FA9F0002EE0E /* IphoneCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IphoneCamera.swift; sourceTree = "<group>"; };
 		A5D70A8620D0FAAD0002EE0E /* IphoneDepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IphoneDepthImage.swift; sourceTree = "<group>"; };
 		A5D70A8820D0FAB60002EE0E /* KinectCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectCamera.swift; sourceTree = "<group>"; };
 		A5D70A8A20D0FAC30002EE0E /* KinectDepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectDepthImage.swift; sourceTree = "<group>"; };
 		A5D70A8D20D0FAFF0002EE0E /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
-		A5EF302120AECBD7003937A3 /* icp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = icp.hpp; sourceTree = "<group>"; };
 		A5EF305D20C6950E003937A3 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		A5EF305F20C6BE12003937A3 /* Alias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alias.swift; sourceTree = "<group>"; };
 		A5EF306120C6BE4F003937A3 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
-		A5F478C02099E10100CAAEC0 /* pointCloudTest.sdp */ = {isa = PBXFileReference; lastKnownFileType = text; path = pointCloudTest.sdp; sourceTree = "<group>"; };
 		A5F478E1209C485200CAAEC0 /* marching_cube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = marching_cube.cpp; sourceTree = "<group>"; };
 		A5F478E2209C485200CAAEC0 /* marching_cube.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = marching_cube.hpp; sourceTree = "<group>"; };
 		A5F478E5209C498700CAAEC0 /* linalg.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = linalg.hpp; sourceTree = "<group>"; };
 		A5F478E7209C657500CAAEC0 /* io.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = io.cpp; sourceTree = "<group>"; };
 		A5F478E8209C657500CAAEC0 /* io.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = io.hpp; sourceTree = "<group>"; };
-		A5F478EC20A0700500CAAEC0 /* ikea-table */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "ikea-table"; sourceTree = "<group>"; };
 		A5F478EE20A096C900CAAEC0 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
 		A5F478F120A2D18200CAAEC0 /* tsdf.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tsdf.hpp; sourceTree = "<group>"; };
-		A5F47AF120A301EA00CAAEC0 /* chair */ = {isa = PBXFileReference; lastKnownFileType = folder; name = chair; path = ../../../../../Downloads/chair; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,17 +161,13 @@
 		A517180D20DB946600067B2E /* include */ = {
 			isa = PBXGroup;
 			children = (
-				A517187620E3C16B00067B2E /* Super4PCS */,
 				A5F478E2209C485200CAAEC0 /* marching_cube.hpp */,
 				A52C3D642093185000BA5BDC /* bridging.hpp */,
 				A5F478E5209C498700CAAEC0 /* linalg.hpp */,
 				A5F478E8209C657500CAAEC0 /* io.hpp */,
 				A5F478F120A2D18200CAAEC0 /* tsdf.hpp */,
 				A5C589A120AAD29C009BA18A /* filtering.hpp */,
-				A5EF302120AECBD7003937A3 /* icp.hpp */,
-				A5D70A6B20CE81710002EE0E /* raytracing.hpp */,
 				A5D70A6E20CE8D400002EE0E /* projection.hpp */,
-				A57BF46220F4D09A0017B09C /* constants.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -227,50 +175,11 @@
 		A517180E20DB947B00067B2E /* src */ = {
 			isa = PBXGroup;
 			children = (
-				A517188C20E3C1A500067B2E /* Super4PCS */,
 				A5F478E1209C485200CAAEC0 /* marching_cube.cpp */,
 				A52C3D632093185000BA5BDC /* bridging.cpp */,
 				A5F478E7209C657500CAAEC0 /* io.cpp */,
 			);
 			path = src;
-			sourceTree = "<group>";
-		};
-		A517187620E3C16B00067B2E /* Super4PCS */ = {
-			isa = PBXGroup;
-			children = (
-				A517188A20E3C19F00067B2E /* sampling.h */,
-				A517188020E3C19B00067B2E /* shared4pcs.h */,
-				A517187820E3C19900067B2E /* disablewarnings.h */,
-				A517187720E3C19800067B2E /* geometry.h */,
-				A517187C20E3C19A00067B2E /* logger.h */,
-				A517187E20E3C19B00067B2E /* timer.h */,
-				A517187F20E3C19B00067B2E /* 4pcs.h */,
-				A517188220E3C19C00067B2E /* match4pcsBase.h */,
-				A517187B20E3C19A00067B2E /* match4pcsBase.hpp */,
-				A517188920E3C19E00067B2E /* pairCreationFunctor.h */,
-				A517187920E3C19900067B2E /* super4pcs.h */,
-				A517188720E3C19E00067B2E /* bruteForceFunctor.h */,
-				A517187D20E3C19A00067B2E /* intersectionFunctor.h */,
-				A517188820E3C19E00067B2E /* intersectionNode.h */,
-				A517188620E3C19D00067B2E /* intersectionPrimitive.h */,
-				A517188120E3C19C00067B2E /* utils.h */,
-				A517187A20E3C19900067B2E /* bbox.h */,
-				A517188B20E3C19F00067B2E /* kdtree.h */,
-				A517188320E3C19C00067B2E /* normalHealSet.h */,
-				A517188420E3C19D00067B2E /* normalset.h */,
-				A517188520E3C19D00067B2E /* normalset.hpp */,
-			);
-			path = Super4PCS;
-			sourceTree = "<group>";
-		};
-		A517188C20E3C1A500067B2E /* Super4PCS */ = {
-			isa = PBXGroup;
-			children = (
-				A517188F20E3C1B500067B2E /* 4pcs.cc */,
-				A517188E20E3C1B500067B2E /* match4pcsBase.cc */,
-				A517188D20E3C1B500067B2E /* super4pcs.cc */,
-			);
-			path = Super4PCS;
 			sourceTree = "<group>";
 		};
 		A52C3D6620933EAC00BA5BDC /* Frameworks */ = {
@@ -379,18 +288,6 @@
 			path = src;
 			sourceTree = "<group>";
 		};
-		A5C5899F20AAC226009BA18A /* deprecated */ = {
-			isa = PBXGroup;
-			children = (
-				A5494B112089E657007EA2FB /* Geometry.swift */,
-				A5494B0D2089E63D007EA2FB /* Plane.swift */,
-				A5494B092089E43A007EA2FB /* Box.swift */,
-				A5494B0F2089E644007EA2FB /* Frustrum.swift */,
-				A58DCE142088A18300280CD2 /* PointCloud.swift */,
-			);
-			path = deprecated;
-			sourceTree = "<group>";
-		};
 		A5D70A8220D0FA110002EE0E /* Kinect */ = {
 			isa = PBXGroup;
 			children = (
@@ -437,12 +334,8 @@
 			isa = PBXGroup;
 			children = (
 				A5C589AE20AC37C3009BA18A /* beep.wav */,
-				A517189320E3D13C00067B2E /* cube-set */,
-				A5F47AF120A301EA00CAAEC0 /* chair */,
 				A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */,
 				A52C3D4E2091E00700BA5BDC /* TriTableContents */,
-				A5F478C02099E10100CAAEC0 /* pointCloudTest.sdp */,
-				A5F478EC20A0700500CAAEC0 /* ikea-table */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -451,7 +344,6 @@
 			isa = PBXGroup;
 			children = (
 				A57BF49920F622200017B09C /* MultiPeer */,
-				A5C5899F20AAC226009BA18A /* deprecated */,
 				A5EF306420C6C450003937A3 /* Utils */,
 				A5EF306320C6C436003937A3 /* Core */,
 				A52C3D382090630200BA5BDC /* IO.swift */,
@@ -579,16 +471,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				A58DCDE22088895500280CD2 /* art.scnassets in Resources */,
-				A5F478ED20A0700500CAAEC0 /* ikea-table in Resources */,
 				A58DCDEC2088895500280CD2 /* LaunchScreen.storyboard in Resources */,
-				A5F47AF220A301EA00CAAEC0 /* chair in Resources */,
-				A517189420E3D13C00067B2E /* cube-set in Resources */,
 				A58DCDE92088895500280CD2 /* Assets.xcassets in Resources */,
 				A5C589AF20AC37C3009BA18A /* beep.wav in Resources */,
 				A58DCDE72088895500280CD2 /* Main.storyboard in Resources */,
 				A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */,
 				A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */,
-				A5F478C12099E33900CAAEC0 /* pointCloudTest.sdp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,11 +501,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5494B102089E644007EA2FB /* Frustrum.swift in Sources */,
-				A5494B122089E657007EA2FB /* Geometry.swift in Sources */,
 				A5F478E3209C485200CAAEC0 /* marching_cube.cpp in Sources */,
 				A57BF49F20F622680017B09C /* Protocol+DOF.swift in Sources */,
-				A517189220E3C1B600067B2E /* 4pcs.cc in Sources */,
 				A52C3D652093185000BA5BDC /* bridging.cpp in Sources */,
 				A544222120A5A39D00AE55C7 /* SceneViewController.swift in Sources */,
 				A52C3D452091CE4B00BA5BDC /* Meshing.swift in Sources */,
@@ -627,24 +512,19 @@
 				A5EF305E20C6950E003937A3 /* Extension.swift in Sources */,
 				A58DCE1B2088BF5C00280CD2 /* Model.swift in Sources */,
 				A5D70A8920D0FAB60002EE0E /* KinectCamera.swift in Sources */,
-				A58DCE152088A18300280CD2 /* PointCloud.swift in Sources */,
 				A58DCE1320888F4A00280CD2 /* DepthImage.swift in Sources */,
 				A57BF49D20F6225D0017B09C /* Extension+DOF.swift in Sources */,
 				A58DCDE42088895500280CD2 /* ViewController.swift in Sources */,
 				A52C3D392090630200BA5BDC /* IO.swift in Sources */,
 				A5D70A8520D0FA9F0002EE0E /* IphoneCamera.swift in Sources */,
-				A517189020E3C1B600067B2E /* super4pcs.cc in Sources */,
 				A5F478E9209C657500CAAEC0 /* io.cpp in Sources */,
 				A554D20420CA677F0096DE8A /* SettingsViewController.swift in Sources */,
 				A58DCDE02088895500280CD2 /* AppDelegate.swift in Sources */,
 				A58DCE1120888D1300280CD2 /* Camera.swift in Sources */,
 				A5D70A8720D0FAAD0002EE0E /* IphoneDepthImage.swift in Sources */,
-				A5494B0E2089E63D007EA2FB /* Plane.swift in Sources */,
 				A5F478EF20A096C900CAAEC0 /* UI.swift in Sources */,
 				A5EF306220C6BE4F003937A3 /* Constant.swift in Sources */,
 				A57BF49B20F622380017B09C /* DOFServiceManager.swift in Sources */,
-				A517189120E3C1B600067B2E /* match4pcsBase.cc in Sources */,
-				A5494B0A2089E43A007EA2FB /* Box.swift in Sources */,
 				A5EF306020C6BE12003937A3 /* Alias.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

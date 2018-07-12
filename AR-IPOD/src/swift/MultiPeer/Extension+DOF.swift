@@ -50,7 +50,7 @@ extension DOFServiceManager : MCSessionDelegate {
     
     // Change color background (ViewController)
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
-        NSLog("%@", "didReceiveData: \(data)")
+        //NSLog("%@", "didReceiveData: \(data)")
         let str = String(data: data, encoding: .utf8)!
         let rows = str.components(separatedBy: .whitespacesAndNewlines)
         var buffer = [Float](repeating: 0, count: 16)

@@ -44,7 +44,7 @@ void bridge_exportVolumeToPLY(const void* centroids,
                               const char* file_name,
                               int size);
 
-
+/*
 void bridge_global_registration(const float* previous,
                                 const float* current,
                                 //const void* voxels,
@@ -58,7 +58,7 @@ void bridge_global_registration(const float* previous,
                                 const float thresh_depth,
                                 const float corresp_dist,
                                 const int max_num_iter);
-
+*/
 /*
 void bridge_global_registration(const float* previous,
                                 const float* current,
@@ -85,7 +85,7 @@ void bridge_drift_correction(const float* current_points,
                              const float resolution,
                              const int width,
                              const int height);
-
+/*
 void bridge_raycastDepthMap(float* depthmap,
                             const void* rotation,
                             const void* translation,
@@ -98,4 +98,6 @@ void bridge_raycastDepthMap(float* depthmap,
                             const float delta,
                             const float epsilon,
                             const float lambda);
+ */
+
 #endif /* volumeInit_hpp */

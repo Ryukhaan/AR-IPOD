@@ -53,7 +53,7 @@ class DOFServiceManager : NSObject {
         0 0 0 0
         0 0 0 0
         """
-        NSLog("%@", "Cx and Cy corrections send to \(mySession.connectedPeers) peers !")
+        //NSLog("%@", "Cx and Cy corrections send to \(mySession.connectedPeers) peers !")
         self.send(text: text)
     }
     
@@ -64,7 +64,7 @@ class DOFServiceManager : NSObject {
         0 0 0 0
         0 0 0 0
         """
-        NSLog("%@", "Integrate depth map done to \(mySession.connectedPeers.count) peers")
+        //NSLog("%@", "Integrate depth map done to \(mySession.connectedPeers.count) peers")
         self.send(text: text)
     }
     
@@ -75,7 +75,7 @@ class DOFServiceManager : NSObject {
         \(M.columns.0.z) \(M.columns.1.z) \(M.columns.2.z) \(M.columns.3.z)
         \(M.columns.0.w) \(M.columns.1.w) \(M.columns.2.w) \(M.columns.3.w)
         """
-        NSLog("%@", "Send camera position : \n \(text) \n to \(mySession.connectedPeers.count) peers")
+        //NSLog("%@", "Send camera position : \n \(text) \n to \(mySession.connectedPeers.count) peers")
         self.send(text: text)
     }
     

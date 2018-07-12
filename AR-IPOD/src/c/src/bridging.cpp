@@ -28,8 +28,8 @@ extern "C" {
 #include "io.hpp"
 #include "tsdf.hpp"
 #include "filtering.hpp"
-#include "raytracing.hpp"
-#include "icp.hpp"
+//#include "raytracing.hpp"
+//#include "icp.hpp"
 #include "projection.hpp"
 
 using namespace std;
@@ -181,7 +181,7 @@ void bridge_fast_icp(const float* previous_points,
     fast_icp(previous_points, current_points, intrinsics, rotation, lie_rotation, translation, voxels, dimension, resolution, width, height);
 }
 */
-
+/*
 void bridge_global_registration(const float* previous,
                                 const float* current,
                                 //const void* voxels,
@@ -197,10 +197,10 @@ void bridge_global_registration(const float* previous,
                                 const int max_num_iter)
 {
     //super4PCS(previous, current, voxels, width, height, rotation, translation, intrinsics, resolution, dimension);
-    /*
-    icp(previous, current, width, height, rotation, translation, intrinsics, resolution, dimension, thresh_depth, corresp_dist, max_num_iter);
-     */
+    //icp(previous, current, width, height, rotation, translation, intrinsics, resolution, dimension, thresh_depth, corresp_dist, max_num_iter);
+ 
 }
+*/
 
 void bridge_median_filter(float* depthmap,
                           const int window_size,
@@ -259,7 +259,7 @@ void bridge_drift_correction(const float* current_points,
     //xtilde = simd_inverse(xtilde);
     //simd_float4x3 error = simd_transpose(simd_mul(xtilde, xy));
 }
-
+/*
 void bridge_raycastDepthMap(float* depthmap,
                            const void* rotation,
                            const void* translation,
@@ -279,3 +279,4 @@ void bridge_raycastDepthMap(float* depthmap,
     Voxel *p_voxels = (Voxel *) voxels;
     raytracing(depthmap, R, T, Kinv, p_voxels, width, height, dimension, resolution, delta, epsilon, lambda);
 }
+*/
