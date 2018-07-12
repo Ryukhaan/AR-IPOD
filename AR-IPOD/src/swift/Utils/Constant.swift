@@ -17,8 +17,15 @@ enum Constant {
         static let Width    = 360
         static let Height   = 640
     }
-    static let IntegrationHasBeenFinished: Float = 201
-    
+    enum Code {
+        enum Integration {
+            static let hasFinished: String = "200"
+            static let isStarting: String = "100"
+            static let cxcy:    String  = "110"
+            static let error:   String  = "400"
+            static let reset:   String  = "600"
+        }
+    }
 }
 
 enum Sounds {

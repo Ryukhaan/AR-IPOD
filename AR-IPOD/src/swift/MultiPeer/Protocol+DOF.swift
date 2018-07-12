@@ -14,6 +14,8 @@ protocol DOFServiceManagerDelegate {
     
     func connectedDevicesChanged(manager : DOFServiceManager, connectedDevices: [String])
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4)
-    func integrationFinished(manager: DOFServiceManager, finished: Bool)
-    
+    func integrationFinished(manager: DOFServiceManager)
+    func startIntegrating(manager: DOFServiceManager)
+    func resetModel(manager: DOFServiceManager)
+    func updateCxCy(manager: DOFServiceManager, points: CGSize)
 }

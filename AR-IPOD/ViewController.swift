@@ -62,6 +62,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Set the scene to the view
         sceneView.scene = scene
         
+        service.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -74,31 +75,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Run the view's session
         sceneView.session.run(configuration)
         sceneView.session.delegate = self
-        //sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
-        //sceneView.session.setWorldOrigin(relativeTransform: matrix_float4x4(diagonal: [1,1,1,1]))
-        // Version with dataset
-        /*
-         let starter = Double(CFAbsoluteTimeGetCurrent())
-         let threads = [DispatchQueue(label: "thread1", qos: .userInteractive, attributes: .concurrent),
-         DispatchQueue(label: "thread2", qos: .userInteractive, attributes: .concurrent)
-         ]
-         let group = DispatchGroup()
-         group.enter()
-         threads[0].async {
-         let intrinsics = Import.intrinsics(from: "depthIntrinsics",
-         at: self.nameOfDataset,
-         type: self.myModel.type)
-         self.myModel.update(intrinsics: intrinsics)
-         group.leave()
-         }
-         group.enter()
-         threads[1].async {
-         self.myModel.reallocateVoxels()
-         group.leave()
-         }
-         _ = Double(CFAbsoluteTimeGetCurrent()) - starter
-         */
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -191,10 +167,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         let cameraPose = frame.camera.transform
         switch self.deviceType {
         case .IPad:
-            NSLog("%@", "\(cameraPose)")
+            //NSLog("%@", "\(cameraPose)")
             service.send(transform: cameraPose)
         case .Iphone:
-            print("\(Model.sharedInstance.camera.rotation) \n \(Model.sharedInstance.camera.translation)")
             if inRealTime {
                 Model.sharedInstance.update(intrinsics: frame.camera.intrinsics)
                 if frame.capturedDepthData != nil
@@ -208,7 +183,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                     Model.sharedInstance.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
                     Model.sharedInstance.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
                     Model.sharedInstance.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
-                    //let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
+                    let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
+                    Model.sharedInstance.parameters["cx"] = Float(frameReference.width / CGFloat(Model.sharedInstance.image.width))
+                    Model.sharedInstance.parameters["cy"] = Float(frameReference.height / CGFloat(Model.sharedInstance.image.height))
                     // We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
                     //compCIImage(depthDataMap: depthDataMap!)
                     //myDepthImage = UIImage(ciImage: myCIImage!)
@@ -225,38 +202,24 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                          Int32(Model.sharedInstance.camera.width),
                                          Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.update(data: depthmap)
-                    
+                    self.inRealTime = false
                     DispatchQueue.global().async {
-                        DispatchQueue.main.async {
-                            self.inRealTime = false
-                        }
                         Model.sharedInstance.integrate()
                         DispatchQueue.main.async {
-                            self.service.send(alert: "")
+                            self.service.send(alert: Constant.Code.Integration.hasFinished)
                         }
                     }
                 }
             }
         }
     }
-    /*
-     //Model.sharedInstance.createMedianDepthMap()
-     //let current_points = Model.sharedInstance.image.data
-     Model.sharedInstance.globalRegistration(previous: last_points, current: current_points)
-     self.numberOfIterations += 1
-     }
-     if self.numberOfIterations >= 10
-     {
-     Model.sharedInstance.integrate()
-     self.numberOfIterations = 0
-     }
-     }
-     }
-     }
-     */
     
     
-    @IBAction func startCompute(_ sender: Any) {
+    @IBAction func resetModel(_ sender: Any) {
+        if self.deviceType == .IPad {
+            service.send(alert: Constant.Code.Integration.reset)
+        }
+        /*
         //let group = DispatchGroup()
         integrationProgress.progress = 0.0
         integrationProgress.isHidden = false
@@ -297,6 +260,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             self.integrationProgress.isHidden = true
             self.integrationProgress.progress = 0.0
         })
+        */
     }
     
     @IBAction func changeDataset(_ sender: Any) {
@@ -337,20 +301,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     @IBAction func startRealTimeIntegration(_ sender: Any) {
-        //self.myModel.switchTo(realTime: true)
-        //self.myModel = Model(from: self.myModel, to: .Iphone)
+        //let cameraPose = sceneView.session.currentFrame?.camera.transform
+        //let frameRef = myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
         if deviceType == .IPad {
-            service.send(alert: "")
+            self.tx.text = "Waiting..."
+            //service.send(transform: cameraPose!)
+            //service.send(alert: Constant.Code.Integration.cxcy, cxUpdated: <#T##String#>, cyUpdated: <#T##String#>)
+            service.send(alert: Constant.Code.Integration.isStarting)
         }
-        /*
-         self.displayAlertMessage(
-         title: "Acquisition en temps réel",
-         message: "Veuillez mettre la caméra en face de l'objet",
-         handler: { _ in
-         //AudioServicesPlaySystemSound (self.systemSoundID)
-         self.inRealTime = !self.inRealTime
-         })
-         */
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -386,22 +344,59 @@ extension ViewController : DOFServiceManagerDelegate {
     }
     
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4) {
+        let M = transform
+        NSLog("%@", "\(M)")
         OperationQueue.main.addOperation {
             if (self.deviceType == .Iphone) {
                 Model.sharedInstance.update(rotation: transform)
                 Model.sharedInstance.update(translation: transform)
+                self.tx.text = "Received"
             }
         }
     }
     
-    func integrationFinished(manager: DOFServiceManager, finished: Bool) {
+    func integrationFinished(manager: DOFServiceManager) {
         OperationQueue.main.addOperation {
             switch self.deviceType {
             case .IPad:
-                self.ty.text = finished ? "201": "Waiting..."
+                self.tx.text = "Finished"
             case .Iphone:
-                self.inRealTime = true
+                self.inRealTime = false
             }
         }
     }
-}
+    
+    func startIntegrating(manager: DOFServiceManager) {
+        OperationQueue.main.addOperation {
+            switch self.deviceType {
+            case .Iphone:
+                self.inRealTime = true
+            default:
+                return;
+            }
+        }
+    }
+    
+    func resetModel(manager: DOFServiceManager) {
+        OperationQueue.main.addOperation {
+            switch self.deviceType {
+            case .Iphone:
+                Model.sharedInstance.reinit()
+            default:
+                return;
+            }
+        }
+    }
+    
+    func updateCxCy(manager: DOFServiceManager, points: CGSize) {
+        OperationQueue.main.addOperation {
+            switch self.deviceType {
+            case .Iphone:
+                Model.sharedInstance.parameters["cx"] = Float(points.width)
+                Model.sharedInstance.parameters["cy"] = Float(points.height)
+            default:
+                return;
+            }
+        }
+    }
+ }

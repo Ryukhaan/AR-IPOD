@@ -9,7 +9,4 @@
 #ifndef constants_h
 #define constants_h
 
-#define cox 6
-#define coy 6
-
 #endif /* constants_h */

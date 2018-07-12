@@ -51,18 +51,28 @@ extension DOFServiceManager : MCSessionDelegate {
     // Change color background (ViewController)
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
         NSLog("%@", "didReceiveData: \(data)")
-        var buffer = [Float](repeating: Float(0.0), count: 16)
-        buffer = data.copyBytes(as: Float.FloatLiteralType.self)
-        print(buffer)
+        let str = String(data: data, encoding: .utf8)!
+        let rows = str.components(separatedBy: .whitespacesAndNewlines)
+        var buffer = [Float](repeating: 0, count: 16)
+        for (i, row) in rows.enumerated() {
+            buffer[i] = Float(row)!
+        }
         let M = matrix_float4x4(rows: [float4(buffer[0], buffer[1], buffer[2], buffer[3]),
                                        float4(buffer[4], buffer[5], buffer[6], buffer[7]),
                                        float4(buffer[8], buffer[9], buffer[10], buffer[11]),
                                        float4(buffer[12], buffer[13], buffer[14], buffer[15])
             ])
-        if (buffer[0] == Constant.IntegrationHasBeenFinished) {
-            self.delegate?.integrationFinished(manager: self, finished: true)
-        }
-        else {
+        let coxy = CGSize(width: CGFloat(buffer[1]), height: CGFloat(buffer[2]))
+        switch rows[0] {
+        case Constant.Code.Integration.hasFinished:
+            self.delegate?.integrationFinished(manager: self)
+        case Constant.Code.Integration.isStarting:
+            self.delegate?.startIntegrating(manager: self)
+        case Constant.Code.Integration.reset:
+            self.delegate?.resetModel(manager: self)
+        case Constant.Code.Integration.cxcy:
+            self.delegate?.updateCxCy(manager: self, points: coxy)
+        default:
             self.delegate?.transformChanged(manager: self, transform: M)
         }
     }

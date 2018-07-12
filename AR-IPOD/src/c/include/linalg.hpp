@@ -129,13 +129,15 @@ simd_float2x3 compute_bounding_box(float* depthmap,
                                    const int height,
                                    const simd_float3x3 rotation,
                                    const simd_float3 translation,
-                                   const simd_float4x4 Kinv) {
+                                   const simd_float4x4 Kinv,
+                                   const float cx,
+                                   const float cy) {
     simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
     for (int i=0; i<height; i++) {
         for (int j=0; j<width; j++) {
             float depth = depthmap[i*width+j];
             if (std::isnan(depth) || depth < 1e-6) continue;
-            simd::float4 uv = simd_make_float4(depth * i * cox, depth * j * coy, depth, 1);
+            simd::float4 uv = simd_make_float4(depth * j * cx, depth * i * cy, depth, 1);
             simd::float4 local = simd_mul(Kinv, uv);
             simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
             //simd::float3 world_point = simd_mul(simd_transpose(rotation), rlocal - translation);

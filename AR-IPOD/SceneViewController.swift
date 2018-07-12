@@ -88,7 +88,7 @@ class SceneViewController: UIViewController {
     @IBAction func showOnlyPoints(_ sender: Any) {
         //let iso = Int(withoutMesh.text!)
         let iso = Float(withoutMesh.text!)
-        let datasetName = "ikea-table"
+        //let datasetName = "ikea-table"
         DispatchQueue.global().async {
             // Display Projected DepthMap
             /*

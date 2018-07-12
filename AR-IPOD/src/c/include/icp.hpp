@@ -114,7 +114,7 @@ void super4PCS(const float* previous,
             z       = current[i * width + j];
             if (z > 1e-6)
             {
-                uvz     = simd_make_float4(z * i * coy, z * j * cox, z, 1);
+                uvz     = simd_make_float4(z * j * cx, z * i * cy, z, 1);
                 local   = simd_mul(Kinv, uvz);
                 global  = simd_mul(R, simd_make_float3(local.x, local.y, local.z)) + T;
                 Q.push_back(Point3D(global.x, global.y, global.z));

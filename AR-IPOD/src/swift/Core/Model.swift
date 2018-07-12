@@ -27,19 +27,21 @@ class Model {
     
     private init() {
         dimension       = 256
-        voxelResolution = 0.02
+        voxelResolution = 0.01
         voxels          = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
         camera  = KinectCamera()
         image   = KinectDepthImage()
         type    = .Kinect
         parameters["Lambda"]    = 0.0
-        parameters["Delta"]     = 0.02
-        parameters["Epsilon"]   = 0.01
+        parameters["Delta"]     = 0.3
+        parameters["Epsilon"]   = 0.025
+        parameters["cx"]        = 6
+        parameters["cy"]        = 6
     }
     
     private init(type: CameraType) {
         dimension       = 256
-        voxelResolution = 0.02
+        voxelResolution = 0.01
         voxels          = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
         switch type {
         case .Kinect:
@@ -80,22 +82,10 @@ class Model {
     }
     
     func reallocateVoxels() {
-        /* Sequence - serial */
         let count = numberOfVoxels()
-        //let square = size * size
         voxels.removeAll()
         voxels.reserveCapacity(numberOfVoxels())
         voxels = [Voxel](repeating: Voxel(), count: count)
-        //centroids = [Vector](repeating: Point3D(0, 0, 0), count: count)
-        /*
-         let stride = MemoryLayout<Point3D>.stride
-         let byteCount = stride * count
-         let points = UnsafeMutablePointer<Point3D>.allocate(capacity: byteCount)
-         bridge_initializeCentroids(points, Int32(numberOfVoxels), resolutionInMeter)
-         let buffer = UnsafeBufferPointer(start: points, count: count)
-         centroids = Array(buffer)
-         points.deallocate()
-         */
     }
     
     func reallocateVoxels(amount: Int) {
@@ -178,7 +168,8 @@ class Model {
                 Int32(image.height),
                 Int32(dimension),
                 voxelResolution,
-                parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!)
+                parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!,
+                parameters["cx"]!, parameters["cy"]!)
         }
     }
     
