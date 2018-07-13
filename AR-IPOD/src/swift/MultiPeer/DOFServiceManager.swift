@@ -69,10 +69,11 @@ class DOFServiceManager : NSObject {
     }
     
     func send(transform M: matrix_float4x4) {
+        let T = simd_mul(M, M)
         let text = """
         \(M.columns.0.x) \(M.columns.1.x) \(M.columns.2.x) \(M.columns.3.x)
         \(M.columns.0.y) \(M.columns.1.y) \(M.columns.2.y) \(M.columns.3.y)
-        \(M.columns.0.z) \(M.columns.1.z) \(M.columns.2.z) \(M.columns.3.z)
+        \(M.columns.0.z) \(M.columns.1.z) \(M.columns.2.z) \(-M.columns.3.z)
         \(M.columns.0.w) \(M.columns.1.w) \(M.columns.2.w) \(M.columns.3.w)
         """
         //NSLog("%@", "Send camera position : \n \(text) \n to \(mySession.connectedPeers.count) peers")

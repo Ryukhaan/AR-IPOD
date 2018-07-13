@@ -44,15 +44,19 @@ void integrate_projection(float* depthmap,
     simd_float3x3 R = ((simd_float3x3 *) rotation)[0];
     simd_float3   T = ((simd_float3 *) translation)[0];
     simd_float4x4 Kinv  = simd_inverse(K);
+    simd_float4x4 Rt;
+    for (int i = 0; i<3; i++) Rt.columns[i] = simd_make_float4(R.columns[i].x, R.columns[i].y, R.columns[i].z, 0);
+    Rt.columns[3] = simd_make_float4(T.x, T.y, T.z, 1);
     
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
+    /*
     simd_float2x3 box = compute_bounding_box(depthmap, width, height, R, T, Kinv, cx, cy);
     simd_int3 point_min = global_to_integer(box.columns[0] + offset, resolution);
     simd_int3 point_max = global_to_integer(box.columns[1] + offset, resolution);
     int mini = hash_code(point_min, dimension);
     int maxi = hash_code(point_max, dimension);
-    
+    */
     /*
     for (int i = 0; i<width*height; i++) {
         float depth = depthmap[i];
@@ -88,19 +92,21 @@ void integrate_projection(float* depthmap,
             {
                 //if (i < 0 || i >= size) continue;
                 n ++;
-                if (n <= mini || n >= maxi) continue;
+                //if (n <= mini || n >= maxi) continue;
                 simd_int3   v_ijk = simd_make_int3(i, j, k);
                 //simd::float3 centroid = create_centroid(n, resolutions.x, dimension) - offset;
                 simd::float3 centroid = integer_to_global(v_ijk, resolution) - global_offset;
-                //simd::float3 X_L    = simd_mul(R, centroid + T);
+                //simd::float4 higher = simd_make_float4(centroid.x, centroid.y, centroid.z, 1);
                 //float z = simd_distance(centroid, T);
                 
                 //simd::float3 X_L      = simd_mul(simd_transpose(R), centroid - T);
                 simd::float3 X_L      = simd_mul(R, centroid) + T;
+                //simd::float3 X_L        = global_to_local(centroid, R, T);
                 if (X_L.z < 0) continue;
                 
-                simd::float4 homogene = simd_make_float4(X_L.x, X_L.y, X_L.z, 1);
-                simd::float4 project  = simd_mul(K, homogene);
+                simd::float4 homogeneous = simd_make_float4(X_L.x, X_L.y, X_L.z, 1);
+                simd::float4 project  = simd_mul(K, homogeneous);
+                //simd::float4 project    = unproject_local_to_screen(homogeneous, K);
                 
                 int u = (int) (project.x / (project.z  * cx));
                 int v = (int) (project.y / (project.z  * cy));
@@ -112,10 +118,12 @@ void integrate_projection(float* depthmap,
                 if (zp < 1e-7) continue;
                 
                 simd::float4 uvz = simd_make_float4(zp * u * cx, zp * v * cy, zp, 1.0);
+                //simd::float4 uvz = homogenezie(u, v, zp, cx, cy);
                 simd::float4 X_S = simd_mul(Kinv, uvz);
+                //simd::float4 X_S = project_screen_to_local(uvz, Kinv);
                 // Depth invalid
                 
-                float distance = simd_sign(zp - X_L.z) * simd_distance(X_S , homogene);
+                float distance = simd_sign(zp - X_L.z) * simd_distance(X_S , homogeneous);
                 //float distance = zp - X_L.z;
                 //float distance = zp - z;
                 

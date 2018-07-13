@@ -719,7 +719,7 @@
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/include",
 				);
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Build/pcl-ios-device-arm64/lib",
@@ -758,7 +758,7 @@
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/include",
 				);
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Build/pcl-ios-device-arm64/lib",

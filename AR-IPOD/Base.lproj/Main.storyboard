@@ -42,7 +42,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="834" height="1063"/>
                             </arscnView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="hL3-Os-wfc">
-                                <rect key="frame" x="20" y="20" width="648" height="29"/>
+                                <rect key="frame" x="20" y="20" width="150" height="29"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="wZT-Nu-PFU"/>
                                 </constraints>
@@ -55,7 +55,7 @@
                                 </connections>
                             </segmentedControl>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="c8J-og-tAT">
-                                <rect key="frame" x="707" y="20" width="107" height="29"/>
+                                <rect key="frame" x="209" y="20" width="107" height="29"/>
                                 <segments>
                                     <segment title="10"/>
                                     <segment title="100"/>
@@ -66,10 +66,10 @@
                                 </connections>
                             </segmentedControl>
                             <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TG2-a5-Vfx">
-                                <rect key="frame" x="30" y="726.5" width="784" height="2"/>
+                                <rect key="frame" x="30" y="726" width="204" height="2"/>
                             </progressView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q9c-hL-Hn7">
-                                <rect key="frame" x="20" y="70" width="75.5" height="25"/>
+                                <rect key="frame" x="20" y="70" width="76" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="nlx-zz-3fy"/>
                                 </constraints>
@@ -78,16 +78,16 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IL4-TE-v6a">
-                                <rect key="frame" x="20" y="127" width="320" height="320"/>
+                                <rect key="frame" x="20" y="127" width="798" height="320"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="320" id="gJm-Jf-Ftw"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="0.75" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ds4-bn-c2c">
-                                <rect key="frame" x="707" y="56" width="107" height="30"/>
+                                <rect key="frame" x="209" y="56" width="25" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -97,7 +97,7 @@
                                 </connections>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qax-Jz-iq4">
-                                <rect key="frame" x="574" y="815" width="240" height="53"/>
+                                <rect key="frame" x="570" y="815" width="176" height="53"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="34"/>
                                 <state key="normal" title="Take Picture">
                                     <color key="titleColor" red="0.0" green="0.16788150090000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -107,7 +107,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yle-OG-6qI">
-                                <rect key="frame" x="632" y="671.5" width="124" height="51"/>
+                                <rect key="frame" x="52" y="671" width="124" height="51"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="124" id="XpP-fw-WpI"/>
                                 </constraints>
@@ -136,17 +136,14 @@
                             <constraint firstItem="N2L-IP-OAK" firstAttribute="bottom" secondItem="SvY-0D-dDP" secondAttribute="bottom" id="LbQ-z1-uR4"/>
                             <constraint firstItem="hL3-Os-wfc" firstAttribute="baseline" secondItem="c8J-og-tAT" secondAttribute="baseline" id="NkB-4r-7i9"/>
                             <constraint firstItem="hL3-Os-wfc" firstAttribute="leading" secondItem="Q9c-hL-Hn7" secondAttribute="leading" id="RkA-Yl-AP1"/>
-                            <constraint firstItem="Qax-Jz-iq4" firstAttribute="leading" secondItem="hhj-Jp-2IH" secondAttribute="leadingMargin" constant="554" id="S5o-qa-USz"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Q9c-hL-Hn7" secondAttribute="trailing" constant="20" symbolic="YES" id="TSU-o9-oQz"/>
                             <constraint firstItem="SvY-0D-dDP" firstAttribute="bottom" secondItem="Qax-Jz-iq4" secondAttribute="bottom" constant="195" id="TWc-0P-hil"/>
                             <constraint firstItem="yle-OG-6qI" firstAttribute="top" secondItem="TG2-a5-Vfx" secondAttribute="bottom" constant="-57" id="UQe-5C-tuH"/>
-                            <constraint firstItem="yle-OG-6qI" firstAttribute="leading" secondItem="Qax-Jz-iq4" secondAttribute="trailing" constant="-182" id="XiM-2Y-ZGF"/>
                             <constraint firstItem="hL3-Os-wfc" firstAttribute="top" secondItem="SvY-0D-dDP" secondAttribute="top" id="axc-Xh-YHX"/>
-                            <constraint firstItem="c8J-og-tAT" firstAttribute="trailing" secondItem="yle-OG-6qI" secondAttribute="trailing" constant="58" id="cgX-qe-JrQ"/>
-                            <constraint firstItem="SvY-0D-dDP" firstAttribute="trailing" secondItem="IL4-TE-v6a" secondAttribute="trailing" constant="494" id="rpK-ee-MQ2"/>
+                            <constraint firstItem="Qax-Jz-iq4" firstAttribute="leading" secondItem="hhj-Jp-2IH" secondAttribute="leading" constant="570" id="pTB-5R-d3e"/>
+                            <constraint firstItem="SvY-0D-dDP" firstAttribute="trailing" secondItem="IL4-TE-v6a" secondAttribute="trailing" constant="16" id="rpK-ee-MQ2"/>
                             <constraint firstItem="N2L-IP-OAK" firstAttribute="leading" secondItem="hhj-Jp-2IH" secondAttribute="leading" id="sp1-mh-1yq"/>
                             <constraint firstItem="c8J-og-tAT" firstAttribute="leading" secondItem="hL3-Os-wfc" secondAttribute="trailing" constant="39" id="wY9-el-UA7"/>
-                            <constraint firstItem="c8J-og-tAT" firstAttribute="trailing" secondItem="hhj-Jp-2IH" secondAttribute="trailingMargin" id="xA9-oy-Iqe"/>
                             <constraint firstItem="ds4-bn-c2c" firstAttribute="leading" secondItem="c8J-og-tAT" secondAttribute="leading" id="xdz-rm-rES"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="SvY-0D-dDP"/>
@@ -164,7 +161,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="450" y="-2066"/>
+            <point key="canvasLocation" x="448.80000000000001" y="-2066.0098522167486"/>
         </scene>
         <!--Mesh View-->
         <scene sceneID="Lqa-hR-lLp">

@@ -26,6 +26,8 @@ class SceneViewController: UIViewController {
     var savedVolumeSizeIndex: Double = 0
     var savedDatasetIndex: Int = 0
     var savedFramesIndex: Int = 0
+    var points: [Vector] = [Vector]()
+    var alreadyMeshed: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,8 +76,9 @@ class SceneViewController: UIViewController {
     @IBAction func meshWithIso(_ sender: Any) {
         let iso = Float(isolevel.text!)
         DispatchQueue.global().async {
-            let points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
-            let pointCloudNode = UIFactory.mesh(from: points)
+            self.points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
+            self.alreadyMeshed = true
+            let pointCloudNode = UIFactory.mesh(from: self.points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
                 scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
@@ -114,17 +117,24 @@ class SceneViewController: UIViewController {
     
     @IBAction func export(_ sender: Any) {
         // Export mesh at an isolovel (need to extract mesh once again, not so logical but easiest way)
-        let iso = Float(isolevel.text!)
-        let points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
-        exportToPLY(mesh: points, at: "meshing.ply")
+        if (!alreadyMeshed) {
+            let iso = Float(isolevel.text!)
+            self.points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
+            self.alreadyMeshed = true
+        }
+        let path = IO.Export.toPLYFormat(mesh: points, at: "meshing.ply")!
+        let tabPath = [path]
+        let vc = UIActivityViewController(activityItems: tabPath, applicationActivities: [])
+        present(vc, animated: true, completion: nil)
     }
     
     @IBAction func fastMeshing(_ sender: Any) {
         // On IphoneX keyboard won't close (so meshWithIso() does not work)
         // Extract mesh with isolevel = 0.0
         DispatchQueue.global().async {
-            let points = extractMesh(model: Model.sharedInstance, isolevel: 0.00)
-            let pointCloudNode = UIFactory.mesh(from: points)
+            self.points = extractMesh(model: Model.sharedInstance, isolevel: 0.00)
+            self.alreadyMeshed = true
+            let pointCloudNode = UIFactory.mesh(from: self.points)
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
                 scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
@@ -151,6 +161,7 @@ class SceneViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        self.alreadyMeshed = false
         if segue.identifier == "Main" {
             if let destination = segue.destination as? ViewController {
                 destination.myModel = Model.sharedInstance

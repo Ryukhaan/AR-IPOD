@@ -116,6 +116,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
         let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = .vertical
         sceneView.session.run(configuration)
         sceneView.session.delegate = self
         
@@ -172,9 +173,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          }
          }
          */
-        var Rt = frame.camera.viewMatrix(for: .landscapeLeft)
+        //var Rt = frame.camera.viewMatrix(for: .landscapeLeft)
         //Rt = Rt.format(".4")
-        //let cameraPose = frame.camera.transform
+        let Rt = frame.camera.transform
         switch self.deviceType {
         case .IPad:
             //NSLog("%@", "\(cameraPose)")
@@ -188,6 +189,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             """
             service.send(transform: Rt)
         case .Iphone:
+            self.ty.numberOfLines = 4
+            let f = ".3"
+            self.ty.text = """
+            \(Rt.columns.0.x.format(f)) \(Rt.columns.1.x.format(f)) \(Rt.columns.2.x.format(f)) \(Rt.columns.3.x.format(f))
+            \(Rt.columns.0.y.format(f)) \(Rt.columns.1.y.format(f)) \(Rt.columns.2.y.format(f)) \(Rt.columns.3.y.format(f))
+            \(Rt.columns.0.z.format(f)) \(Rt.columns.1.z.format(f)) \(Rt.columns.2.z.format(f)) \(Rt.columns.3.z.format(f))
+            \(Rt.columns.0.w.format(f)) \(Rt.columns.1.w.format(f)) \(Rt.columns.2.w.format(f)) \(Rt.columns.3.w.format(f))
+            """
             if inRealTime {
                 if frame.capturedDepthData != nil
                 {
@@ -250,6 +259,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBAction func resetModel(_ sender: Any) {
         if self.deviceType == .IPad {
             service.send(alert: Constant.Code.Integration.reset)
+            let origin = matrix_float4x4(diagonal: float4(1,1,1,1))
+            //sceneView.session.setWorldOrigin(relativeTransform: origin)
         }
         /*
         //let group = DispatchGroup()
@@ -307,7 +318,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             Model.sharedInstance.switchTo(type: .Kinect)
         default: break
         }
-        let intrinsic = Import.intrinsics(from: "depthIntrinsics", at: nameOfDataset, type: Model.sharedInstance.type)
+        let intrinsic = IO.Import.intrinsics(from: "depthIntrinsics", at: nameOfDataset, type: Model.sharedInstance.type)
         Model.sharedInstance.update(intrinsics: intrinsic)
     }
     
