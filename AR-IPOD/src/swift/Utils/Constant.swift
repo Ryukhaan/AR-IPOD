@@ -21,9 +21,11 @@ enum Constant {
         enum Integration {
             static let hasFinished: String = "200"
             static let isStarting: String = "100"
-            static let cxcy:    String  = "110"
             static let error:   String  = "400"
             static let reset:   String  = "600"
+        }
+        enum Photo {
+            static let sendingPhoto: String = "110"
         }
     }
 }

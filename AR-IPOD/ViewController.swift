@@ -19,6 +19,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     
+    @IBOutlet var imageView: UIImageView!
+    
     let systemSoundID: SystemSoundID = 1016
     var myModel: Model              = Model.sharedInstance
     //var myDepthImage: DepthImage    = DepthImage(onRealTime: false)
@@ -32,7 +34,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var numberOfIterations: Int     = 0
     var timer                       = Double(CFAbsoluteTimeGetCurrent())
     var inRealTime: Bool            = false
-    
+
     @IBOutlet var datasetSizeField: UITextField!
     @IBOutlet var integrationProgress: UIProgressView!
     
@@ -48,6 +50,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet var datasetChoice: UISegmentedControl!
     @IBOutlet var datasetSize: UISegmentedControl!
     
+    var previousLocation: SCNVector3 = SCNVector3(0, 0, 0)
+    var cameraPose: matrix_float4x4 = matrix_float4x4(diagonal: float4(1,1,1,1))
+    var oldFrame: matrix_float4x4 = matrix_float4x4(diagonal: float4(1,1,1,1))
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -59,9 +64,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         // Create a new scene
         let scene = SCNScene()
+        
+        /*
+        let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0)
+        let node = SCNNode(geometry: cube)
+        scene.rootNode.addChildNode(node)
+        */
+        
         // Set the scene to the view
         sceneView.scene = scene
-        
         service.delegate = self
     }
     
@@ -105,9 +116,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //    else { return }
         switch camera.trackingState {
         case .notAvailable:
-            sceneView.alpha = 0.1
+            sceneView.alpha = 0.2
         case .normal:
-            sceneView.alpha = 0.6
+            sceneView.alpha = 0.7
         default:
             return;
         }
@@ -116,11 +127,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = .vertical
+        configuration.planeDetection = .horizontal
         sceneView.session.run(configuration)
         sceneView.session.delegate = self
         
-        deviceType = .IPad
+        self.deviceType = .IPad
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
@@ -176,6 +187,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //var Rt = frame.camera.viewMatrix(for: .landscapeLeft)
         //Rt = Rt.format(".4")
         let Rt = frame.camera.transform
+        //var orientation = simd_mul(Rt, float4(0, 0, -0.1, 1))
+        //let location = SCNVector3(Rt[3][0], Rt[3][1], Rt[3][2])
+        //let direction = SCNVector3(orientation.x, orientation.y, orientation.z)
+
         switch self.deviceType {
         case .IPad:
             //NSLog("%@", "\(cameraPose)")
@@ -188,6 +203,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             \(Rt.columns.0.w.format(f)) \(Rt.columns.1.w.format(f)) \(Rt.columns.2.w.format(f)) \(Rt.columns.3.w.format(f))
             """
             service.send(transform: Rt)
+            /*
+            let indices: [Int32] = [0, 1]
+            let source = SCNGeometrySource(vertices: [location, direction])
+            let element = SCNGeometryElement(indices: indices, primitiveType: .line)
+            let line = SCNGeometry(sources: [source], elements: [element])
+            let lineNode = SCNNode(geometry: line)
+            lineNode.geometry?.firstMaterial?.diffuse.contents = UIColor.white
+            sceneView.scene.rootNode.addChildNode(lineNode)
+            */
+            //previousLocation = location
         case .Iphone:
             self.ty.numberOfLines = 4
             let f = ".3"
@@ -197,42 +222,36 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             \(Rt.columns.0.z.format(f)) \(Rt.columns.1.z.format(f)) \(Rt.columns.2.z.format(f)) \(Rt.columns.3.z.format(f))
             \(Rt.columns.0.w.format(f)) \(Rt.columns.1.w.format(f)) \(Rt.columns.2.w.format(f)) \(Rt.columns.3.w.format(f))
             """
-            if inRealTime {
-                if frame.capturedDepthData != nil
-                {
-                    self.myDepthDataRaw =  frame.capturedDepthData
-                    let depthDataMap = self.myDepthDataRaw?.depthDataMap
-                    CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
-                    let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
-                    
-                    Model.sharedInstance.image.width = Int(CVPixelBufferGetWidth(depthDataMap!))
-                    Model.sharedInstance.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
-                    Model.sharedInstance.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
-                    Model.sharedInstance.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
-                    let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
-                    Model.sharedInstance.parameters["cy"] = Float(frameReference.width / CGFloat(Model.sharedInstance.image.width))
-                    Model.sharedInstance.parameters["cx"] = Float(frameReference.height / CGFloat(Model.sharedInstance.image.height))
-                    
-                    Model.sharedInstance.update(intrinsics: self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrix)
-                    /*
-                    let matrix = self.myDepthDataRaw?.cameraCalibrationData?.extrinsicMatrix
-                    let newRotation = matrix_float4x4(rows:
-                        [ matrix!.transpose.columns.0,
-                          matrix!.transpose.columns.1,
-                          matrix!.transpose.columns.2,
-                          float4(0, 0, 0, 1)
-                        ])
-                    Model.sharedInstance.update(rotation: newRotation)
-                    */
-                    // We have to convert depthDataMap into an UIImage to perform some pre-processing like filtering.
-                    //compCIImage(depthDataMap: depthDataMap!)
-                    //myDepthImage = UIImage(ciImage: myCIImage!)
-                    //depthView.image = myDepthImage
-                    //self.myDepthImage.update(_data: depthPointer)
-                    //self.myDepthImage.update(_data: depthPointer)
-                    //self.myCamera.update(extrinsics: frame.camera.transform)
-                    //let last_points = Model.sharedInstance.image.data
-                    //Model.sharedInstance.image.push(map: depthPointer)
+            if frame.capturedDepthData != nil
+            {
+                self.myDepthDataRaw =  frame.capturedDepthData
+                let depthDataMap = self.myDepthDataRaw?.depthDataMap
+                CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
+                let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
+                /*
+                let ciImage = CIImage(cvPixelBuffer: depthDataMap!)
+                let uiImage = UIImage(ciImage: ciImage)
+                let outputFilePath = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("photo.jpg")
+                do {
+                    try UIImageJPEGRepresentation(uiImage, 100)?.write(to: outputFilePath!)
+                    self.service.send(photo: Constant.Code.Photo.sendingPhoto, file: outputFilePath!)
+                }
+                catch {}
+                */
+                
+                Model.sharedInstance.image.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+                Model.sharedInstance.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
+                Model.sharedInstance.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
+                Model.sharedInstance.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
+                let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
+                Model.sharedInstance.parameters["cy"] = Float(frameReference.width / CGFloat(Model.sharedInstance.image.width))
+                Model.sharedInstance.parameters["cx"] = Float(frameReference.height / CGFloat(Model.sharedInstance.image.height))
+                
+                Model.sharedInstance.update(intrinsics: self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrix)
+                Model.sharedInstance.update(rotation: Rt)
+
+                if inRealTime {
+                    self.inRealTime = false
                     Model.sharedInstance.update(data: depthPointer)
                     
                     var depthmap = Model.sharedInstance.image.data
@@ -241,25 +260,27 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                          Int32(Model.sharedInstance.camera.width),
                                          Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.update(data: depthmap)
-
-                    self.inRealTime = false
+                    
                     DispatchQueue.global().async {
                         Model.sharedInstance.integrate()
                         DispatchQueue.main.async {
                             self.service.send(alert: Constant.Code.Integration.hasFinished)
                         }
                     }
- 
+                    
                 }
             }
         }
     }
     
+    func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        // Pass
+    }
     
     @IBAction func resetModel(_ sender: Any) {
         if self.deviceType == .IPad {
             service.send(alert: Constant.Code.Integration.reset)
-            let origin = matrix_float4x4(diagonal: float4(1,1,1,1))
+            //let origin = matrix_float4x4(diagonal: float4(1,1,1,1))
             //sceneView.session.setWorldOrigin(relativeTransform: origin)
         }
         /*
@@ -389,7 +410,7 @@ extension ViewController : DOFServiceManagerDelegate {
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4) {
         OperationQueue.main.addOperation {
             if (self.deviceType == .Iphone) {
-                Model.sharedInstance.update(rotation: transform)
+                //Model.sharedInstance.update(rotation: transform)
                 Model.sharedInstance.update(translation: transform)
                 self.tx.text = "Received"
             }
@@ -429,12 +450,13 @@ extension ViewController : DOFServiceManagerDelegate {
         }
     }
     
-    func updateCxCy(manager: DOFServiceManager, points: CGSize) {
+    func photoChaned(manager: DOFServiceManager) {
         OperationQueue.main.addOperation {
             switch self.deviceType {
-            case .Iphone:
-                Model.sharedInstance.parameters["cx"] = Float(points.width)
-                Model.sharedInstance.parameters["cy"] = Float(points.height)
+            case .IPad:
+                let file = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("photo.jpg")
+                let uImage = UIImage(contentsOfFile: (file?.absoluteString)!)
+                self.imageView.image = uImage
             default:
                 return;
             }

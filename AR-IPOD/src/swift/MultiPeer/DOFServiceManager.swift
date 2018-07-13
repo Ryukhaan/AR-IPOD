@@ -46,15 +46,15 @@ class DOFServiceManager : NSObject {
     }
     
     
-    func send(alert A : String, cxUpdated cx: String, cyUpdated cy: String) {
+    func send(photo A: String, file: URL) {
         let text = """
-        \(A) \(cx) \(cy) 0
+        \(A) 0 0 0
         0 0 0 0
         0 0 0 0
         0 0 0 0
         """
-        //NSLog("%@", "Cx and Cy corrections send to \(mySession.connectedPeers) peers !")
-        self.send(text: text)
+        //NSLog("%@", "Integrate depth map done to \(mySession.connectedPeers.count) peers")
+        self.transferFile(file: file)
     }
     
     func send(alert A: String) {
@@ -69,11 +69,11 @@ class DOFServiceManager : NSObject {
     }
     
     func send(transform M: matrix_float4x4) {
-        let T = simd_mul(M, M)
+        //let T = simd_mul(M, M)
         let text = """
         \(M.columns.0.x) \(M.columns.1.x) \(M.columns.2.x) \(M.columns.3.x)
         \(M.columns.0.y) \(M.columns.1.y) \(M.columns.2.y) \(M.columns.3.y)
-        \(M.columns.0.z) \(M.columns.1.z) \(M.columns.2.z) \(-M.columns.3.z)
+        \(M.columns.0.z) \(M.columns.1.z) \(M.columns.2.z) \(M.columns.3.z)
         \(M.columns.0.w) \(M.columns.1.w) \(M.columns.2.w) \(M.columns.3.w)
         """
         //NSLog("%@", "Send camera position : \n \(text) \n to \(mySession.connectedPeers.count) peers")
@@ -87,6 +87,14 @@ class DOFServiceManager : NSObject {
             }
             catch let error {
                 NSLog("%@", "Error for sending: \(error)")
+            }
+        }
+    }
+    
+    private func transferFile(file: URL) {
+        if mySession.connectedPeers.count > 0 {
+            for id in mySession.connectedPeers {
+                self.mySession.sendResource(at: file, withName: "photo.jpg", toPeer: id, withCompletionHandler: nil)
             }
         }
     }

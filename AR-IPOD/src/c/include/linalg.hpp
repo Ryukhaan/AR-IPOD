@@ -167,9 +167,9 @@ simd_float2x3 compute_bounding_box(float* depthmap,
                                    const float cy) {
     simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
     simd_float3x3 R = simd_transpose(rotation);
-    simd_float4x4 Rtinv;
-    for (int i = 0; i<3; i++) Rtinv.columns[i] = simd_make_float4(R.columns[i].x, R.columns[i].y, R.columns[i].z, 0);
-    Rtinv.columns[3] = simd_make_float4(-translation.x, -translation.y, -translation.z, 1);
+    //simd_float4x4 Rtinv;
+    //for (int i = 0; i<3; i++) Rtinv.columns[i] = simd_make_float4(R.columns[i].x, R.columns[i].y, R.columns[i].z, 0);
+    //Rtinv.columns[3] = simd_make_float4(-translation.x, -translation.y, -translation.z, 1);
     //Rtinv = simd_inverse(Rtinv);
     
     for (int i=0; i<height; i++) {
@@ -185,7 +185,7 @@ simd_float2x3 compute_bounding_box(float* depthmap,
             */
             simd::float4 uvz = homogenezie(j, i, depth, cx, cy);
             simd::float4 local = project_screen_to_local(uvz, Kinv);
-            simd::float4 global = local_to_global(local, Rtinv);
+            simd::float3 global = local_to_global(local, rotation, translation);
             box.columns[0].x = simd_min(box.columns[0].x, global.x);
             box.columns[0].y = simd_min(box.columns[0].y, global.y);
             box.columns[0].z = simd_min(box.columns[0].z, global.z);

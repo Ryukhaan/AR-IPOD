@@ -28,6 +28,7 @@ class SceneViewController: UIViewController {
     var savedFramesIndex: Int = 0
     var points: [Vector] = [Vector]()
     var alreadyMeshed: Bool = false
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
