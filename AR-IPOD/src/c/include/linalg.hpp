@@ -176,16 +176,18 @@ simd_float2x3 compute_bounding_box(float* depthmap,
         for (int j=0; j<width; j++) {
             float depth = depthmap[i*width+j];
             if (std::isnan(depth) || depth < 1e-6) continue;
-            /*
+            
             simd::float4 uv = simd_make_float4(depth * j * cx, depth * i * cy, depth, 1);
             simd::float4 local = simd_mul(Kinv, uv);
             simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
-            simd::float3 world_point = simd_mul(simd_transpose(rotation), rlocal - translation);
-            //simd::float3 world_point = simd_mul(rotation, rlocal) + translation;
-            */
+            //simd::float3 world_point = simd_mul(simd_transpose(rotation), rlocal - translation);
+            simd::float3 global = simd_mul(rotation, rlocal) + translation;
+            
+            /*
             simd::float4 uvz = homogenezie(j, i, depth, cx, cy);
             simd::float4 local = project_screen_to_local(uvz, Kinv);
             simd::float3 global = local_to_global(local, rotation, translation);
+            */
             box.columns[0].x = simd_min(box.columns[0].x, global.x);
             box.columns[0].y = simd_min(box.columns[0].y, global.y);
             box.columns[0].z = simd_min(box.columns[0].z, global.z);

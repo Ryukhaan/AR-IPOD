@@ -50,13 +50,13 @@ void integrate_projection(float* depthmap,
     
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
-    /*
+    
     simd_float2x3 box = compute_bounding_box(depthmap, width, height, R, T, Kinv, cx, cy);
     simd_int3 point_min = global_to_integer(box.columns[0] + offset, resolution);
     simd_int3 point_max = global_to_integer(box.columns[1] + offset, resolution);
     int mini = hash_code(point_min, dimension);
     int maxi = hash_code(point_max, dimension);
-    */
+    
     
     for (int i = 0; i<width*height; i++) {
         float depth = depthmap[i];
@@ -150,7 +150,7 @@ void integrate_projection(float* depthmap,
                 //    updated_voxel = update_voxel(updated_voxel, delta, weight);
                 ((Voxel *)voxels)[n] = updated_voxel;
             }
-    */
+     */
     return;
 }
 #endif /* projection_hpp */

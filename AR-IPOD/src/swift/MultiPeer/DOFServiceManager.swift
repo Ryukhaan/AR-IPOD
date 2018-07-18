@@ -14,6 +14,7 @@ class DOFServiceManager : NSObject {
     
     // Service type must be a unique string, at most 15 characters long
     // and can contain only ASCII lowercase letters, numbers and hyphens.
+    var correctionM = matrix_float4x4(diagonal: float4(1,1,1,1))
     private let DofServiceType = "dof-service"
     
     private let myPeerId = MCPeerID(displayName: UIDevice.current.name)
@@ -58,21 +59,23 @@ class DOFServiceManager : NSObject {
     }
     
     func send(transform A: matrix_float4x4) {
+
         let reorientIpad = matrix_float4x4([
-            float4(0,   -1,   0,  0),
-            float4(1,   0,    0,  0),
-            float4(0,   0,    1,  0),
+            float4(0,   -1,    0,  0),
+            float4(-1,  0,    0,  0),
+            float4(0,   0,    -1,  0),
             float4(0,   0,    0,  1),
             ])
  
-        //let M = simd_mul(reorientIpad, A)
-        let R = simd_mul(A, reorientIpad)
+        let R = simd_mul(A, simd_transpose(reorientIpad))
+        //let R = simd_mul(A, simd_transpose(correctionM))
         let text = """
         \(R.columns.0.x) \(R.columns.1.x) \(R.columns.2.x) \(-A.columns.3.x)
-        \(R.columns.0.y) \(R.columns.1.y) \(R.columns.2.y) \(-A.columns.3.y)
+        \(R.columns.0.y) \(R.columns.1.y) \(R.columns.2.y) \(A.columns.3.y)
         \(R.columns.0.z) \(R.columns.1.z) \(R.columns.2.z) \(-A.columns.3.z)
-        \(A.columns.0.w) \(A.columns.1.w) \(A.columns.2.w) \(A.columns.3.w)
+        0 0 0 1
         """
+ 
         //NSLog("%@", "Send camera position : \n \(text) \n to \(mySession.connectedPeers.count) peers")
         self.send(text: text)
     }

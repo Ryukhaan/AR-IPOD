@@ -132,6 +132,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //var Rt = frame.camera.viewMatrix(for: .landscapeLeft)
         //Rt = Rt.format(".4")
         var Rt = frame.camera.transform
+        let reorientIpad = matrix_float4x4([
+            float4(0,   -1,   0,  0),
+            float4(1,   0,    0,  0),
+            float4(0,   0,    1,  0),
+            float4(0,   0,    0,  1),
+            ])
+        Rt = simd_mul(Rt, simd_transpose(service.correctionM))
+        var M = frame.camera.transform
         //var orientation = simd_mul(Rt, float4(0, 0, -0.1, 1))
         //let location = SCNVector3(Rt[3][0], Rt[3][1], Rt[3][2])
         //let direction = SCNVector3(orientation.x, orientation.y, orientation.z)
@@ -140,12 +148,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         case .IPad:
             //NSLog("%@", "\(cameraPose)")
             self.ty.numberOfLines = 4
-            let f = ".3"
+            self.tz.numberOfLines = 4
+            let f = ".2"
             self.ty.text = """
-            \(Rt.columns.0.x.format(f)) \(Rt.columns.1.x.format(f)) \(Rt.columns.2.x.format(f)) \(Rt.columns.3.x.format(f))
-            \(Rt.columns.0.y.format(f)) \(Rt.columns.1.y.format(f)) \(Rt.columns.2.y.format(f)) \(Rt.columns.3.y.format(f))
-            \(Rt.columns.0.z.format(f)) \(Rt.columns.1.z.format(f)) \(Rt.columns.2.z.format(f)) \(Rt.columns.3.z.format(f))
-            \(Rt.columns.0.w.format(f)) \(Rt.columns.1.w.format(f)) \(Rt.columns.2.w.format(f)) \(Rt.columns.3.w.format(f))
+            \(Rt.columns.0.x.format(f))\t \(Rt.columns.1.x.format(f))\t \(Rt.columns.2.x.format(f))\t \(Rt.columns.3.x.format(f))
+            \(Rt.columns.0.y.format(f))\t \(Rt.columns.1.y.format(f))\t \(Rt.columns.2.y.format(f))\t \(Rt.columns.3.y.format(f))
+            \(Rt.columns.0.z.format(f))\t \(Rt.columns.1.z.format(f))\t \(Rt.columns.2.z.format(f))\t \(Rt.columns.3.z.format(f))
+            \(Rt.columns.0.w.format(f))\t \(Rt.columns.1.w.format(f))\t \(Rt.columns.2.w.format(f))\t \(Rt.columns.3.w.format(f))
+            """
+            self.tz.text = """
+            \(M.columns.0.x.format(f))\t \(M.columns.1.x.format(f))\t \(M.columns.2.x.format(f))\t \(M.columns.3.x.format(f))
+            \(M.columns.0.y.format(f))\t \(M.columns.1.y.format(f))\t \(M.columns.2.y.format(f))\t \(M.columns.3.y.format(f))
+            \(M.columns.0.z.format(f))\t \(M.columns.1.z.format(f))\t \(M.columns.2.z.format(f))\t \(M.columns.3.z.format(f))
+            \(M.columns.0.w.format(f))\t \(M.columns.1.w.format(f))\t \(M.columns.2.w.format(f))\t \(M.columns.3.w.format(f))
             """
             service.send(transform: Rt)
             //previousLocation = location
@@ -243,7 +258,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         switch deviceType {
         case .IPad:
             service.send(alert: Constant.Code.Integration.reset)
-            //let origin = sceneView.session.currentFrame?.camera.transform
+            let origin = sceneView.session.currentFrame?.camera.transform
+            service.correctionM = origin!
             //sceneView.session.setWorldOrigin(relativeTransform: origin!)
         case .Iphone:
             Model.sharedInstance.reinit()
