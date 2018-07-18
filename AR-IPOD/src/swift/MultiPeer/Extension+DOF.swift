@@ -70,8 +70,8 @@ extension DOFServiceManager : MCSessionDelegate {
             self.delegate?.startIntegrating(manager: self)
         case Constant.Code.Integration.reset:
             self.delegate?.resetModel(manager: self)
-        case Constant.Code.Photo.sendingPhoto:
-            self.delegate?.photoChaned(manager: self)
+        //case Constant.Code.Photo.sendingPhoto:
+            //self.delegate?.photoChaned(manager: self)
         default:
             self.delegate?.transformChanged(manager: self, transform: M)
         }

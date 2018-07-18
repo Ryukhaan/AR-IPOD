@@ -17,5 +17,4 @@ protocol DOFServiceManagerDelegate {
     func integrationFinished(manager: DOFServiceManager)
     func startIntegrating(manager: DOFServiceManager)
     func resetModel(manager: DOFServiceManager)
-    func photoChaned(manager: DOFServiceManager)
 }

@@ -46,17 +46,6 @@ class DOFServiceManager : NSObject {
     }
     
     
-    func send(photo A: String, file: URL) {
-        let text = """
-        \(A) 0 0 0
-        0 0 0 0
-        0 0 0 0
-        0 0 0 0
-        """
-        //NSLog("%@", "Integrate depth map done to \(mySession.connectedPeers.count) peers")
-        self.transferFile(file: file)
-    }
-    
     func send(alert A: String) {
         let text = """
         \(A) 0 0 0
@@ -69,24 +58,20 @@ class DOFServiceManager : NSObject {
     }
     
     func send(transform A: matrix_float4x4) {
-        var M = A
-        /*
         let reorientIpad = matrix_float4x4([
-            float4(1,   0,  0,  0),
-            float4(0,   1,  0,  0),
-            float4(0,   0,  -1, 0),
-            float4(0,   0,  0,  1),
+            float4(0,   -1,   0,  0),
+            float4(1,   0,    0,  0),
+            float4(0,   0,    1,  0),
+            float4(0,   0,    0,  1),
             ])
-
-        M = simd_mul(reorientIpad, M)
-        */
-        //M.columns.3 = A.columns.3
-        //M = simd_transpose(M)
+ 
+        //let M = simd_mul(reorientIpad, A)
+        let R = simd_mul(A, reorientIpad)
         let text = """
-        \(M.columns.0.x) \(M.columns.1.x) \(M.columns.2.x) \(M.columns.3.x)
-        \(M.columns.0.y) \(M.columns.1.y) \(M.columns.2.y) \(M.columns.3.y)
-        \(M.columns.0.z) \(M.columns.1.z) \(M.columns.2.z) \(M.columns.3.z)
-        \(M.columns.0.w) \(M.columns.1.w) \(M.columns.2.w) \(M.columns.3.w)
+        \(R.columns.0.x) \(R.columns.1.x) \(R.columns.2.x) \(-A.columns.3.x)
+        \(R.columns.0.y) \(R.columns.1.y) \(R.columns.2.y) \(-A.columns.3.y)
+        \(R.columns.0.z) \(R.columns.1.z) \(R.columns.2.z) \(-A.columns.3.z)
+        \(A.columns.0.w) \(A.columns.1.w) \(A.columns.2.w) \(A.columns.3.w)
         """
         //NSLog("%@", "Send camera position : \n \(text) \n to \(mySession.connectedPeers.count) peers")
         self.send(text: text)

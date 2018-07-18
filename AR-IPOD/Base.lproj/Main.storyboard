@@ -51,17 +51,14 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yle-OG-6qI">
-                                <rect key="frame" x="968" y="537" width="124" height="51"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="124" id="XpP-fw-WpI"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
-                                <state key="normal" title="Reset">
+                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="252" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qax-Jz-iq4">
+                                <rect key="frame" x="19" y="644" width="176" height="53"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="34"/>
+                                <state key="normal" title="Take Picture">
                                     <color key="titleColor" red="0.0" green="0.16788150090000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
-                                    <action selector="resetModel:" destination="BV1-FR-VrT" eventType="touchUpInside" id="aVr-N8-Wza"/>
+                                    <action selector="startRealTimeIntegration:" destination="BV1-FR-VrT" eventType="touchUpInside" id="JGr-xB-gua"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IL4-TE-v6a">
@@ -80,14 +77,17 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="252" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qax-Jz-iq4">
-                                <rect key="frame" x="916" y="657" width="176" height="53"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="34"/>
-                                <state key="normal" title="Take Picture">
+                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yle-OG-6qI">
+                                <rect key="frame" x="45" y="537" width="124" height="51"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="124" id="XpP-fw-WpI"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <state key="normal" title="Reset">
                                     <color key="titleColor" red="0.0" green="0.16788150090000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
-                                    <action selector="startRealTimeIntegration:" destination="BV1-FR-VrT" eventType="touchUpInside" id="JGr-xB-gua"/>
+                                    <action selector="resetModel:" destination="BV1-FR-VrT" eventType="touchUpInside" id="aVr-N8-Wza"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -96,14 +96,14 @@
                             <constraint firstItem="IL4-TE-v6a" firstAttribute="top" secondItem="Q9c-hL-Hn7" secondAttribute="bottom" constant="8" symbolic="YES" id="2df-lq-cZ0"/>
                             <constraint firstItem="Q9c-hL-Hn7" firstAttribute="leading" secondItem="hhj-Jp-2IH" secondAttribute="leadingMargin" id="8pD-7F-kj1"/>
                             <constraint firstItem="SvY-0D-dDP" firstAttribute="trailing" secondItem="Q9c-hL-Hn7" secondAttribute="trailing" constant="558" id="BPv-88-WPI"/>
-                            <constraint firstItem="Qax-Jz-iq4" firstAttribute="baseline" secondItem="yle-OG-6qI" secondAttribute="baseline" constant="121.5" id="Cs3-d5-ELg"/>
-                            <constraint firstItem="yle-OG-6qI" firstAttribute="leading" secondItem="SvY-0D-dDP" secondAttribute="leading" constant="968" id="D1C-xN-YlQ"/>
+                            <constraint firstItem="Qax-Jz-iq4" firstAttribute="baseline" secondItem="yle-OG-6qI" secondAttribute="baseline" constant="108.5" id="Cs3-d5-ELg"/>
+                            <constraint firstItem="yle-OG-6qI" firstAttribute="leading" secondItem="SvY-0D-dDP" secondAttribute="leading" constant="45" id="D1C-xN-YlQ"/>
                             <constraint firstItem="Q9c-hL-Hn7" firstAttribute="trailing" secondItem="IL4-TE-v6a" secondAttribute="trailing" constant="-538" id="D9Y-Pj-J4k"/>
                             <constraint firstItem="Q9c-hL-Hn7" firstAttribute="leading" secondItem="IL4-TE-v6a" secondAttribute="leading" id="Ezm-ys-a7t"/>
-                            <constraint firstItem="yle-OG-6qI" firstAttribute="centerX" secondItem="Qax-Jz-iq4" secondAttribute="centerX" constant="26" id="IqD-bI-J6Z"/>
-                            <constraint firstItem="Qax-Jz-iq4" firstAttribute="top" secondItem="yle-OG-6qI" secondAttribute="bottom" constant="69" id="LDA-aR-iOu"/>
+                            <constraint firstItem="yle-OG-6qI" firstAttribute="centerX" secondItem="Qax-Jz-iq4" secondAttribute="centerX" id="IqD-bI-J6Z"/>
+                            <constraint firstItem="Qax-Jz-iq4" firstAttribute="top" secondItem="yle-OG-6qI" secondAttribute="bottom" constant="56" id="LDA-aR-iOu"/>
                             <constraint firstItem="N2L-IP-OAK" firstAttribute="bottom" secondItem="SvY-0D-dDP" secondAttribute="bottom" id="LbQ-z1-uR4"/>
-                            <constraint firstItem="SvY-0D-dDP" firstAttribute="bottom" secondItem="Qax-Jz-iq4" secondAttribute="bottom" constant="75" id="TWc-0P-hil"/>
+                            <constraint firstItem="SvY-0D-dDP" firstAttribute="bottom" secondItem="Qax-Jz-iq4" secondAttribute="bottom" constant="88" id="TWc-0P-hil"/>
                             <constraint firstItem="N2L-IP-OAK" firstAttribute="leading" secondItem="hhj-Jp-2IH" secondAttribute="leading" id="l2j-7y-s6h"/>
                             <constraint firstAttribute="trailing" secondItem="N2L-IP-OAK" secondAttribute="trailing" id="wSd-cs-qLi"/>
                             <constraint firstItem="Q9c-hL-Hn7" firstAttribute="top" secondItem="SvY-0D-dDP" secondAttribute="top" id="xZf-kJ-erT"/>

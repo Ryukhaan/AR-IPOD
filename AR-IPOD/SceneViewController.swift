@@ -166,8 +166,8 @@ class SceneViewController: UIViewController {
         if segue.identifier == "Main" {
             if let destination = segue.destination as? ViewController {
                 destination.myModel = Model.sharedInstance
-                destination.datasetChoice.selectedSegmentIndex  = savedDatasetIndex
-                destination.datasetSize.selectedSegmentIndex    = savedFramesIndex
+                //destination.datasetChoice.selectedSegmentIndex  = savedDatasetIndex
+                //destination.datasetSize.selectedSegmentIndex    = savedFramesIndex
             }
         }
     }
