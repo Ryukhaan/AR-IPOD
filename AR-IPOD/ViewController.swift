@@ -34,7 +34,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var numberOfIterations: Int     = 0
     var timer                       = Double(CFAbsoluteTimeGetCurrent())
     var inRealTime: Bool            = false
-
+    var fixedRt: matrix_float4x4    = matrix_float4x4([
+        float4(0,   0,  -1, 0),
+        float4(0,   1,  0,  0),
+        float4(1,   0,  0,  0),
+        float4(0,   0,  0,  1)
+        ])
+    
     @IBOutlet var datasetSizeField: UITextField!
     @IBOutlet var integrationProgress: UIProgressView!
     
@@ -132,6 +138,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         sceneView.session.delegate = self
         
         self.deviceType = .IPad
+        //sceneView.session.setWorldOrigin(relativeTransform: (sceneView.session.currentFrame?.camera.transform)!)
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
@@ -186,7 +193,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
          */
         //var Rt = frame.camera.viewMatrix(for: .landscapeLeft)
         //Rt = Rt.format(".4")
-        let Rt = frame.camera.transform
+        var Rt = frame.camera.transform
         //var orientation = simd_mul(Rt, float4(0, 0, -0.1, 1))
         //let location = SCNVector3(Rt[3][0], Rt[3][1], Rt[3][2])
         //let direction = SCNVector3(orientation.x, orientation.y, orientation.z)
@@ -248,9 +255,27 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 Model.sharedInstance.parameters["cx"] = Float(frameReference.height / CGFloat(Model.sharedInstance.image.height))
                 
                 Model.sharedInstance.update(intrinsics: self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrix)
-                Model.sharedInstance.update(rotation: Rt)
+                //Model.sharedInstance.update(rotation: Rt)
 
                 if inRealTime {
+                    //Model.sharedInstance.update(rotation: Rt)
+                    // Rotation -pi/2
+                    /*
+                    let angular = matrix_float4x4([
+                        float4(0,   0,  1,  0),
+                        float4(0,   1,  0,  0),
+                        float4(-1,  0,  0,  0),
+                        float4(0,   0,  0,  1)
+                        ])
+                    fixedRt = angular * fixedRt
+                    Model.sharedInstance.update(rotation: fixedRt)
+                    */
+                    // Update translation (0,0,-r)
+                    //let oldT = float4(0, 0, 0.35, 1)
+                    //let newT = Rt * oldT
+                    //Rt.columns.3 = oldT - newT
+                    //Model.sharedInstance.update(translation: Rt)
+                    
                     self.inRealTime = false
                     Model.sharedInstance.update(data: depthPointer)
                     
@@ -282,6 +307,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             service.send(alert: Constant.Code.Integration.reset)
             //let origin = matrix_float4x4(diagonal: float4(1,1,1,1))
             //sceneView.session.setWorldOrigin(relativeTransform: origin)
+        }
+        if self.deviceType == .Iphone {
+            Model.sharedInstance.reinit()
         }
         /*
         //let group = DispatchGroup()
@@ -373,6 +401,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             //service.send(alert: Constant.Code.Integration.cxcy, cxUpdated: <#T##String#>, cyUpdated: <#T##String#>)
             service.send(alert: Constant.Code.Integration.isStarting)
         }
+        if deviceType == .Iphone {
+            self.inRealTime = true
+            //Model.sharedInstance.camera.translation = float3(0, 0,  -0.5)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -408,10 +440,15 @@ extension ViewController : DOFServiceManagerDelegate {
     }
     
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4) {
+        //var newT = transform
+        //newT.columns.3.y = 0
+        //newT.columns.3.x = 0
+        //newT.columns.3.z = -0.2
         OperationQueue.main.addOperation {
             if (self.deviceType == .Iphone) {
-                //Model.sharedInstance.update(rotation: transform)
+                Model.sharedInstance.update(rotation: transform)
                 Model.sharedInstance.update(translation: transform)
+                //Model.sharedInstance.update(translation: newT)
                 self.tx.text = "Received"
             }
         }

@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import SceneKit
 
-class SettingsViewController: UIViewController {
+class SettingsViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet var volumeSize: UITextField!
     @IBOutlet var rangeVision: UITextField!
@@ -92,6 +92,11 @@ class SettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        volumeSize.delegate = self
+        rangeVision.delegate = self
+        epsilon.delegate = self
+        delta.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -112,5 +117,11 @@ class SettingsViewController: UIViewController {
                 destination.myModel = Model.sharedInstance
             }
         }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        textField.resignFirstResponder()
+        return true
     }
 }

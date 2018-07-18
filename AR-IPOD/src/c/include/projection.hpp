@@ -99,8 +99,8 @@ void integrate_projection(float* depthmap,
                 //simd::float4 higher = simd_make_float4(centroid.x, centroid.y, centroid.z, 1);
                 //float z = simd_distance(centroid, T);
                 
-                //simd::float3 X_L      = simd_mul(simd_transpose(R), centroid - T);
-                simd::float3 X_L      = simd_mul(R, centroid) + T;
+                simd::float3 X_L      = simd_mul(simd_transpose(R), centroid - T);
+                //simd::float3 X_L      = simd_mul(R, centroid) + T;
                 //simd::float3 X_L        = global_to_local(centroid, R, T);
                 if (X_L.z < 0) continue;
                 

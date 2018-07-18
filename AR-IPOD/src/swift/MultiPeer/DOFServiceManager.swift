@@ -68,8 +68,20 @@ class DOFServiceManager : NSObject {
         self.send(text: text)
     }
     
-    func send(transform M: matrix_float4x4) {
-        //let T = simd_mul(M, M)
+    func send(transform A: matrix_float4x4) {
+        var M = A
+        /*
+        let reorientIpad = matrix_float4x4([
+            float4(1,   0,  0,  0),
+            float4(0,   1,  0,  0),
+            float4(0,   0,  -1, 0),
+            float4(0,   0,  0,  1),
+            ])
+
+        M = simd_mul(reorientIpad, M)
+        */
+        //M.columns.3 = A.columns.3
+        //M = simd_transpose(M)
         let text = """
         \(M.columns.0.x) \(M.columns.1.x) \(M.columns.2.x) \(M.columns.3.x)
         \(M.columns.0.y) \(M.columns.1.y) \(M.columns.2.y) \(M.columns.3.y)
