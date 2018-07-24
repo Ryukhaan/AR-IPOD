@@ -53,36 +53,29 @@ unsigned long bridge_extractMesh(void* triangles,
     //float cy = 6, cx = 6;
 //  int num_threads = omp_get_num_threads();
 //#pragma omp parallel for shared(index) collapse(3) num_threads(num_threads)
-    for (int i = 1; i<n-1; i++) {
-        for (int j = 1; j<n-1; j++) {
-            for (int k = 1; k<n-1; k++) {
-                /*
-                int i0 = i*n2 + j*n + (k+1);
-                int i1 = (i+1)*n2 + j*n + (k+1);
-                int i2 = (i+1)*n2 + j*n + k;
-                int i3 = i*n2 + j*n + k;
-                int i4 = i*n2 + (j+1)*n + (k+1);
-                int i5 = (i+1)*n2 + (j+1)*n + (k+1);
-                int i6 = (i+1)*n2 + (j+1)*n + k;
-                int i7 = i*n2 + (j+1)*n + k;
-                */
+    for (int i = 0; i<n-1; i++) {
+        for (int j = 0; j<n-1; j++) {
+            for (int k = 0; k<n-1; k++) {
                 int idx = i * n2 + j * n + k;
-                int i0 = idx + 1;
-                int i1 = idx + n2 + 1;
-                int i2 = idx + n2;
-                int i3 = idx;
-                int i4 = idx + n + 1;
-                int i5 = idx + n2 + n + 1;
-                int i6 = idx + n2 + n;
-                int i7 = idx + n;
-                simd_int3 p0 = simd_make_int3(i, j, k+1);
-                simd_int3 p1 = simd_make_int3(i+1, j, k+1);
-                simd_int3 p2 = simd_make_int3(i+1, j, k);
-                simd_int3 p3 = simd_make_int3(i, j, k);
-                simd_int3 p4 = simd_make_int3(i, j+1, k+1);
-                simd_int3 p5 = simd_make_int3(i+1, j+1, k+1);
-                simd_int3 p6 = simd_make_int3(i+1, j+1, k);
-                simd_int3 p7 = simd_make_int3(i, j+1, k);
+                
+                int i0 = idx;
+                int i1 = idx + n2;
+                int i2 = idx + n2 + 1;
+                int i3 = idx + 1;
+                int i4 = idx + n;
+                int i5 = idx + n + n2;
+                int i6 = idx + n + n2 + 1;
+                int i7 = idx + n + 1;
+                
+                simd_int3 p0 = simd_make_int3(i, j, k);
+                simd_int3 p1 = simd_make_int3(i+1, j, k);
+                simd_int3 p2 = simd_make_int3(i+1, j, k+1);
+                simd_int3 p3 = simd_make_int3(i, j, k+1);
+                simd_int3 p4 = simd_make_int3(i, j+1, k);
+                simd_int3 p5 = simd_make_int3(i+1, j+1, k);
+                simd_int3 p6 = simd_make_int3(i+1, j+1, k+1);
+                simd_int3 p7 = simd_make_int3(i, j+1, k+1);
+                
                 simd::float3 c0 = integer_to_global(p0, resolution) - offset;
                 simd::float3 c1 = integer_to_global(p1, resolution) - offset;
                 simd::float3 c2 = integer_to_global(p2, resolution) - offset;
@@ -91,40 +84,9 @@ unsigned long bridge_extractMesh(void* triangles,
                 simd::float3 c5 = integer_to_global(p5, resolution) - offset;
                 simd::float3 c6 = integer_to_global(p6, resolution) - offset;
                 simd::float3 c7 = integer_to_global(p7, resolution) - offset;
-                /*
-                simd::float3 c0 = create_centroid(i0, resolution, dimension) - offset;
-                simd::float3 c1 = create_centroid(i1, resolution, dimension) - offset;
-                simd::float3 c2 = create_centroid(i2, resolution, dimension) - offset;
-                simd::float3 c3 = create_centroid(i3, resolution, dimension) - offset;
-                simd::float3 c4 = create_centroid(i4, resolution, dimension) - offset;
-                simd::float3 c5 = create_centroid(i5, resolution, dimension) - offset;
-                simd::float3 c6 = create_centroid(i6, resolution, dimension) - offset;
-                simd::float3 c7 = create_centroid(i7, resolution, dimension) - offset;
-                */
-                /*
-                simd::float3 points[8] = {
-                    ((simd::float3*) centroids)[i0],
-                    ((simd::float3*) centroids)[i1],
-                    ((simd::float3*) centroids)[i2],
-                    ((simd::float3*) centroids)[i3],
-                    ((simd::float3*) centroids)[i4],
-                    ((simd::float3*) centroids)[i5],
-                    ((simd::float3*) centroids)[i6],
-                    ((simd::float3*) centroids)[i7]
-                };
-                 */
+
                 simd::float3 points[8] = {c0, c1, c2, c3, c4, c5, c6, c7};
                 float values[8] = {
-                    /*
-                    fabs( ((Voxel*) voxels)[i0].sdf ),
-                    fabs( ((Voxel*) voxels)[i1].sdf ),
-                    fabs( ((Voxel*) voxels)[i2].sdf ),
-                    fabs( ((Voxel*) voxels)[i3].sdf ),
-                    fabs( ((Voxel*) voxels)[i4].sdf ),
-                    fabs( ((Voxel*) voxels)[i5].sdf ),
-                    fabs( ((Voxel*) voxels)[i6].sdf ),
-                    fabs( ((Voxel*) voxels)[i7].sdf )
-                    */
                     ( ((Voxel*) voxels)[i0].sdf ),
                     ( ((Voxel*) voxels)[i1].sdf ),
                     ( ((Voxel*) voxels)[i2].sdf ),
