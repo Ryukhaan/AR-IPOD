@@ -56,7 +56,6 @@ unsigned long bridge_extractMesh(void* triangles,
     for (int i = 0; i<n-1; i++) {
         for (int j = 0; j<n-1; j++) {
             for (int k = 0; k<n-1; k++) {
-                int idx = i * n2 + j * n + k;
                 /*
                 int i0 = i*n2 + j*n + (k+1);
                 int i1 = (i+1)*n2 + j*n + (k+1);
@@ -67,22 +66,31 @@ unsigned long bridge_extractMesh(void* triangles,
                 int i6 = (i+1)*n2 + (j+1)*n + k;
                 int i7 = i*n2 + (j+1)*n + k;
                 */
-                simd_int3 i0 = simd_make_int3(i, j, k+1);
-                simd_int3 i1 = simd_make_int3(i+1, j, k+1);
-                simd_int3 i2 = simd_make_int3(i+1, j, k);
-                simd_int3 i3 = simd_make_int3(i, j, k);
-                simd_int3 i4 = simd_make_int3(i, j+1, k+1);
-                simd_int3 i5 = simd_make_int3(i+1, j+1, k+1);
-                simd_int3 i6 = simd_make_int3(i+1, j+1, k);
-                simd_int3 i7 = simd_make_int3(i, j+1, k);
-                simd::float3 c0 = integer_to_global(i0, resolution) - offset;
-                simd::float3 c1 = integer_to_global(i1, resolution) - offset;
-                simd::float3 c2 = integer_to_global(i2, resolution) - offset;
-                simd::float3 c3 = integer_to_global(i3, resolution) - offset;
-                simd::float3 c4 = integer_to_global(i4, resolution) - offset;
-                simd::float3 c5 = integer_to_global(i5, resolution) - offset;
-                simd::float3 c6 = integer_to_global(i6, resolution) - offset;
-                simd::float3 c7 = integer_to_global(i7, resolution) - offset;
+                int idx = i * n2 + j * n + k;
+                int i0 = idx + 1;
+                int i1 = idx + n2 + 1;
+                int i2 = idx + n2;
+                int i3 = idx;
+                int i4 = idx + n + 1;
+                int i5 = idx + n2 + n + 1;
+                int i6 = idx + n2 + n;
+                int i7 = idx + n;
+                simd_int3 p0 = simd_make_int3(i, j, k+1);
+                simd_int3 p1 = simd_make_int3(i+1, j, k+1);
+                simd_int3 p2 = simd_make_int3(i+1, j, k);
+                simd_int3 p3 = simd_make_int3(i, j, k);
+                simd_int3 p4 = simd_make_int3(i, j+1, k+1);
+                simd_int3 p5 = simd_make_int3(i+1, j+1, k+1);
+                simd_int3 p6 = simd_make_int3(i+1, j+1, k);
+                simd_int3 p7 = simd_make_int3(i, j+1, k);
+                simd::float3 c0 = integer_to_global(p0, resolution) - offset;
+                simd::float3 c1 = integer_to_global(p1, resolution) - offset;
+                simd::float3 c2 = integer_to_global(p2, resolution) - offset;
+                simd::float3 c3 = integer_to_global(p3, resolution) - offset;
+                simd::float3 c4 = integer_to_global(p4, resolution) - offset;
+                simd::float3 c5 = integer_to_global(p5, resolution) - offset;
+                simd::float3 c6 = integer_to_global(p6, resolution) - offset;
+                simd::float3 c7 = integer_to_global(p7, resolution) - offset;
                 /*
                 simd::float3 c0 = create_centroid(i0, resolution, dimension) - offset;
                 simd::float3 c1 = create_centroid(i1, resolution, dimension) - offset;
