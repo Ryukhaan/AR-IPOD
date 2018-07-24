@@ -62,7 +62,7 @@ extension DOFServiceManager : MCSessionDelegate {
                                        float4(buffer[8], buffer[9], buffer[10], buffer[11]),
                                        float4(buffer[12], buffer[13], buffer[14], buffer[15])
             ])
-        let coxy = CGSize(width: CGFloat(buffer[1]), height: CGFloat(buffer[2]))
+        //let coxy = CGSize(width: CGFloat(buffer[1]), height: CGFloat(buffer[2]))
         switch rows[0] {
         case Constant.Code.Integration.hasFinished:
             self.delegate?.integrationFinished(manager: self)

@@ -57,7 +57,7 @@ void integrate_projection(float* depthmap,
     int mini = hash_code(point_min, dimension);
     int maxi = hash_code(point_max, dimension);
     
-    
+    /*
     for (int i = 0; i<width*height; i++) {
         float depth = depthmap[i];
         if (depth == 0) continue;
@@ -80,12 +80,12 @@ void integrate_projection(float* depthmap,
         ((Voxel *)voxels)[k] = updated_voxel;
         //number_of_changes ++;
     }
-    
+    */
     //for (int i = 0; i<size; i++)
     //for (int i = mini; i<maxi; i++)
     int n = -1;
     //float global_offset = 0.5 * (1.0 - dimension) * resolution;
-    /*
+    
     float global_offset = 0.5 * dimension * resolution;
     for (int i = 0; i<dimension; i++)
         for (int j = 0; j<dimension; j++)
@@ -93,7 +93,7 @@ void integrate_projection(float* depthmap,
             {
                 //if (i < 0 || i >= size) continue;
                 n ++;
-                //if (n <= mini || n >= maxi) continue;
+                if (n <= mini || n >= maxi) continue;
                 simd_int3   v_ijk = simd_make_int3(i, j, k);
                 //simd::float3 centroid = create_centroid(n, resolutions.x, dimension) - offset;
                 simd::float3 centroid = integer_to_global(v_ijk, resolution) - global_offset;
@@ -140,17 +140,17 @@ void integrate_projection(float* depthmap,
                 // update_voxel((Voxel *)voxels, distance, weight, n);
                 //
                 Voxel updated_voxel = ((Voxel *)voxels)[n];
-                if (distance >= delta + epsilon && distance < zp)
-                    updated_voxel = carving_voxel(updated_voxel);
+               // if (distance >= delta + epsilon && distance < zp)
+               //     updated_voxel = carving_voxel(updated_voxel);
                 if (fabs(distance) <= delta)
                     updated_voxel = update_voxel(updated_voxel, distance, weight);
-                //else if (distance < -delta)
-                //    updated_voxel = update_voxel(updated_voxel, -delta, weight);
-                //else if (distance > delta)
-                //    updated_voxel = update_voxel(updated_voxel, delta, weight);
+                else if (distance < -delta)
+                    updated_voxel = update_voxel(updated_voxel, -delta, weight);
+                else if (distance > delta)
+                    updated_voxel = update_voxel(updated_voxel, delta, weight);
                 ((Voxel *)voxels)[n] = updated_voxel;
             }
-     */
+
     return;
 }
 #endif /* projection_hpp */

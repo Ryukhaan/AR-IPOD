@@ -87,5 +87,14 @@ extension matrix_float4x4 {
                                Float(Float(res.columns.3.w).format(f))!)
         return res
     }
+}
 
+extension float4 {
+    init(_ v : float3, _ x: Float) {
+        self.init()
+        self.x = v.x
+        self.y = v.y
+        self.z = v.z
+        self.w = x
+    }
 }

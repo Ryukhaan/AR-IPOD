@@ -59,20 +59,10 @@ class DOFServiceManager : NSObject {
     }
     
     func send(transform A: matrix_float4x4) {
-
-        let reorientIpad = matrix_float4x4([
-            float4(0,   -1,    0,  0),
-            float4(-1,  0,    0,  0),
-            float4(0,   0,    -1,  0),
-            float4(0,   0,    0,  1),
-            ])
- 
-        let R = simd_mul(A, simd_transpose(reorientIpad))
-        //let R = simd_mul(A, simd_transpose(correctionM))
         let text = """
-        \(R.columns.0.x) \(R.columns.1.x) \(R.columns.2.x) \(-A.columns.3.x)
-        \(R.columns.0.y) \(R.columns.1.y) \(R.columns.2.y) \(A.columns.3.y)
-        \(R.columns.0.z) \(R.columns.1.z) \(R.columns.2.z) \(-A.columns.3.z)
+        \(A.columns.0.x) \(A.columns.1.x) \(A.columns.2.x) \(A.columns.3.x)
+        \(A.columns.0.y) \(A.columns.1.y) \(A.columns.2.y) \(A.columns.3.y)
+        \(A.columns.0.z) \(A.columns.1.z) \(A.columns.2.z) \(A.columns.3.z)
         0 0 0 1
         """
  
@@ -87,14 +77,6 @@ class DOFServiceManager : NSObject {
             }
             catch let error {
                 NSLog("%@", "Error for sending: \(error)")
-            }
-        }
-    }
-    
-    private func transferFile(file: URL) {
-        if mySession.connectedPeers.count > 0 {
-            for id in mySession.connectedPeers {
-                self.mySession.sendResource(at: file, withName: "photo.jpg", toPeer: id, withCompletionHandler: nil)
             }
         }
     }
