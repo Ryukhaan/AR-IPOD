@@ -19,7 +19,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     
-    var PBG: matrix_float4x4 = matrix_float4x4(diagonal: float4(1,1,1,1))
+    var PBG: matrix_float4x4 = matrix_float4x4(
+        float4(1, 0, 0, 0),
+        float4(0, 1, 0, 0),
+        float4(0, 0, 1, 0),
+        float4(0, 0, 0, 1)
+    )
     
     let systemSoundID: SystemSoundID = 1016
     var myModel: Model              = Model.sharedInstance
@@ -224,7 +229,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 float4( 0,  0,  0,  1))
             if let frame = self.sceneView.session.currentFrame {
                 sceneView.session.setWorldOrigin(relativeTransform: frame.camera.transform)
-                self.PBG = simd_mul(simd_transpose(frame.camera.transform), R)
+                self.PBG = simd_mul(R, simd_transpose(frame.camera.transform))
             }
         }
     }
@@ -273,9 +278,7 @@ extension ViewController : DOFServiceManagerDelegate {
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4) {
         // Update Rotation and Transformation : Camera Position
         let T = transform
-        //T.columns.3.x = -T.columns.3.x
-        //T.columns.3.y = -T.columns.3.y
-        //T.columns.3.z = -T.columns.3.z
+
         OperationQueue.main.addOperation {
             if (self.deviceType == .Iphone) {
                 //Model.sharedInstance.update(rotation: transform)
@@ -322,7 +325,7 @@ extension ViewController : DOFServiceManagerDelegate {
                 Model.sharedInstance.reinit()
                 if let frame = self.sceneView.session.currentFrame {
                     self.sceneView.session.setWorldOrigin(relativeTransform: frame.camera.transform)
-                    self.PBG = simd_mul(simd_transpose(frame.camera.transform), R)
+                    self.PBG = simd_mul(R, simd_transpose(frame.camera.transform))
                 }
                 self.tx.text = "Reinitialized"
             default:
