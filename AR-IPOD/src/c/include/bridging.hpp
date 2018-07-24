@@ -44,33 +44,6 @@ void bridge_exportVolumeToPLY(const void* centroids,
                               const char* file_name,
                               int size);
 
-/*
-void bridge_global_registration(const float* previous,
-                                const float* current,
-                                //const void* voxels,
-                                const int width,
-                                const int height,
-                                void* rotation,
-                                void* translation,
-                                const void* intrinsics,
-                                const float resolution,
-                                const int dimension,
-                                const float thresh_depth,
-                                const float corresp_dist,
-                                const int max_num_iter);
-*/
-/*
-void bridge_global_registration(const float* previous,
-                                const float* current,
-                                const void* voxels,
-                                const int width,
-                                const int height,
-                                void* rotation,
-                                void* translation,
-                                const void* intrinsics,
-                                const float resolution,
-                                const int dimension);
-*/
 
 void bridge_median_filter(float* depthmap,
                           const int window_size,
@@ -85,19 +58,5 @@ void bridge_drift_correction(const float* current_points,
                              const float resolution,
                              const int width,
                              const int height);
-/*
-void bridge_raycastDepthMap(float* depthmap,
-                            const void* rotation,
-                            const void* translation,
-                            const void* intrinsics,
-                            void* voxels,
-                            const int width,
-                            const int height,
-                            const int dimension,
-                            const float resolution,
-                            const float delta,
-                            const float epsilon,
-                            const float lambda);
- */
 
 #endif /* volumeInit_hpp */

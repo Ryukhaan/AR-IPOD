@@ -147,42 +147,6 @@ void bridge_exportVolumeToPLY(const void* centroids,
     save_volume_ply_format((simd::float3 *) centroids, sdfs, file_name, size);
 }
 
-/*
-void bridge_fast_icp(const float* previous_points,
-                     const float* current_points,
-                     const void* intrinsics,
-                     void* rotation,
-                     void* lie_rotation,
-                     void* translation,
-                     void* voxels,
-                     const int dimension,
-                     const float resolution,
-                     const int width,
-                     const int height) {
-    fast_icp(previous_points, current_points, intrinsics, rotation, lie_rotation, translation, voxels, dimension, resolution, width, height);
-}
-*/
-/*
-void bridge_global_registration(const float* previous,
-                                const float* current,
-                                //const void* voxels,
-                                const int width,
-                                const int height,
-                                void* rotation,
-                                void* translation,
-                                const void* intrinsics,
-                                const float resolution,
-                                const int dimension,
-                                const float thresh_depth,
-                                const float corresp_dist,
-                                const int max_num_iter)
-{
-    //super4PCS(previous, current, voxels, width, height, rotation, translation, intrinsics, resolution, dimension);
-    //icp(previous, current, width, height, rotation, translation, intrinsics, resolution, dimension, thresh_depth, corresp_dist, max_num_iter);
- 
-}
-*/
-
 void bridge_median_filter(float* depthmap,
                           const int window_size,
                           const int width,
@@ -240,24 +204,3 @@ void bridge_drift_correction(const float* current_points,
     //xtilde = simd_inverse(xtilde);
     //simd_float4x3 error = simd_transpose(simd_mul(xtilde, xy));
 }
-/*
-void bridge_raycastDepthMap(float* depthmap,
-                           const void* rotation,
-                           const void* translation,
-                           const void* intrinsics,
-                           void* voxels,
-                           const int width,
-                           const int height,
-                           const int dimension,
-                           const float resolution,
-                           const float delta,
-                           const float epsilon,
-                           const float lambda) {
-    simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
-    simd_float3x3 R = ((simd_float3x3 *) rotation)[0];
-    simd_float3   T = ((simd_float3 *) translation)[0];
-    simd_float4x4 Kinv = simd_inverse(K);
-    Voxel *p_voxels = (Voxel *) voxels;
-    raytracing(depthmap, R, T, Kinv, p_voxels, width, height, dimension, resolution, delta, epsilon, lambda);
-}
-*/
