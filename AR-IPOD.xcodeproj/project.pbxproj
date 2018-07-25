@@ -121,6 +121,7 @@
 		A5D70A8820D0FAB60002EE0E /* KinectCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectCamera.swift; sourceTree = "<group>"; };
 		A5D70A8A20D0FAC30002EE0E /* KinectDepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectDepthImage.swift; sourceTree = "<group>"; };
 		A5D70A8D20D0FAFF0002EE0E /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		A5E8F5F521089535002D2655 /* parallelism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parallelism.h; sourceTree = "<group>"; };
 		A5EF305D20C6950E003937A3 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		A5EF305F20C6BE12003937A3 /* Alias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alias.swift; sourceTree = "<group>"; };
 		A5EF306120C6BE4F003937A3 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
@@ -168,6 +169,7 @@
 				A5F478F120A2D18200CAAEC0 /* tsdf.hpp */,
 				A5C589A120AAD29C009BA18A /* filtering.hpp */,
 				A5D70A6E20CE8D400002EE0E /* projection.hpp */,
+				A5E8F5F521089535002D2655 /* parallelism.h */,
 			);
 			path = include;
 			sourceTree = "<group>";

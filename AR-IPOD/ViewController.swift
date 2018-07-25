@@ -39,6 +39,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var timer                       = Double(CFAbsoluteTimeGetCurrent())
     var inRealTime: Bool            = false
     var isSetUp: Bool               = false
+    var stopComputing: Bool         = true
+    var timeStep: Int               = 0
     
     var myDepthStrings = [String]()
     //var myDepthImage: UIImage?
@@ -185,20 +187,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 Model.sharedInstance.image.height   = Int(CVPixelBufferGetHeight(depthDataMap))
                 Model.sharedInstance.camera.width   = Int(CVPixelBufferGetWidth(depthDataMap))
                 Model.sharedInstance.camera.height  = Int(CVPixelBufferGetHeight(depthDataMap))
-                let frameReference = image.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
-                Model.sharedInstance.parameters["cy"] = Float(frameReference.width / CGFloat(Model.sharedInstance.image.width))
-                Model.sharedInstance.parameters["cx"] = Float(frameReference.height / CGFloat(Model.sharedInstance.image.height))
+                if let calibration = image.cameraCalibrationData {
+                    let frameReference = calibration.intrinsicMatrixReferenceDimensions
+                    Model.sharedInstance.parameters["cy"] = Float(frameReference.width / CGFloat(Model.sharedInstance.image.width))
+                    Model.sharedInstance.parameters["cx"] = Float(frameReference.height / CGFloat(Model.sharedInstance.image.height))
+                    Model.sharedInstance.update(intrinsics: calibration.intrinsicMatrix)
+                }
                 
-                Model.sharedInstance.update(intrinsics: image.cameraCalibrationData!.intrinsicMatrix)
                 Model.sharedInstance.update(translation: M)
                 Model.sharedInstance.update(rotation: M)
-                Model.sharedInstance.push(data: depthPointer)
+                //Model.sharedInstance.push(data: depthPointer)
                 
-                if inRealTime {
+                if inRealTime || (!stopComputing) {
                     
                     self.inRealTime = false
-                    Model.sharedInstance.computeDepthsMedian()
-                    //Model.sharedInstance.update(data: depthPointer)
+                    //Model.sharedInstance.computeDepthsMedian()
+                    Model.sharedInstance.update(data: depthPointer)
                     
                     var depthmap = Model.sharedInstance.image.data
                     bridge_median_filter(&depthmap,
@@ -207,10 +211,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                          Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.update(data: depthmap)
                     
-                    DispatchQueue.global().async {
+                    let d = 3.0 + Double(3*timeStep)
+                    DispatchQueue.global().asyncAfter(deadline: .now()+d) {
                         Model.sharedInstance.integrate()
                         DispatchQueue.main.async {
-                            self.service.send(alert: Constant.Code.Integration.hasFinished)
+                            self.timeStep += 1
+                            //self.service.send(alert: Constant.Code.Integration.hasFinished)
                         }
                     }
                     
@@ -238,9 +244,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         switch deviceType {
         case .iPad:
             self.tx.text = "Integrating..."
-            service.send(alert: Constant.Code.Integration.isStarting)
+            self.stopComputing = !self.stopComputing
+            if (!self.stopComputing) {
+                service.send(alert: Constant.Code.Integration.isStarting)
+            }
         case .iPhoneX:
-            self.inRealTime = true
+            //self.inRealTime = true
+            self.stopComputing = !self.stopComputing
         }
     }
     
@@ -251,22 +261,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             }
         }
     }
-    /*
-    func displayAlertMessage(title: String, message: String, handler: @escaping ((UIAlertAction) -> Void)) {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-            let player = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: Sounds.beep!), fileTypeHint: AVFileType.wav.rawValue)
-            player.prepareToPlay()
-            player.play()
-            sleep(1)
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: handler))
-            self.present(alert, animated: true, completion: nil)
-        }
-        catch {}
-    }
-    */
     
     func setUpBasis() {
         var N = matrix_identity_float4x4
@@ -303,9 +297,7 @@ extension ViewController : DOFServiceManagerDelegate {
         OperationQueue.main.addOperation {
             switch self.deviceType {
             case .iPhoneX:
-                //print(transform.columns.3)
                 Model.sharedInstance.update(translation: transform)
-                //print(Model.sharedInstance.camera.translation)
                 self.tx.text = "Received"
             case .iPad:
                 return;
@@ -319,7 +311,9 @@ extension ViewController : DOFServiceManagerDelegate {
             switch self.deviceType {
             case .iPad:
                 self.tx.text = "Finished"
-                self.service.send(alert: Constant.Code.Integration.isStarting)
+                if (!self.stopComputing) {
+                    self.service.send(alert: Constant.Code.Integration.isStarting)
+                }
             case .iPhoneX:
                 self.inRealTime = false
             }

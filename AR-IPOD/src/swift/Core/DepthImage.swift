@@ -17,8 +17,8 @@ class DepthImage : DepthImageProtocol {
     var width:  Int             = 0// Image width  (IPhoneX : 360 pixel)
     var height: Int             = 0// Image height (IPhoneX : 480 pixel)
     var data:   [Float]         = [Float]()  // Stores all depths in an array
-    var datasCollection: [[Float]]    = [[Float]]() // Stores all
     var collectionSize: Int     = 6
+    var datasCollection: [[Float]]    = [[Float]]() // Stores all
     
     /**
      * Returns depth at index : row * width + column.
@@ -47,15 +47,18 @@ class DepthImage : DepthImageProtocol {
     }
     
     func push(map: UnsafeMutablePointer<Float>) {
-        let n = numberOfPixels()
-        let s = datasCollection.count
-        if s > 5 {
-            datasCollection.remove(at: 0)
-        }
-        datasCollection.append([Float](repeating: 0.0, count: n))
-        for i in 0..<height {
-            for j in 0..<width {
-                datasCollection[s-1][i*width+j] = map[i*width+j]
+        OperationQueue.main.addOperation {
+            let n = self.numberOfPixels()
+            var s = self.datasCollection.count
+            if s >= self.collectionSize {
+                self.datasCollection.remove(at: 0)
+            }
+            self.datasCollection.append([Float](repeating: 0.0, count: n))
+            s = self.datasCollection.count
+            for i in 0..<self.height {
+                for j in 0..<self.width {
+                    self.datasCollection[s-1][i*self.width+j] = map[i*self.width+j]
+                }
             }
         }
     }
