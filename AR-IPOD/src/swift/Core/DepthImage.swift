@@ -17,7 +17,8 @@ class DepthImage : DepthImageProtocol {
     var width:  Int             = 0// Image width  (IPhoneX : 360 pixel)
     var height: Int             = 0// Image height (IPhoneX : 480 pixel)
     var data:   [Float]         = [Float]()  // Stores all depths in an array
-    var savedData: [[Float]]    = [[Float]]()
+    var datasCollection: [[Float]]    = [[Float]]() // Stores all
+    var collectionSize: Int     = 6
     
     /**
      * Returns depth at index : row * width + column.
@@ -47,27 +48,26 @@ class DepthImage : DepthImageProtocol {
     
     func push(map: UnsafeMutablePointer<Float>) {
         let n = numberOfPixels()
-        if savedData.count >= 6 {
-            savedData.remove(at: 0)
+        let s = datasCollection.count
+        if s > 5 {
+            datasCollection.remove(at: 0)
         }
-        savedData.append([Float](repeating: 0.0, count: n))
+        datasCollection.append([Float](repeating: 0.0, count: n))
         for i in 0..<height {
             for j in 0..<width {
-                savedData[savedData.count-1][i*width+j] = map[i*width+j]
+                datasCollection[s-1][i*width+j] = map[i*width+j]
             }
         }
     }
     
-    func updateDataWithSavedData() {
+    func collect() {
         for i in 0..<height {
             for j in 0..<width {
                 let index = i*width+j
-                let array  = [savedData[0][index],
-                              savedData[1][index],
-                              savedData[2][index],
-                              savedData[3][index],
-                              savedData[4][index],
-                              savedData[5][index]]
+                var array = [Float](repeating: 0.0, count: collectionSize)
+                for k in 0..<collectionSize {
+                    array.append(datasCollection[k][index])
+                }
                 let sorted = array.sorted()
                 if sorted.count % 2 == 0 {
                     data[index] = Float((sorted[(sorted.count / 2)] + sorted[(sorted.count / 2) - 1])) / 2
@@ -77,7 +77,6 @@ class DepthImage : DepthImageProtocol {
                 }
             }
         }
-        savedData.removeAll()
     }
     /**
      * Updates depths values stored in UInt8 Array.
@@ -101,7 +100,7 @@ class DepthImage : DepthImageProtocol {
     
     func switchTo(type: CameraType) -> DepthImage {
         switch type {
-        case .Iphone:
+        case .iPhoneX:
             return IphoneDepthImage()
         case .Kinect:
             return KinectDepthImage()
@@ -109,35 +108,5 @@ class DepthImage : DepthImageProtocol {
             return self
         }
     }
-    /*
-     if realTime {
-     width = UInt16(Constant.Iphone.Width)
-     height = UInt16(Constant.Iphone.Height)
-     }
-     else {
-     width = UInt16(Constant.Kinect.Width)
-     height = UInt16(Constant.Kinect.Height)
-     }
-     data = Array<Float>(repeating: 0, count: Int(width)*Int(height))
-     }
-     */
-    /**
-     * Collects some statistics about the image (minimum, maximum and mean values).
-     */
-    /*
-     func getStats() -> (Float, Float, Float) {
-     var minimum: Float = 9999.0
-     var maximum: Float = -9999.0
-     var mean: Float    = 0.0
-     for pixel in self.data {
-     if pixel.isNaN { continue }
-     minimum = min(minimum, pixel)
-     maximum = max(maximum, pixel)
-     mean += pixel
-     }
-     mean /= Float(self.numberOfPixels())
-     return (minimum, maximum, mean)
-     }
-     */
 }
 

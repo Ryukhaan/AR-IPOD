@@ -21,7 +21,7 @@ class KinectDepthImage : DepthImage {
     
     override func switchTo(type: CameraType) -> DepthImage {
         switch type {
-        case .Iphone:
+        case .iPhoneX:
             return IphoneDepthImage()
         default:
             return self

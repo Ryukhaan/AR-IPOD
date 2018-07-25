@@ -26,14 +26,13 @@ class Camera : CameraProtocol {
     var intrinsics:     matrix_float4x4 = matrix_float4x4(diagonal: float4(1,1,1,1)) // Matrix K
     var rotation:       matrix_float3x3 = matrix_float3x3(diagonal: float3(1,1,1)) // Camera's rotation
     var translation:    Vector = Vector(0,0,0) // Camera's translation
-    var rotationLie:    Vector = Vector(-9999,-9999,-9999)
     
     func update(intrinsics: matrix_float4x4) {}
     func update(rotation: matrix_float3x3) {}
     func update(translation: vector_float3) {}
     func switchTo(type: CameraType) -> Camera {
         switch type {
-        case .Iphone:
+        case .iPhoneX:
             return IphoneCamera(from: self)
         case .Kinect:
             return KinectCamera(from: self)

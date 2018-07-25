@@ -29,7 +29,7 @@ struct IO {
                     return rows.map {
                         $0.components(separatedBy: " ").map { Float($0)! * 1e-3  }
                         }.flatMap { $0 }
-                case .Iphone:
+                case .iPhoneX:
                     return rows.map {
                         $0.components(separatedBy: " ").map { Float($0)!}
                         }.flatMap { $0 }

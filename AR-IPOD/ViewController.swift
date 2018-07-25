@@ -31,7 +31,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     //var myCamera: Camera            = Camera(onRealTime: false)
     
     let service:    DOFServiceManager   = DOFServiceManager()
-    var deviceType: DeviceType      = .Iphone
+    var deviceType: DeviceType      = .iPhoneX
     let batchSize:  Int             = 3
     var sizeOfDataset: Int          = 1
     var nameOfDataset: String       = "tasse-set"
@@ -122,7 +122,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         sceneView.session.run(configuration)
         sceneView.session.delegate = self
         
-        self.deviceType = .IPad
+        self.deviceType = .iPad
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
@@ -141,11 +141,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         M.columns.3 = t
         M = simd_transpose(passage) * M * passage
         switch self.deviceType {
-        case .IPad:
+        case .iPad:
             //NSLog("%@", "\(cameraPose)")
             self.ty.numberOfLines = 4
             self.tz.numberOfLines = 4
-            let f = ".2"
+            //let f = ".2"
+            /*
             self.ty.text = """
             \(Rt.columns.0.x.format(f))\t \(Rt.columns.1.x.format(f))\t \(Rt.columns.2.x.format(f))\t \(Rt.columns.3.x.format(f))
             \(Rt.columns.0.y.format(f))\t \(Rt.columns.1.y.format(f))\t \(Rt.columns.2.y.format(f))\t \(Rt.columns.3.y.format(f))
@@ -159,18 +160,20 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             \(M.columns.0.z.format(f))\t \(M.columns.1.z.format(f))\t \(M.columns.2.z.format(f))\t \(M.columns.3.z.format(f))
             \(M.columns.0.w.format(f))\t \(M.columns.1.w.format(f))\t \(M.columns.2.w.format(f))\t \(M.columns.3.w.format(f))
             """
-            
+            */
             service.send(transform: Rt)
             //previousLocation = location
-        case .Iphone:
+        case .iPhoneX:
             self.ty.numberOfLines = 4
-            let f = ".2"
+            //let f = ".2"
+            /*
             self.ty.text = """
             \(M.columns.0.x.format(f)) \(M.columns.1.x.format(f)) \(M.columns.2.x.format(f)) \(M.columns.3.x.format(f))
             \(M.columns.0.y.format(f)) \(M.columns.1.y.format(f)) \(M.columns.2.y.format(f)) \(M.columns.3.y.format(f))
             \(M.columns.0.z.format(f)) \(M.columns.1.z.format(f)) \(M.columns.2.z.format(f)) \(M.columns.3.z.format(f))
             \(M.columns.0.w.format(f)) \(M.columns.1.w.format(f)) \(M.columns.2.w.format(f)) \(M.columns.3.w.format(f))
             """
+            */
             if let image = frame.capturedDepthData
             {
                 self.myDepthDataRaw =  image
@@ -221,9 +224,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBAction func resetModel(_ sender: Any) {
         setUpBasis()
         switch deviceType {
-        case .IPad:
+        case .iPad:
             service.send(alert: Constant.Code.Integration.reset)
-        case .Iphone:
+        case .iPhoneX:
             Model.sharedInstance.reinit()
         }
     }
@@ -231,10 +234,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBAction func startRealTimeIntegration(_ sender: Any) {
         switch deviceType {
-        case .IPad:
+        case .iPad:
             self.tx.text = "Integrating..."
             service.send(alert: Constant.Code.Integration.isStarting)
-        case .Iphone:
+        case .iPhoneX:
             self.inRealTime = true
         }
     }
@@ -266,13 +269,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     func setUpBasis() {
         var N = matrix_identity_float4x4
         switch deviceType {
-        case .IPad:
+        case .iPad:
             N = matrix_float4x4(
                 float4( 0, -1,  0,  0),
                 float4(-1,  0,  0,  0),
                 float4( 0,  0,  1,  0),
                 float4( 0,  0,  0,  1))
-        case .Iphone:
+        case .iPhoneX:
             N = matrix_float4x4(
                 float4( 0, -1,  0,  0),
                 float4(-1,  0,  0,  0),
@@ -297,12 +300,12 @@ extension ViewController : DOFServiceManagerDelegate {
         // Update Rotation and Transformation : Camera Position
         OperationQueue.main.addOperation {
             switch self.deviceType {
-            case .Iphone:
+            case .iPhoneX:
                 //print(transform.columns.3)
                 Model.sharedInstance.update(translation: transform)
                 //print(Model.sharedInstance.camera.translation)
                 self.tx.text = "Received"
-            case .IPad:
+            case .iPad:
                 return;
             }
         }
@@ -312,9 +315,9 @@ extension ViewController : DOFServiceManagerDelegate {
         // IPAD : Receive message when integration has been finished
         OperationQueue.main.addOperation {
             switch self.deviceType {
-            case .IPad:
+            case .iPad:
                 self.tx.text = "Finished"
-            case .Iphone:
+            case .iPhoneX:
                 self.inRealTime = false
             }
         }
@@ -324,7 +327,7 @@ extension ViewController : DOFServiceManagerDelegate {
         // IPHONE : Receive message to start integrating
         OperationQueue.main.addOperation {
             switch self.deviceType {
-            case .Iphone:
+            case .iPhoneX:
                 self.inRealTime = true
             default:
                 self.tx.text = "Integrating..."
@@ -337,7 +340,7 @@ extension ViewController : DOFServiceManagerDelegate {
         setUpBasis()
         OperationQueue.main.addOperation {
             switch self.deviceType {
-            case .Iphone:
+            case .iPhoneX:
                 Model.sharedInstance.reinit()
                 self.tx.text = "Reinitialized"
             default:

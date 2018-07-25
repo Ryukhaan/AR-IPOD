@@ -166,7 +166,7 @@ simd_float2x3 compute_bounding_box(float* depthmap,
                                    const float cx,
                                    const float cy) {
     simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
-    simd_float3x3 R = simd_transpose(rotation);
+    //simd_float3x3 R = simd_transpose(rotation);
     //simd_float4x4 Rtinv;
     //for (int i = 0; i<3; i++) Rtinv.columns[i] = simd_make_float4(R.columns[i].x, R.columns[i].y, R.columns[i].z, 0);
     //Rtinv.columns[3] = simd_make_float4(-translation.x, -translation.y, -translation.z, 1);

@@ -38,7 +38,7 @@ class KinectCamera: Camera {
         
     override func switchTo(type: CameraType) -> Camera {
             switch type {
-            case .Iphone:
+            case .iPhoneX:
                 return IphoneCamera(from: self)
             default:
                 return self;

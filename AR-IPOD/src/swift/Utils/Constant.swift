@@ -42,11 +42,11 @@ enum AcquisitionType {
 
 enum CameraType {
     case Kinect
-    case Iphone
+    case iPhoneX
     case Other
 }
 
 enum DeviceType {
-    case Iphone
-    case IPad
+    case iPhoneX
+    case iPad
 }

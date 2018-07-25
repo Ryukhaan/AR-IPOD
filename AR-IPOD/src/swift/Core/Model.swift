@@ -31,7 +31,7 @@ class Model {
         voxels          = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
         camera  = IphoneCamera()
         image   = IphoneDepthImage()
-        type    = .Iphone
+        type    = .iPhoneX
         parameters["Lambda"]    = 0.0
         parameters["Delta"]     = 0.3
         parameters["Epsilon"]   = 0.025
@@ -47,7 +47,7 @@ class Model {
         case .Kinect:
             camera  = KinectCamera()
             image   = KinectDepthImage()
-        case .Iphone:
+        case .iPhoneX:
             camera  = IphoneCamera()
             image   = IphoneDepthImage()
         default:
@@ -67,7 +67,7 @@ class Model {
         case .Kinect:
             camera  = KinectCamera()
             image   = KinectDepthImage()
-        case .Iphone:
+        case .iPhoneX:
             camera  = IphoneCamera()
             image   = IphoneDepthImage()
         default:
@@ -134,8 +134,8 @@ class Model {
         image.update(_data: data)
     }
     
-    func createMedianDepthMap() {
-        image.updateDataWithSavedData()
+    func getDatasMedian() {
+        image.collect()
     }
     
     func integrate() {
