@@ -192,11 +192,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 Model.sharedInstance.update(intrinsics: image.cameraCalibrationData!.intrinsicMatrix)
                 Model.sharedInstance.update(translation: M)
                 Model.sharedInstance.update(rotation: M)
+                Model.sharedInstance.push(data: depthPointer)
                 
                 if inRealTime {
                     
                     self.inRealTime = false
-                    Model.sharedInstance.update(data: depthPointer)
+                    Model.sharedInstance.computeDepthsMedian()
+                    //Model.sharedInstance.update(data: depthPointer)
                     
                     var depthmap = Model.sharedInstance.image.data
                     bridge_median_filter(&depthmap,
@@ -317,6 +319,7 @@ extension ViewController : DOFServiceManagerDelegate {
             switch self.deviceType {
             case .iPad:
                 self.tx.text = "Finished"
+                self.service.send(alert: Constant.Code.Integration.isStarting)
             case .iPhoneX:
                 self.inRealTime = false
             }

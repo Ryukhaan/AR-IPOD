@@ -99,9 +99,9 @@ class Model {
     
     func update(intrinsics: matrix_float3x3) {
         var tmp = matrix_float4x4()
-        tmp.columns.0 = float4(intrinsics.columns.0.x, intrinsics.columns.0.y, intrinsics.columns.0.z, 0);
-        tmp.columns.1 = float4(intrinsics.columns.1.x, intrinsics.columns.1.y, intrinsics.columns.1.z, 0);
-        tmp.columns.2 = float4(intrinsics.columns.2.x, intrinsics.columns.2.y, intrinsics.columns.2.z, 0);
+        tmp.columns.0 = float4(intrinsics.columns.0, 0);
+        tmp.columns.1 = float4(intrinsics.columns.1, 0);
+        tmp.columns.2 = float4(intrinsics.columns.2, 0);
         tmp.columns.3 = float4(0, 0, 0, 1);
         camera.update(intrinsics: tmp)
     }
@@ -134,7 +134,11 @@ class Model {
         image.update(_data: data)
     }
     
-    func getDatasMedian() {
+    func push(data: UnsafeMutablePointer<Float>) {
+        image.push(map: data)
+    }
+    
+    func computeDepthsMedian() {
         image.collect()
     }
     
