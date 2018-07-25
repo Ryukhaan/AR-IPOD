@@ -157,27 +157,6 @@ class Model {
             parameters["Delta"]!, parameters["Epsilon"]!, parameters["Lambda"]!,
             parameters["cx"]!, parameters["cy"]!)
     }
-    /*
-    func globalRegistration(previous: [Float], current : [Float]) {
-        var R = self.camera.rotation
-        var T = self.camera.translation
-        var K = self.camera.intrinsics
-        bridge_global_registration(previous,
-                                   current,
-                                   Int32(Model.sharedInstance.camera.width),
-                                   Int32(Model.sharedInstance.camera.height),
-                                   &R,
-                                   &T,
-                                   &K,
-                                   Model.sharedInstance.voxelResolution,
-                                   Int32(Model.sharedInstance.dimension),
-                                   Model.sharedInstance.parameters["icpMaxDist"]!,
-                                   Model.sharedInstance.parameters["icpMaxCorr"]!,
-                                   Int32(Model.sharedInstance.parameters["icpMaxIter"]!))
-        self.camera.rotation    = R
-        self.camera.translation = T
-    }
-    */
     
     func reinit() {
         reallocateVoxels()
@@ -185,38 +164,11 @@ class Model {
         camera.translation = float3(0,0,0)
     }
     
-    private func carvingVoxel(i: Int) {
-        if voxels[i].sdf <= 0 && voxels[i].weight > 0 {
-            voxels[i] = Voxel()
-        }
-    }
-    
-    private func updateVoxel(i: Int, distance: Float, weight: Float) {
-        voxels[i].update(sdf: distance, weight: weight)
-    }
-    
-    private func createCentroid(i: Int, voxelResolution: Float, dimension: Int) -> Vector {
-        let offset = voxelResolution * 0.5
-        let coord = hash_decode(i)
-        return offset + integer_to_global(coord)
-    }
-    
-    private func hash_decode(_ i: Int) -> Id3 {
-        let square = dimension * dimension
-        let x = Int(i / square)
-        let remainder = i - square * x
-        let y = remainder / dimension
-        let z = remainder - y * dimension
-        return Id3(Int32(x), Int32(y), Int32(z))
-    }
-    
-    private func integer_to_global(_ coord: Id3) -> Vector {
-        return voxelResolution * Vector(Float(coord.x), Float(coord.y), Float(coord.z))
-    }
-    
     private func getRotationFrom(matrix: matrix_float4x4) -> matrix_float3x3 {
-        let tmp = matrix_float3x4(matrix.columns.0, matrix.columns.1, matrix.columns.2)
-        return matrix_float3x3(tmp.transpose.columns.0, tmp.transpose.columns.1, tmp.transpose.columns.2).transpose
+        return matrix_float3x3(
+            float3(matrix.columns.0),
+            float3(matrix.columns.1),
+            float3(matrix.columns.2))
     }
     
     private func getTranslationFrom(matrix: matrix_float4x4) -> float3 {

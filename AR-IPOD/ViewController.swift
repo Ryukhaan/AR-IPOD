@@ -39,6 +39,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var numberOfIterations: Int     = 0
     var timer                       = Double(CFAbsoluteTimeGetCurrent())
     var inRealTime: Bool            = false
+    var isSetUp: Bool               = false
     
     var myDepthStrings = [String]()
     //var myDepthImage: UIImage?
@@ -137,7 +138,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         // Capture DepthMap
         let Rt = frame.camera.transform
         var M = simd_mul(simd_transpose(self.PBG), simd_mul(Rt, self.PBG))
-        M.columns.3 = float4(Model.sharedInstance.camera.translation, 1)
+        //M.columns.3 = float4(Model.sharedInstance.camera.translation, 1)
         switch self.deviceType {
         case .IPad:
             //NSLog("%@", "\(cameraPose)")
@@ -217,20 +218,26 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     @IBAction func resetModel(_ sender: Any) {
+        if (!self.isSetUp) {
+            let P = matrix_float4x4(
+                float4( 0, -1,  0,  0),
+                float4( 1,  0,  0,  0),
+                float4( 0,  0, -1,  0),
+                float4( 0,  0,  0,  1))
+            let N = matrix_float4x4(
+                float4( 0, -1,  0,  0),
+                float4(-1,  0,  0,  0),
+                float4( 0,  0, -1,  0),
+                float4( 0,  0,  0,  1))
+            self.sceneView.session.setWorldOrigin(relativeTransform: N)
+            self.PBG = P
+            self.isSetUp = true
+        }
         switch deviceType {
         case .IPad:
             service.send(alert: Constant.Code.Integration.reset)
         case .Iphone:
             Model.sharedInstance.reinit()
-            let R = matrix_float4x4(
-                float4( 1,  0,  0,  0),
-                float4( 0,  1,  0,  0),
-                float4( 0,  0, -1,  0),
-                float4( 0,  0,  0,  1))
-            if let frame = self.sceneView.session.currentFrame {
-                sceneView.session.setWorldOrigin(relativeTransform: frame.camera.transform)
-                self.PBG = simd_mul(R, simd_transpose(frame.camera.transform))
-            }
         }
     }
 
@@ -278,7 +285,6 @@ extension ViewController : DOFServiceManagerDelegate {
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4) {
         // Update Rotation and Transformation : Camera Position
         let T = transform
-
         OperationQueue.main.addOperation {
             if (self.deviceType == .Iphone) {
                 //Model.sharedInstance.update(rotation: transform)
@@ -314,9 +320,14 @@ extension ViewController : DOFServiceManagerDelegate {
     
     func resetModel(manager: DOFServiceManager) {
         // IPHONE : Resetting model
-        let R = matrix_float4x4(
+        let P = matrix_float4x4(
+            float4( 0, -1,  0,  0),
             float4( 1,  0,  0,  0),
-            float4( 0,  1,  0,  0),
+            float4( 0,  0, -1,  0),
+            float4( 0,  0,  0,  1))
+        let N = matrix_float4x4(
+            float4( 0, -1,  0,  0),
+            float4(-1,  0,  0,  0),
             float4( 0,  0, -1,  0),
             float4( 0,  0,  0,  1))
         OperationQueue.main.addOperation {
@@ -324,8 +335,9 @@ extension ViewController : DOFServiceManagerDelegate {
             case .Iphone:
                 Model.sharedInstance.reinit()
                 if let frame = self.sceneView.session.currentFrame {
-                    self.sceneView.session.setWorldOrigin(relativeTransform: frame.camera.transform)
-                    self.PBG = simd_mul(R, simd_transpose(frame.camera.transform))
+                    //self.sceneView.session.setWorldOrigin(relativeTransform: frame.camera.transform)
+                    self.sceneView.session.setWorldOrigin(relativeTransform: N)
+                    self.PBG = P
                 }
                 self.tx.text = "Reinitialized"
             default:

@@ -33,6 +33,13 @@ extension Vector {
     static func -(vector: Vector, scalar: Float) -> Vector {
         return scalar - vector
     }
+    
+    init(_ v : float4) {
+        self.init()
+        self.x = v.x
+        self.y = v.y
+        self.z = v.z
+    }
 }
 
 extension Float {
