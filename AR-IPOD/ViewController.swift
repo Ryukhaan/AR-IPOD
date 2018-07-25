@@ -19,12 +19,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     
-    var PBG: matrix_float4x4 = matrix_float4x4(
-        float4(1, 0, 0, 0),
-        float4(0, 1, 0, 0),
-        float4(0, 0, 1, 0),
-        float4(0, 0, 0, 1)
-    )
+    var passage: matrix_float4x4 = matrix_float4x4(
+        float4( 0, -1,  0,  0),
+        float4( 1,  0,  0,  0),
+        float4( 0,  0, -1,  0),
+        float4( 0,  0,  0,  1))
     
     let systemSoundID: SystemSoundID = 1016
     var myModel: Model              = Model.sharedInstance
@@ -137,8 +136,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
         let Rt = frame.camera.transform
-        var M = simd_mul(simd_transpose(self.PBG), simd_mul(Rt, self.PBG))
-        //M.columns.3 = float4(Model.sharedInstance.camera.translation, 1)
+        var M = frame.camera.transform
+        let t = float4(Model.sharedInstance.camera.translation, 1)
+        M.columns.3 = t
+        M = simd_transpose(passage) * M * passage
         switch self.deviceType {
         case .IPad:
             //NSLog("%@", "\(cameraPose)")
@@ -151,14 +152,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             \(Rt.columns.0.z.format(f))\t \(Rt.columns.1.z.format(f))\t \(Rt.columns.2.z.format(f))\t \(Rt.columns.3.z.format(f))
             \(Rt.columns.0.w.format(f))\t \(Rt.columns.1.w.format(f))\t \(Rt.columns.2.w.format(f))\t \(Rt.columns.3.w.format(f))
             """
-            /*
+            
             self.tz.text = """
             \(M.columns.0.x.format(f))\t \(M.columns.1.x.format(f))\t \(M.columns.2.x.format(f))\t \(M.columns.3.x.format(f))
             \(M.columns.0.y.format(f))\t \(M.columns.1.y.format(f))\t \(M.columns.2.y.format(f))\t \(M.columns.3.y.format(f))
             \(M.columns.0.z.format(f))\t \(M.columns.1.z.format(f))\t \(M.columns.2.z.format(f))\t \(M.columns.3.z.format(f))
             \(M.columns.0.w.format(f))\t \(M.columns.1.w.format(f))\t \(M.columns.2.w.format(f))\t \(M.columns.3.w.format(f))
             """
-            */
+            
             service.send(transform: Rt)
             //previousLocation = location
         case .Iphone:
@@ -170,22 +171,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             \(M.columns.0.z.format(f)) \(M.columns.1.z.format(f)) \(M.columns.2.z.format(f)) \(M.columns.3.z.format(f))
             \(M.columns.0.w.format(f)) \(M.columns.1.w.format(f)) \(M.columns.2.w.format(f)) \(M.columns.3.w.format(f))
             """
-            if frame.capturedDepthData != nil
+            if let image = frame.capturedDepthData
             {
-                self.myDepthDataRaw =  frame.capturedDepthData
-                let depthDataMap = self.myDepthDataRaw?.depthDataMap
-                CVPixelBufferLockBaseAddress(depthDataMap!, CVPixelBufferLockFlags(rawValue: 0))
-                let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap!), to: UnsafeMutablePointer<Float>.self)
+                self.myDepthDataRaw =  image
+                let depthDataMap = image.depthDataMap
+                CVPixelBufferLockBaseAddress(depthDataMap, CVPixelBufferLockFlags(rawValue: 0))
+                let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap), to: UnsafeMutablePointer<Float>.self)
                 
-                Model.sharedInstance.image.width = Int(CVPixelBufferGetWidth(depthDataMap!))
-                Model.sharedInstance.image.height = Int(CVPixelBufferGetHeight(depthDataMap!))
-                Model.sharedInstance.camera.width = Int(CVPixelBufferGetWidth(depthDataMap!))
-                Model.sharedInstance.camera.height = Int(CVPixelBufferGetHeight(depthDataMap!))
-                let frameReference = self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
+                Model.sharedInstance.image.width    = Int(CVPixelBufferGetWidth(depthDataMap))
+                Model.sharedInstance.image.height   = Int(CVPixelBufferGetHeight(depthDataMap))
+                Model.sharedInstance.camera.width   = Int(CVPixelBufferGetWidth(depthDataMap))
+                Model.sharedInstance.camera.height  = Int(CVPixelBufferGetHeight(depthDataMap))
+                let frameReference = image.cameraCalibrationData!.intrinsicMatrixReferenceDimensions
                 Model.sharedInstance.parameters["cy"] = Float(frameReference.width / CGFloat(Model.sharedInstance.image.width))
                 Model.sharedInstance.parameters["cx"] = Float(frameReference.height / CGFloat(Model.sharedInstance.image.height))
                 
-                Model.sharedInstance.update(intrinsics: self.myDepthDataRaw!.cameraCalibrationData!.intrinsicMatrix)
+                Model.sharedInstance.update(intrinsics: image.cameraCalibrationData!.intrinsicMatrix)
                 Model.sharedInstance.update(translation: M)
                 Model.sharedInstance.update(rotation: M)
                 
@@ -218,21 +219,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     @IBAction func resetModel(_ sender: Any) {
-        if (!self.isSetUp) {
-            let P = matrix_float4x4(
-                float4( 0, -1,  0,  0),
-                float4( 1,  0,  0,  0),
-                float4( 0,  0, -1,  0),
-                float4( 0,  0,  0,  1))
-            let N = matrix_float4x4(
-                float4( 0, -1,  0,  0),
-                float4(-1,  0,  0,  0),
-                float4( 0,  0, -1,  0),
-                float4( 0,  0,  0,  1))
-            self.sceneView.session.setWorldOrigin(relativeTransform: N)
-            self.PBG = P
-            self.isSetUp = true
-        }
+        setUpBasis()
         switch deviceType {
         case .IPad:
             service.send(alert: Constant.Code.Integration.reset)
@@ -259,7 +246,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             }
         }
     }
-    
+    /*
     func displayAlertMessage(title: String, message: String, handler: @escaping ((UIAlertAction) -> Void)) {
         do {
             try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
@@ -274,6 +261,30 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         }
         catch {}
     }
+    */
+    
+    func setUpBasis() {
+        var N = matrix_identity_float4x4
+        switch deviceType {
+        case .IPad:
+            N = matrix_float4x4(
+                float4( 0, -1,  0,  0),
+                float4(-1,  0,  0,  0),
+                float4( 0,  0,  1,  0),
+                float4( 0,  0,  0,  1))
+        case .Iphone:
+            N = matrix_float4x4(
+                float4( 0, -1,  0,  0),
+                float4(-1,  0,  0,  0),
+                float4( 0,  0, -1,  0),
+                float4( 0,  0,  0,  1))
+        }
+        if (!self.isSetUp) {
+            self.sceneView.session.setWorldOrigin(relativeTransform: N)
+            self.isSetUp = true
+        }
+    }
+    
 }
 
 extension ViewController : DOFServiceManagerDelegate {
@@ -284,12 +295,15 @@ extension ViewController : DOFServiceManagerDelegate {
     
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4) {
         // Update Rotation and Transformation : Camera Position
-        let T = transform
         OperationQueue.main.addOperation {
-            if (self.deviceType == .Iphone) {
-                //Model.sharedInstance.update(rotation: transform)
-                Model.sharedInstance.update(translation: T)
+            switch self.deviceType {
+            case .Iphone:
+                //print(transform.columns.3)
+                Model.sharedInstance.update(translation: transform)
+                //print(Model.sharedInstance.camera.translation)
                 self.tx.text = "Received"
+            case .IPad:
+                return;
             }
         }
     }
@@ -320,25 +334,11 @@ extension ViewController : DOFServiceManagerDelegate {
     
     func resetModel(manager: DOFServiceManager) {
         // IPHONE : Resetting model
-        let P = matrix_float4x4(
-            float4( 0, -1,  0,  0),
-            float4( 1,  0,  0,  0),
-            float4( 0,  0, -1,  0),
-            float4( 0,  0,  0,  1))
-        let N = matrix_float4x4(
-            float4( 0, -1,  0,  0),
-            float4(-1,  0,  0,  0),
-            float4( 0,  0, -1,  0),
-            float4( 0,  0,  0,  1))
+        setUpBasis()
         OperationQueue.main.addOperation {
             switch self.deviceType {
             case .Iphone:
                 Model.sharedInstance.reinit()
-                if let frame = self.sceneView.session.currentFrame {
-                    //self.sceneView.session.setWorldOrigin(relativeTransform: frame.camera.transform)
-                    self.sceneView.session.setWorldOrigin(relativeTransform: N)
-                    self.PBG = P
-                }
                 self.tx.text = "Reinitialized"
             default:
                 self.tx.text = "Reinitialized"
