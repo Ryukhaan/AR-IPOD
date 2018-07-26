@@ -10,6 +10,7 @@ import UIKit
 import SceneKit
 import ARKit
 import Accelerate
+import Metal
 
 class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
@@ -198,7 +199,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 Model.sharedInstance.update(rotation: M)
                 //Model.sharedInstance.push(data: depthPointer)
                 
-                if inRealTime || (!stopComputing) {
+                if inRealTime /*|| (!stopComputing)*/ {
                     
                     self.inRealTime = false
                     //Model.sharedInstance.computeDepthsMedian()
@@ -211,12 +212,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                          Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.update(data: depthmap)
                     
-                    let d = 3.0 + Double(3*timeStep)
-                    DispatchQueue.global().asyncAfter(deadline: .now()+d) {
+                    DispatchQueue.global().async {
                         Model.sharedInstance.integrate()
                         DispatchQueue.main.async {
-                            self.timeStep += 1
-                            //self.service.send(alert: Constant.Code.Integration.hasFinished)
+                            //self.timeStep += 1
+                            self.service.send(alert: Constant.Code.Integration.hasFinished)
                         }
                     }
                     
@@ -244,13 +244,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         switch deviceType {
         case .iPad:
             self.tx.text = "Integrating..."
-            self.stopComputing = !self.stopComputing
-            if (!self.stopComputing) {
-                service.send(alert: Constant.Code.Integration.isStarting)
-            }
+            //self.stopComputing = !self.stopComputing
+            //if (!self.stopComputing) {
+            service.send(alert: Constant.Code.Integration.isStarting)
+            //}
         case .iPhoneX:
-            //self.inRealTime = true
-            self.stopComputing = !self.stopComputing
+            self.inRealTime = true
+            //self.stopComputing = !self.stopComputing
         }
     }
     
@@ -311,9 +311,9 @@ extension ViewController : DOFServiceManagerDelegate {
             switch self.deviceType {
             case .iPad:
                 self.tx.text = "Finished"
-                if (!self.stopComputing) {
-                    self.service.send(alert: Constant.Code.Integration.isStarting)
-                }
+                //if (!self.stopComputing) {
+                //    self.service.send(alert: Constant.Code.Integration.isStarting)
+                //}
             case .iPhoneX:
                 self.inRealTime = false
             }

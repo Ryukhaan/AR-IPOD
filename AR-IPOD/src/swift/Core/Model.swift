@@ -178,4 +178,67 @@ class Model {
     private func getTranslationFrom(matrix: matrix_float4x4) -> float3 {
         return float3(matrix.columns.3.x, matrix.columns.3.y, matrix.columns.3.z)
     }
+    
+    func toGlobal(point: simd_int3, resolution: Float) -> float3 {
+        return resolution * Vector(point)
+    }
+    
+    func integrateDepth() {
+        let R = camera.rotation
+        let T = camera.translation
+        let K = camera.intrinsics
+        let Kinv = simd_inverse(K)
+        let width = image.width
+        let height = image.height
+        guard let cx = parameters["cx"] else { return }
+        guard let cy = parameters["cy"] else { return }
+        guard let delta = parameters["Delta"] else { return }
+        guard let epsilon = parameters["Epsilon"] else { return }
+        var n = -1
+        let globalOffset = 0.5 * Float(dimension) * voxelResolution
+        for i in 0..<dimension {
+            for j in 0..<dimension {
+                for k in 0..<dimension {
+                    n += 1
+                    //if (n <= mini || n >= maxi) continue;
+                    // Retrieve Voxel and Global Vector associated to
+                    let v_ijk = simd_make_int3(Int32(i), Int32(j), Int32(k))
+                    let centroid = toGlobal(point: v_ijk, resolution: voxelResolution) - globalOffset
+                    
+                    // Back to Local World
+                    let X_L      = simd_mul(simd_transpose(R), centroid - T)
+                    if (X_L.z < 0) { continue }
+                    
+                    // Project to Screen World
+                    let homogeneous = float4(X_L)
+                    let project  = simd_mul(K, homogeneous)
+                    
+                    let u = Int(project.x / (project.z  * cx))
+                    let v = Int(project.y / (project.z  * cy))
+                    if (u < 0 || u >= height) { continue }
+                    if (v < 0 || v >= width) { continue }
+                    
+                    // Get depth at pixel (u, v)
+                    let zp = image.data[u * width + v];
+                    if (zp.isNaN) { continue }
+                    if (zp < 1e-7) { continue }
+                    
+                    // Compute distance
+                    let uvz = simd_make_float4(zp * Float(u) * cx, zp * Float(v) * cy, zp, 1.0)
+                    let X_S = simd_mul(Kinv, uvz)
+                    let distance = simd_sign(zp - X_L.z) * simd_distance(X_S , homogeneous);
+                    let weight: Float = 1.0
+                    
+                    // Update Voxel at index n
+                    let updated_voxel = voxels[n]
+                    if (distance >= delta + epsilon && distance < zp) {
+                        voxels[n] = updated_voxel.carving()
+                    }
+                    if (fabs(distance) <= delta) {
+                        voxels[n] = updated_voxel.update(sdf: distance, weight: weight)
+                    }
+                }
+            }
+        }
+    }
 }

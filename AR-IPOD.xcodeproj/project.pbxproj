@@ -35,6 +35,8 @@
 		A5D70A8920D0FAB60002EE0E /* KinectCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8820D0FAB60002EE0E /* KinectCamera.swift */; };
 		A5D70A8B20D0FAC30002EE0E /* KinectDepthImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8A20D0FAC30002EE0E /* KinectDepthImage.swift */; };
 		A5D70A8E20D0FAFF0002EE0E /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D70A8D20D0FAFF0002EE0E /* Protocol.swift */; };
+		A5E8F5F82109B03E002D2655 /* Metal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E8F5F72109B03E002D2655 /* Metal.swift */; };
+		A5E8F5FA2109B081002D2655 /* Integrator.metal in Sources */ = {isa = PBXBuildFile; fileRef = A5E8F5F92109B081002D2655 /* Integrator.metal */; };
 		A5EF305E20C6950E003937A3 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF305D20C6950E003937A3 /* Extension.swift */; };
 		A5EF306020C6BE12003937A3 /* Alias.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF305F20C6BE12003937A3 /* Alias.swift */; };
 		A5EF306220C6BE4F003937A3 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5EF306120C6BE4F003937A3 /* Constant.swift */; };
@@ -122,6 +124,8 @@
 		A5D70A8A20D0FAC30002EE0E /* KinectDepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectDepthImage.swift; sourceTree = "<group>"; };
 		A5D70A8D20D0FAFF0002EE0E /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		A5E8F5F521089535002D2655 /* parallelism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parallelism.h; sourceTree = "<group>"; };
+		A5E8F5F72109B03E002D2655 /* Metal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metal.swift; sourceTree = "<group>"; };
+		A5E8F5F92109B081002D2655 /* Integrator.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Integrator.metal; sourceTree = "<group>"; };
 		A5EF305D20C6950E003937A3 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		A5EF305F20C6BE12003937A3 /* Alias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alias.swift; sourceTree = "<group>"; };
 		A5EF306120C6BE4F003937A3 /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
@@ -308,6 +312,15 @@
 			path = Iphone;
 			sourceTree = "<group>";
 		};
+		A5E8F5F62109B017002D2655 /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				A5E8F5F72109B03E002D2655 /* Metal.swift */,
+				A5E8F5F92109B081002D2655 /* Integrator.metal */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
 		A5EF306320C6C436003937A3 /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -345,6 +358,7 @@
 		A5F478EA209C6D6800CAAEC0 /* swift */ = {
 			isa = PBXGroup;
 			children = (
+				A5E8F5F62109B017002D2655 /* Metal */,
 				A57BF49920F622200017B09C /* MultiPeer */,
 				A5EF306420C6C450003937A3 /* Utils */,
 				A5EF306320C6C436003937A3 /* Core */,
@@ -503,7 +517,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5E8F5FA2109B081002D2655 /* Integrator.metal in Sources */,
 				A5F478E3209C485200CAAEC0 /* marching_cube.cpp in Sources */,
+				A5E8F5F82109B03E002D2655 /* Metal.swift in Sources */,
 				A57BF49F20F622680017B09C /* Protocol+DOF.swift in Sources */,
 				A52C3D652093185000BA5BDC /* bridging.cpp in Sources */,
 				A544222120A5A39D00AE55C7 /* SceneViewController.swift in Sources */,
