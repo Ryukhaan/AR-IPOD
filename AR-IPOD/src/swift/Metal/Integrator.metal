@@ -12,6 +12,11 @@ using namespace metal;
 
 kernel void integrate(const device float *inVector [[ buffer(0) ]],
                       device float *outVector [[ buffer(1) ]],
-                      uint id [[ thread_position_in_grid ]]) {
+                      uint3 id [[ thread_position_in_grid ]]) {
+    //outVector[id] = 1.0 / (1.0 + exp(-inVector[id]));
+    int index = id.x * 256 * 256 + id.y * 256 + id.z;
+    float offset = 128.0;
+    uint3 centroid = uint3(id.x - offset, id.y - offset, id.z - offset);
+    outVector[index] = centroid.x + centroid.y + centroid.z;
 }
 

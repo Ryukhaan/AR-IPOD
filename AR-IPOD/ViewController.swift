@@ -212,8 +212,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                          Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.update(data: depthmap)
                     
+                    //let start = Double(CFAbsoluteTimeGetCurrent())
                     DispatchQueue.global().async {
                         Model.sharedInstance.integrate()
+                    //print("\(Double(CFAbsoluteTimeGetCurrent()) - start)")
                         DispatchQueue.main.async {
                             //self.timeStep += 1
                             self.service.send(alert: Constant.Code.Integration.hasFinished)
@@ -244,13 +246,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         switch deviceType {
         case .iPad:
             self.tx.text = "Integrating..."
-            //self.stopComputing = !self.stopComputing
-            //if (!self.stopComputing) {
             service.send(alert: Constant.Code.Integration.isStarting)
-            //}
         case .iPhoneX:
             self.inRealTime = true
-            //self.stopComputing = !self.stopComputing
         }
     }
     

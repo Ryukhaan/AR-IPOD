@@ -21,10 +21,7 @@
 //#include <unsupported/Eigen/MatrixFunctions>
 
 #include "filtering.hpp"
-#include "constants.h"
-
-static const double ang_min_sinc = 1.0e-8;
-static const double ang_min_mc = 2.5e-4;
+#include "omp.h"
 
 /**
  * Mapping between integer to centroid coordinate.
@@ -165,29 +162,24 @@ simd_float2x3 compute_bounding_box(float* depthmap,
                                    const simd_float4x4 Kinv,
                                    const float cx,
                                    const float cy) {
-    simd_float2x3 box = simd_matrix(simd_make_float3(99999, 99999, 99999), simd_make_float3(-99999, -99999, -99999));
-    //simd_float3x3 R = simd_transpose(rotation);
-    //simd_float4x4 Rtinv;
-    //for (int i = 0; i<3; i++) Rtinv.columns[i] = simd_make_float4(R.columns[i].x, R.columns[i].y, R.columns[i].z, 0);
-    //Rtinv.columns[3] = simd_make_float4(-translation.x, -translation.y, -translation.z, 1);
-    //Rtinv = simd_inverse(Rtinv);
+    simd_float2x3 box = simd_matrix(simd_make_float3(1000, 1000, 1000),
+                                    simd_make_float3(-1000, -1000, -1000));
     
-    for (int i=0; i<height; i++) {
-        for (int j=0; j<width; j++) {
+    int num_threads = omp_get_max_threads();
+    omp_set_dynamic(0);
+    omp_set_num_threads(num_threads);
+    int i ,j;
+#pragma omp parallel for private(i, j) collapse(2)
+    for (i=0; i<height; i++) {
+        for (j=0; j<width; j++) {
             float depth = depthmap[i*width+j];
             if (std::isnan(depth) || depth < 1e-6) continue;
             
             simd::float4 uv = simd_make_float4(depth * j * cx, depth * i * cy, depth, 1);
             simd::float4 local = simd_mul(Kinv, uv);
             simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
-            //simd::float3 world_point = simd_mul(simd_transpose(rotation), rlocal - translation);
             simd::float3 global = simd_mul(rotation, rlocal) + translation;
             
-            /*
-            simd::float4 uvz = homogenezie(j, i, depth, cx, cy);
-            simd::float4 local = project_screen_to_local(uvz, Kinv);
-            simd::float3 global = local_to_global(local, rotation, translation);
-            */
             box.columns[0].x = simd_min(box.columns[0].x, global.x);
             box.columns[0].y = simd_min(box.columns[0].y, global.y);
             box.columns[0].z = simd_min(box.columns[0].z, global.z);
@@ -197,71 +189,6 @@ simd_float2x3 compute_bounding_box(float* depthmap,
         }
     }
     return box;
-}
-/*
-simd_float3x3 rotation_from_lie(simd::float3 omega) {
-    //
-    simd_float3x3 R = simd_diagonal_matrix(simd_make_float3(1,1,1));
-    R.columns[0].y = expf(omega.z);
-    R.columns[0].z = expf(-omega.y);
-    R.columns[1].x = expf(-omega.z);
-    R.columns[1].z = expf(omega.x);
-    R.columns[2].x = expf(omega.y);
-    R.columns[2].y = expf(-omega.x);
-    return R;
-    //
-    Eigen::Matrix3d R;
-    R(0,0) = 0;
-    R(0,1) = -omega.z;
-    R(0,2) = omega.y;
-    
-    R(1,0) = omega.z;
-    R(1,1) = 0;
-    R(1,2) = -omega.x;
-    
-    R(2,0) = -omega.y;
-    R(2,1) = omega.x;
-    R(2,2) = 0;
-    R = R.exp();
-    
-    return simd_matrix_from_rows(simd_make_float3(R(0,0), R(0,1), R(0,2)),
-                                 simd_make_float3(R(1,0), R(1,1), R(1,2)),
-                                 simd_make_float3(R(2,0), R(2,1), R(2,2)));
-}
-*/
-
-
-/*
-inline Vector3f project_camera_to_plane(const Vector3f point,
-                                        const Matrix_4x4 K)
-{
-    Vector4f tmp = Vector4f(point(0), point(1), point(2), 1);
-    return Vector3f(tmp(0) / tmp(2), tmp(1) / tmp(2), tmp(2));
-}
-
-inline Vector3f project_plane_to_camera(const Vector2i point,
-                                        const float depth,
-                                        const Matrix_4x4 K)
-{
-    Matrix_4x4 Kinv = K.inverse();
-    Vector4f tmp = Kinv * (depth * Vector3f(point(0), point(1), 1.0));
-    return Vector3f(tmp(0), tmp(1), tmp(2));
-}
-*/
-
-inline double f_sinc(double sinx, double x)
-{
-    return (fabs(x) < ang_min_sinc) ? 1.0 : (sinx / x);
-}
-
-inline double f_mcosc(double cosx, double x)
-{
-    return (fabs(x) < ang_min_mc) ? 0.5 : ((1.0 - cosx) / x / x);
-}
-
-inline double f_msinc(double sinx, double x)
-{
-    return (fabs(x) < ang_min_mc) ? (1. / 6.0) : ((1.0 - sinx / x) / x / x);
 }
 
 #endif /* linalg_hpp */

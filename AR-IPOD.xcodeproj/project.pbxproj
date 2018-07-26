@@ -12,6 +12,10 @@
 		A52C3D4D2091DFD300BA5BDC /* EdgeTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4C2091DFD300BA5BDC /* EdgeTableContents */; };
 		A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4E2091E00700BA5BDC /* TriTableContents */; };
 		A52C3D652093185000BA5BDC /* bridging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D632093185000BA5BDC /* bridging.cpp */; };
+		A53502C42109E46F00E158F1 /* openmp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A53502C32109E46F00E158F1 /* openmp.framework */; };
+		A53502CB2109FF2800E158F1 /* libiomp5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A53502C82109FF2700E158F1 /* libiomp5.dylib */; };
+		A53502CC2109FF2800E158F1 /* libomp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A53502C92109FF2800E158F1 /* libomp.dylib */; };
+		A53502CD2109FF2800E158F1 /* libgomp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A53502CA2109FF2800E158F1 /* libgomp.dylib */; };
 		A544222120A5A39D00AE55C7 /* SceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A544222020A5A39D00AE55C7 /* SceneViewController.swift */; };
 		A554D20420CA677F0096DE8A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A554D20320CA677F0096DE8A /* SettingsViewController.swift */; };
 		A57BF49B20F622380017B09C /* DOFServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57BF49A20F622380017B09C /* DOFServiceManager.swift */; };
@@ -86,6 +90,11 @@
 		A52C3D622093185000BA5BDC /* AR-IPOD-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AR-IPOD-Bridging-Header.h"; sourceTree = "<group>"; };
 		A52C3D632093185000BA5BDC /* bridging.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bridging.cpp; sourceTree = "<group>"; };
 		A52C3D642093185000BA5BDC /* bridging.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bridging.hpp; sourceTree = "<group>"; };
+		A53502C32109E46F00E158F1 /* openmp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openmp.framework; sourceTree = "<group>"; };
+		A53502C52109F81100E158F1 /* libomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libomp.dylib; path = ../../../../../usr/local/Cellar/llvm/4.0.1/lib/libomp.dylib; sourceTree = "<group>"; };
+		A53502C82109FF2700E158F1 /* libiomp5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiomp5.dylib; path = ../../OpenMP/openmp/build/runtime/src/libiomp5.dylib; sourceTree = "<group>"; };
+		A53502C92109FF2800E158F1 /* libomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libomp.dylib; path = ../../OpenMP/openmp/build/runtime/src/libomp.dylib; sourceTree = "<group>"; };
+		A53502CA2109FF2800E158F1 /* libgomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgomp.dylib; path = ../../OpenMP/openmp/build/runtime/src/libgomp.dylib; sourceTree = "<group>"; };
 		A544222020A5A39D00AE55C7 /* SceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneViewController.swift; sourceTree = "<group>"; };
 		A554D20320CA677F0096DE8A /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		A57BF46320F4E56E0017B09C /* libpcl_search.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_search.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_search.a"; sourceTree = "<group>"; };
@@ -123,7 +132,6 @@
 		A5D70A8820D0FAB60002EE0E /* KinectCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectCamera.swift; sourceTree = "<group>"; };
 		A5D70A8A20D0FAC30002EE0E /* KinectDepthImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinectDepthImage.swift; sourceTree = "<group>"; };
 		A5D70A8D20D0FAFF0002EE0E /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
-		A5E8F5F521089535002D2655 /* parallelism.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parallelism.h; sourceTree = "<group>"; };
 		A5E8F5F72109B03E002D2655 /* Metal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metal.swift; sourceTree = "<group>"; };
 		A5E8F5F92109B081002D2655 /* Integrator.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Integrator.metal; sourceTree = "<group>"; };
 		A5EF305D20C6950E003937A3 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
@@ -143,6 +151,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A53502C42109E46F00E158F1 /* openmp.framework in Frameworks */,
+				A53502CB2109FF2800E158F1 /* libiomp5.dylib in Frameworks */,
+				A53502CC2109FF2800E158F1 /* libomp.dylib in Frameworks */,
+				A53502CD2109FF2800E158F1 /* libgomp.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,7 +185,6 @@
 				A5F478F120A2D18200CAAEC0 /* tsdf.hpp */,
 				A5C589A120AAD29C009BA18A /* filtering.hpp */,
 				A5D70A6E20CE8D400002EE0E /* projection.hpp */,
-				A5E8F5F521089535002D2655 /* parallelism.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -191,6 +202,11 @@
 		A52C3D6620933EAC00BA5BDC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A53502C52109F81100E158F1 /* libomp.dylib */,
+				A53502CA2109FF2800E158F1 /* libgomp.dylib */,
+				A53502C82109FF2700E158F1 /* libiomp5.dylib */,
+				A53502C92109FF2800E158F1 /* libomp.dylib */,
+				A53502C32109E46F00E158F1 /* openmp.framework */,
 				A57BF46420F4E56E0017B09C /* libpcl_common.a */,
 				A57BF46720F4E56E0017B09C /* libpcl_features.a */,
 				A57BF46520F4E56E0017B09C /* libpcl_filters.a */,
@@ -719,15 +735,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_MODULES = YES;
+				CC = /usr/local/Cellar/llvm/4.0.1/bin/clang;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				COMPILER_INDEX_STORE_ENABLE = YES;
+				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Frameworks/",
+					/Users/Remi/Downloads/openmp.framework,
+					"$(PROJECT_DIR)",
 				);
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
@@ -735,15 +755,18 @@
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/boost-ios-device-arm64/include/",
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/eigen/",
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/include",
+					/Users/Remi/Documents/OpenMP/openmp/build/runtime/src/,
 				);
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Build/pcl-ios-device-arm64/lib",
+					/Users/Remi/Documents/OpenMP/openmp/build/runtime/src,
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib",
 				);
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-fopenmp";
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -751,6 +774,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = /Users/Remi/Downloads/openmp.framework/Headers/;
 				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Debug;
@@ -759,15 +783,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_MODULES = YES;
+				CC = /usr/local/Cellar/llvm/4.0.1/bin/clang;
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_MODULE_DEBUGGING = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				COMPILER_INDEX_STORE_ENABLE = YES;
+				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = 42Z6PG6SU6;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/Frameworks/",
+					/Users/Remi/Downloads/openmp.framework,
+					"$(PROJECT_DIR)",
 				);
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
@@ -775,21 +803,25 @@
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/boost-ios-device-arm64/include/",
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/eigen/",
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/include",
+					/Users/Remi/Documents/OpenMP/openmp/build/runtime/src/,
 				);
 				INFOPLIST_FILE = "AR-IPOD/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Build/pcl-ios-device-arm64/lib",
+					/Users/Remi/Documents/OpenMP/openmp/build/runtime/src,
 					"/Users/Remi/Documents/Install/pcl-superbuild/build/CMakeExternals/Install/flann-ios-device-arm64/lib",
 				);
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-fopenmp";
 				PRODUCT_BUNDLE_IDENTIFIER = "mycompany.AR-IPOD";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "AR-IPOD/AR-IPOD-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = /Users/Remi/Downloads/openmp.framework/Headers/;
 				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Release;

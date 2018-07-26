@@ -55,28 +55,6 @@ extension Float {
     }
 }
 
-extension matrix_float4x4 {
-    subscript(index: Int) -> float4 {
-        get {
-            switch index {
-            case 0: return self.columns.0
-            case 1: return self.columns.1
-            case 2: return self.columns.2
-            case 3: return self.columns.3
-            default: return float4(0,0,0,0)
-            }
-        }
-        set(newColumn) {
-            switch index {
-            case 0: self.columns.0 = newColumn
-            case 1: self.columns.0 = newColumn
-            case 2: self.columns.0 = newColumn
-            case 3: self.columns.0 = newColumn
-            default: return;
-            }
-        }
-    }
-}
 
 extension matrix_float4x4 {
     func format(_ f: String) -> matrix_float4x4 {

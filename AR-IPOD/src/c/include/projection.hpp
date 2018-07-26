@@ -17,8 +17,10 @@
 #include <simd/conversion.h>
 #include <simd/matrix.h>
 
-#include "constants.h"
-#include "parallelism.h"
+#include <Accelerate/Accelerate.h>
+
+#include <openmp/omp.h>
+#include "omp.h"
 
 void integrate_projection(float* depthmap,
                           //const void* centroids,
@@ -39,15 +41,14 @@ void integrate_projection(float* depthmap,
     // Instanciate all local variables
     simd::float3 resolutions = simd_make_float3(resolution, resolution, resolution);
     simd::float3 offset = 0.5 * (dimension * resolutions);
+    int n = -1;
+    float global_offset = 0.5 * dimension * resolution;
     
     // Relative camera variables
     simd_float4x4 K = ((simd_float4x4 *) intrinsics)[0];
     simd_float3x3 R = ((simd_float3x3 *) rotation)[0];
     simd_float3   T = ((simd_float3 *) translation)[0];
     simd_float4x4 Kinv  = simd_inverse(K);
-    simd_float4x4 Rt;
-    for (int i = 0; i<3; i++) Rt.columns[i] = simd_make_float4(R.columns[i].x, R.columns[i].y, R.columns[i].z, 0);
-    Rt.columns[3] = simd_make_float4(T.x, T.y, T.z, 1);
     
     // Determines bounding box of camera, O(n) where n is width*height of depthmap.
     // It can reduce (always ?) next loop complexity.
@@ -58,43 +59,21 @@ void integrate_projection(float* depthmap,
     int mini = hash_code(point_min, dimension);
     int maxi = hash_code(point_max, dimension);
     
-    /*
-    for (int i = 0; i<width*height; i++) {
-        float depth = depthmap[i];
-        if (depth == 0) continue;
-        int u = i / width;
-        int v = i % width;
-        simd::float4 homogene = simd_make_float4(u * depth * cx, v * depth * cy, depth, 1);
-        simd::float4 local = simd_mul(Kinv, homogene);
-        simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
-        simd::float3 rglobal = simd_mul(R, rlocal) + T;
-        //simd::float3 rglobal = simd_mul(simd_transpose(R), rlocal - T);
-        //simd::float3 rglobal = rlocal;
-        if (! (rglobal.x >= -offset.x && rglobal.y >= -offset.y && rglobal.z >= -offset.z &&
-               rglobal.x < offset.x && rglobal.y < offset.x && rglobal.z < offset.z))
-            continue;
-        simd_int3 coordinate = global_to_integer(rglobal + offset, resolution);
-        int k = hash_code(coordinate, dimension);
-        if (k < 0 || k >= 16777216) continue;
-        Voxel updated_voxel = ((Voxel *)voxels)[k];
-        updated_voxel = update_voxel(updated_voxel, -0.1, 1);
-        ((Voxel *)voxels)[k] = updated_voxel;
-        //number_of_changes ++;
-    }
-    */
-    //for (int i = 0; i<size; i++)
-    //for (int i = mini; i<maxi; i++)
-    int n = -1;
-    //float global_offset = 0.5 * (1.0 - dimension) * resolution;
-    
-    float global_offset = 0.5 * dimension * resolution;
-    
-    for (int i = 0; i<dimension; i++)
-        for (int j = 0; j<dimension; j++)
-            for (int k = 0; k<dimension; k++)
+    int num_threads = omp_get_max_threads();
+    omp_set_dynamic(0);
+    omp_set_num_threads(num_threads);
+    int i ,j, k;
+#pragma omp parallel for private(i, j, k) collapse(3)
+    for (i = 0; i<dimension; i++)
+        for (j = 0; j<dimension; j++)
+            for (k = 0; k<dimension; k++)
     {
         //if (i < 0 || i >= size) continue;
-        n ++;
+        #pragma omp atomic
+        n++;
+        
+        int idx = n;
+        
         if (n <= mini || n >= maxi) continue;
         simd_int3   v_ijk = simd_make_int3(i, j, k);
         //simd::float3 centroid = create_centroid(n, resolutions.x, dimension) - offset;
@@ -133,7 +112,7 @@ void integrate_projection(float* depthmap,
         float weight = 1.0;
         //float weight = weighting(distance, delta, epsilon);
         
-        Voxel updated_voxel = ((Voxel *)voxels)[n];
+        Voxel updated_voxel = ((Voxel *)voxels)[idx];
         if (distance >= delta + epsilon && distance < zp)
             updated_voxel = carving_voxel(updated_voxel);
         if (fabs(distance) <= delta)
@@ -142,72 +121,9 @@ void integrate_projection(float* depthmap,
         //    updated_voxel = update_voxel(updated_voxel, -delta, weight);
         //else if (distance > delta)
         //    updated_voxel = update_voxel(updated_voxel, delta, weight);
-        ((Voxel *)voxels)[n] = updated_voxel;
+        ((Voxel *)voxels)[idx] = updated_voxel;
     }
     
-    /*
-    parallel_for(dimension, [&](int start_i, int end_i) {
-        parallel_for(dimension, [&](int start_j, int end_j) {
-            parallel_for(dimension, [&](int start_k, int end_k) {
-                for (int i = start_i; i<end_i; i++)
-                    for (int j = start_j; j<end_j; j++)
-                        for (int k = start_k; k<end_k; k++)
-                        {
-                            //if (i < 0 || i >= size) continue;
-                            n ++;
-                            if (n <= mini || n >= maxi) continue;
-                            simd_int3   v_ijk = simd_make_int3(i, j, k);
-                            //simd::float3 centroid = create_centroid(n, resolutions.x, dimension) - offset;
-                            simd::float3 centroid = integer_to_global(v_ijk, resolution) - global_offset;
-                            //simd::float4 higher = simd_make_float4(centroid.x, centroid.y, centroid.z, 1);
-                            //float z = simd_distance(centroid, T);
-                            
-                            simd::float3 X_L      = simd_mul(simd_transpose(R), centroid - T);
-                            //simd::float3 X_L      = simd_mul(R, centroid) + T;
-                            //simd::float3 X_L        = global_to_local(centroid, R, T);
-                            if (X_L.z < 0) continue;
-                            
-                            simd::float4 homogeneous = simd_make_float4(X_L.x, X_L.y, X_L.z, 1);
-                            simd::float4 project  = simd_mul(K, homogeneous);
-                            //simd::float4 project    = unproject_local_to_screen(homogeneous, K);
-                            
-                            int u = (int) (project.x / (project.z  * cx));
-                            int v = (int) (project.y / (project.z  * cy));
-                            if (u < 0 || u >= height) continue;
-                            if (v < 0 || v >= width) continue;
-                            
-                            float zp = depthmap[u * width + v];
-                            if (std::isnan(zp)) continue;
-                            if (zp < 1e-7) continue;
-                            
-                            simd::float4 uvz = simd_make_float4(zp * u * cx, zp * v * cy, zp, 1.0);
-                            //simd::float4 uvz = homogenezie(u, v, zp, cx, cy);
-                            simd::float4 X_S = simd_mul(Kinv, uvz);
-                            //simd::float4 X_S = project_screen_to_local(uvz, Kinv);
-                            // Depth invalid
-                            
-                            float distance = simd_sign(zp - X_L.z) * simd_distance(X_S , homogeneous);
-                            //float distance = zp - X_L.z;
-                            //float distance = zp - z;
-                            
-                            float weight = 1.0;
-                            //float weight = weighting(distance, delta, epsilon);
-                            
-                            Voxel updated_voxel = ((Voxel *)voxels)[n];
-                            if (distance >= delta + epsilon && distance < zp)
-                                updated_voxel = carving_voxel(updated_voxel);
-                            if (fabs(distance) <= delta)
-                                updated_voxel = update_voxel(updated_voxel, distance, weight);
-                            //else if (distance < -delta)
-                            //    updated_voxel = update_voxel(updated_voxel, -delta, weight);
-                            //else if (distance > delta)
-                            //    updated_voxel = update_voxel(updated_voxel, delta, weight);
-                            ((Voxel *)voxels)[n] = updated_voxel;
-                        }
-            });
-        });
-    });
-    */
     return;
 }
 #endif /* projection_hpp */

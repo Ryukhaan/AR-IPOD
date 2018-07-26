@@ -212,7 +212,7 @@ class Model {
                     // Project to Screen World
                     let homogeneous = float4(X_L)
                     let project  = simd_mul(K, homogeneous)
-                    
+                    //print(project)
                     let u = Int(project.x / (project.z  * cx))
                     let v = Int(project.y / (project.z  * cy))
                     if (u < 0 || u >= height) { continue }
