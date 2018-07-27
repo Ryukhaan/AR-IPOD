@@ -16,6 +16,9 @@
 #include <simd/matrix.h>
 #include <vector>
 
+#include <openmp/omp.h>
+#include "omp.h"
+
 simd::float3 interpolate(float isolevel, simd::float3 a, simd::float3 b, float alpha, float beta) {
     /* First Version --
     if (abs(isolevel-alpha) < 0.00001)  { return a; }
@@ -66,7 +69,10 @@ std::vector<simd::float3> polygonise(const simd::float3 points[8],
         simd_make_int2(2, 6),
         simd_make_int2(3, 7)
     };
-    
+
+    int num_threads = omp_get_max_threads();
+    omp_set_num_threads(num_threads);
+#pragma omp parallel for
     for (int i = 0; i < 12; i++) {
         const int i0 = pairs[i].x;
         const int i1 = pairs[i].y;

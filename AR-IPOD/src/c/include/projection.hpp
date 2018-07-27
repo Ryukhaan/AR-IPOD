@@ -41,7 +41,6 @@ void integrate_projection(float* depthmap,
     // Instanciate all local variables
     simd::float3 resolutions = simd_make_float3(resolution, resolution, resolution);
     simd::float3 offset = 0.5 * (dimension * resolutions);
-    int n = 0;
     float global_offset = 0.5 * dimension * resolution;
     
     // Relative camera variables
@@ -119,10 +118,7 @@ void integrate_projection(float* depthmap,
         //else if (distance > delta)
         //    updated_voxel = update_voxel(updated_voxel, delta, weight);
         
-//#pragma omp critical(dataupdate)
-//        {
-            ((Voxel *)voxels)[idx] = updated_voxel;
-//        }
+        ((Voxel *)voxels)[idx] = updated_voxel;
     }
     
     return;

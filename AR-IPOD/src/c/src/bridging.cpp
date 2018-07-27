@@ -45,15 +45,15 @@ void* bridge_extractMesh(int* ntriangles,
                            const int dimension,
                            const float isolevel,
                            const float resolution) {
-    simd::float3* mesh;
+    simd::float3* mesh = nullptr;
     const int n = dimension;
     const float offset = 0.5 * (dimension * resolution);
     int n2 = n * n;
 
     
-    int num_threads = omp_get_max_threads();
-    omp_set_num_threads(num_threads);
-//#pragma omp parallel for private(i, j, k) collapse(3)
+//    int num_threads = omp_get_max_threads();
+//    omp_set_num_threads(num_threads);
+//#pragma omp parallel for collapse(3)
     for (int i = 0; i<n-1; i++) {
         for (int j = 0; j<n-1; j++) {
             for (int k = 0; k<n-1; k++) {
@@ -99,27 +99,21 @@ void* bridge_extractMesh(int* ntriangles,
                 };
                 std::vector<simd::float3> temp = polygonise(points, values, isolevel, edgeTable, triTable);
                 if (temp.size() <= 0) continue;
+                
                 void* ptr_realloc = realloc(mesh, sizeof(simd::float3) * (*ntriangles + temp.size()));
                 if (ptr_realloc != NULL)
                     mesh = (simd::float3 *)ptr_realloc;
+            
                 for (simd::float3 triangle : temp) {
                     mesh[*ntriangles][0] = triangle[0];
                     mesh[*ntriangles][1] = triangle[1];
                     mesh[*ntriangles][2] = triangle[2];
-                    /*
-                    ((simd::float3*) triangles)[index][0] = triangle[0];
-                    ((simd::float3*) triangles)[index][1] = triangle[1];
-                    ((simd::float3*) triangles)[index][2] = triangle[2];
-                    */
                     (*ntriangles)++;
-                    //#pragma omp atomic
-                    //index++;
                 }
             }
         }
     }
     return (void*)&mesh[0];
-    //return index;
 }
 
 void bridge_integrateDepthMap(float* depthmap,

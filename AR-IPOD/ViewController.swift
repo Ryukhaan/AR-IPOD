@@ -164,7 +164,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
              \(M.columns.0.w.format(f))\t \(M.columns.1.w.format(f))\t \(M.columns.2.w.format(f))\t \(M.columns.3.w.format(f))
              """
              */
-        //service.send(transform: Rt)
+            service.send(transform: Rt)
         case .iPhoneX:
             self.ty.numberOfLines = 1
             let f = ".2"
@@ -212,14 +212,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                          Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.update(data: depthmap)
                     
-                    let start = Double(CFAbsoluteTimeGetCurrent())
-                    var end = Double(CFAbsoluteTimeGetCurrent())
+                    //let start = Double(CFAbsoluteTimeGetCurrent())
+                    //var end = Double(CFAbsoluteTimeGetCurrent())
                     DispatchQueue.global().async {
                         Model.sharedInstance.integrate()
-                        end = Double(CFAbsoluteTimeGetCurrent())
+                        //end = Double(CFAbsoluteTimeGetCurrent())
                         DispatchQueue.main.async {
-                            print("\(end - start)")
-                            //self.service.send(alert: Constant.Code.Integration.hasFinished)
+                            //print("\(end - start)")
+                            self.service.send(alert: Constant.Code.Integration.hasFinished)
                         }
                     }
                     
@@ -234,6 +234,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBAction func resetModel(_ sender: Any) {
         setUpBasis()
+        self.tx.text = "Reinitialized"
         switch deviceType {
         case .iPad:
             service.send(alert: Constant.Code.Integration.reset)
@@ -244,6 +245,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     
     @IBAction func startRealTimeIntegration(_ sender: Any) {
+        self.stopComputing = !self.stopComputing
         switch deviceType {
         case .iPad:
             self.tx.text = "Integrating..."
@@ -262,6 +264,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     func setUpBasis() {
+        timeStep = 0
         var N = matrix_identity_float4x4
         switch deviceType {
         case .iPad:
@@ -309,10 +312,11 @@ extension ViewController : DOFServiceManagerDelegate {
         OperationQueue.main.addOperation {
             switch self.deviceType {
             case .iPad:
-                self.tx.text = "Finished"
-                //if (!self.stopComputing) {
-                //    self.service.send(alert: Constant.Code.Integration.isStarting)
-            //}
+                self.timeStep += 1
+                self.tx.text = "Finished : Time \(self.timeStep)"
+                if (!self.stopComputing) {
+                    self.service.send(alert: Constant.Code.Integration.isStarting)
+                }
             case .iPhoneX:
                 self.inRealTime = false
             }

@@ -19,6 +19,9 @@
 #include <vector>
 #include <algorithm>
 
+#include <openmp/omp.h>
+#include "omp.h"
+
 #define KINECT_WIDTH 640
 #define KINECT_HEIGHT 480
 
@@ -28,10 +31,13 @@ void median_filter(float* depthmap,
                    const int height) {
     float* tmp_depth = (float*) malloc(sizeof(float) * width * height);
     //float tmp_depth[ KINECT_WIDTH * KINECT_HEIGHT ];
+    int num_threads = omp_get_max_threads();
+    omp_set_num_threads(num_threads);
+#pragma omp parallel for collapse(2)
     for (int i = 0; i<height; i++) {
-        int iMin = fmax(i-window_size, 0);
-        int iMax = fmin(i+window_size, height-1);
         for (int j = 0; j<width; j++) {
+            int iMin = fmax(i-window_size, 0);
+            int iMax = fmin(i+window_size, height-1);
             int jMin = fmax(j-window_size, 0);
             int jMax = fmin(j+window_size, width-1);
             std::vector<float> tmp_array;
@@ -48,6 +54,7 @@ void median_filter(float* depthmap,
                 tmp_depth[i*width + j] = (tmp_array[(size+1)/2.0] + tmp_array[(size-1)/2.0])/2.0;
         }
     }
+#pragma omp parallel for shared(depthmap, tmp_depth)
     for (int i = 0; i< height * width ; i++)
         depthmap[i] = tmp_depth[i];
     free(tmp_depth);
