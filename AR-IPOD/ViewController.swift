@@ -150,58 +150,58 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             self.tz.numberOfLines = 4
             //let f = ".2"
             /*
-            self.ty.text = """
-            \(Rt.columns.0.x.format(f))\t \(Rt.columns.1.x.format(f))\t \(Rt.columns.2.x.format(f))\t \(Rt.columns.3.x.format(f))
-            \(Rt.columns.0.y.format(f))\t \(Rt.columns.1.y.format(f))\t \(Rt.columns.2.y.format(f))\t \(Rt.columns.3.y.format(f))
-            \(Rt.columns.0.z.format(f))\t \(Rt.columns.1.z.format(f))\t \(Rt.columns.2.z.format(f))\t \(Rt.columns.3.z.format(f))
-            \(Rt.columns.0.w.format(f))\t \(Rt.columns.1.w.format(f))\t \(Rt.columns.2.w.format(f))\t \(Rt.columns.3.w.format(f))
-            """
-            
-            self.tz.text = """
-            \(M.columns.0.x.format(f))\t \(M.columns.1.x.format(f))\t \(M.columns.2.x.format(f))\t \(M.columns.3.x.format(f))
-            \(M.columns.0.y.format(f))\t \(M.columns.1.y.format(f))\t \(M.columns.2.y.format(f))\t \(M.columns.3.y.format(f))
-            \(M.columns.0.z.format(f))\t \(M.columns.1.z.format(f))\t \(M.columns.2.z.format(f))\t \(M.columns.3.z.format(f))
-            \(M.columns.0.w.format(f))\t \(M.columns.1.w.format(f))\t \(M.columns.2.w.format(f))\t \(M.columns.3.w.format(f))
-            """
-            */
-            service.send(transform: Rt)
-            //previousLocation = location
+             self.ty.text = """
+             \(Rt.columns.0.x.format(f))\t \(Rt.columns.1.x.format(f))\t \(Rt.columns.2.x.format(f))\t \(Rt.columns.3.x.format(f))
+             \(Rt.columns.0.y.format(f))\t \(Rt.columns.1.y.format(f))\t \(Rt.columns.2.y.format(f))\t \(Rt.columns.3.y.format(f))
+             \(Rt.columns.0.z.format(f))\t \(Rt.columns.1.z.format(f))\t \(Rt.columns.2.z.format(f))\t \(Rt.columns.3.z.format(f))
+             \(Rt.columns.0.w.format(f))\t \(Rt.columns.1.w.format(f))\t \(Rt.columns.2.w.format(f))\t \(Rt.columns.3.w.format(f))
+             """
+             
+             self.tz.text = """
+             \(M.columns.0.x.format(f))\t \(M.columns.1.x.format(f))\t \(M.columns.2.x.format(f))\t \(M.columns.3.x.format(f))
+             \(M.columns.0.y.format(f))\t \(M.columns.1.y.format(f))\t \(M.columns.2.y.format(f))\t \(M.columns.3.y.format(f))
+             \(M.columns.0.z.format(f))\t \(M.columns.1.z.format(f))\t \(M.columns.2.z.format(f))\t \(M.columns.3.z.format(f))
+             \(M.columns.0.w.format(f))\t \(M.columns.1.w.format(f))\t \(M.columns.2.w.format(f))\t \(M.columns.3.w.format(f))
+             """
+             */
+        //service.send(transform: Rt)
         case .iPhoneX:
-            self.ty.numberOfLines = 4
-            //let f = ".2"
+            self.ty.numberOfLines = 1
+            let f = ".2"
             /*
+             self.ty.text = """
+             \(M.columns.0.x.format(f)) \(M.columns.1.x.format(f)) \(M.columns.2.x.format(f)) \(M.columns.3.x.format(f))
+             \(M.columns.0.y.format(f)) \(M.columns.1.y.format(f)) \(M.columns.2.y.format(f)) \(M.columns.3.y.format(f))
+             \(M.columns.0.z.format(f)) \(M.columns.1.z.format(f)) \(M.columns.2.z.format(f)) \(M.columns.3.z.format(f))
+             \(M.columns.0.w.format(f)) \(M.columns.1.w.format(f)) \(M.columns.2.w.format(f)) \(M.columns.3.w.format(f))
+             """
+             */
             self.ty.text = """
-            \(M.columns.0.x.format(f)) \(M.columns.1.x.format(f)) \(M.columns.2.x.format(f)) \(M.columns.3.x.format(f))
-            \(M.columns.0.y.format(f)) \(M.columns.1.y.format(f)) \(M.columns.2.y.format(f)) \(M.columns.3.y.format(f))
-            \(M.columns.0.z.format(f)) \(M.columns.1.z.format(f)) \(M.columns.2.z.format(f)) \(M.columns.3.z.format(f))
-            \(M.columns.0.w.format(f)) \(M.columns.1.w.format(f)) \(M.columns.2.w.format(f)) \(M.columns.3.w.format(f))
+            \((M.columns.3.x.format(f)))\t\(M.columns.3.y.format(f))\t\(M.columns.3.z.format(f))
             """
-            */
+            Model.sharedInstance.update(translation: M)
+            Model.sharedInstance.update(rotation: M)
             if let image = frame.capturedDepthData
             {
                 self.myDepthDataRaw =  image
                 let depthDataMap = image.depthDataMap
-                CVPixelBufferLockBaseAddress(depthDataMap, CVPixelBufferLockFlags(rawValue: 0))
-                let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap), to: UnsafeMutablePointer<Float>.self)
-                
-                Model.sharedInstance.image.width    = Int(CVPixelBufferGetWidth(depthDataMap))
-                Model.sharedInstance.image.height   = Int(CVPixelBufferGetHeight(depthDataMap))
-                Model.sharedInstance.camera.width   = Int(CVPixelBufferGetWidth(depthDataMap))
-                Model.sharedInstance.camera.height  = Int(CVPixelBufferGetHeight(depthDataMap))
-                if let calibration = image.cameraCalibrationData {
-                    let frameReference = calibration.intrinsicMatrixReferenceDimensions
-                    Model.sharedInstance.parameters["cy"] = Float(frameReference.width / CGFloat(Model.sharedInstance.image.width))
-                    Model.sharedInstance.parameters["cx"] = Float(frameReference.height / CGFloat(Model.sharedInstance.image.height))
-                    Model.sharedInstance.update(intrinsics: calibration.intrinsicMatrix)
-                }
-                
-                Model.sharedInstance.update(translation: M)
-                Model.sharedInstance.update(rotation: M)
-                //Model.sharedInstance.push(data: depthPointer)
-                
                 if inRealTime /*|| (!stopComputing)*/ {
-                    
                     self.inRealTime = false
+                    CVPixelBufferLockBaseAddress(depthDataMap, CVPixelBufferLockFlags(rawValue: 0))
+                    let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap), to: UnsafeMutablePointer<Float>.self)
+                    
+                    Model.sharedInstance.image.width    = Int(CVPixelBufferGetWidth(depthDataMap))
+                    Model.sharedInstance.image.height   = Int(CVPixelBufferGetHeight(depthDataMap))
+                    Model.sharedInstance.camera.width   = Int(CVPixelBufferGetWidth(depthDataMap))
+                    Model.sharedInstance.camera.height  = Int(CVPixelBufferGetHeight(depthDataMap))
+                    if let calibration = image.cameraCalibrationData {
+                        let frameReference = calibration.intrinsicMatrixReferenceDimensions
+                        Model.sharedInstance.parameters["cy"] = Float(frameReference.width / CGFloat(Model.sharedInstance.image.width))
+                        Model.sharedInstance.parameters["cx"] = Float(frameReference.height / CGFloat(Model.sharedInstance.image.height))
+                        Model.sharedInstance.update(intrinsics: calibration.intrinsicMatrix)
+                    }
+                    
+                    //Model.sharedInstance.push(data: depthPointer)
                     //Model.sharedInstance.computeDepthsMedian()
                     Model.sharedInstance.update(data: depthPointer)
                     
@@ -212,13 +212,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                          Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.update(data: depthmap)
                     
-                    //let start = Double(CFAbsoluteTimeGetCurrent())
+                    let start = Double(CFAbsoluteTimeGetCurrent())
+                    var end = Double(CFAbsoluteTimeGetCurrent())
                     DispatchQueue.global().async {
                         Model.sharedInstance.integrate()
-                    //print("\(Double(CFAbsoluteTimeGetCurrent()) - start)")
+                        end = Double(CFAbsoluteTimeGetCurrent())
                         DispatchQueue.main.async {
-                            //self.timeStep += 1
-                            self.service.send(alert: Constant.Code.Integration.hasFinished)
+                            print("\(end - start)")
+                            //self.service.send(alert: Constant.Code.Integration.hasFinished)
                         }
                     }
                     
@@ -240,7 +241,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             Model.sharedInstance.reinit()
         }
     }
-
+    
     
     @IBAction func startRealTimeIntegration(_ sender: Any) {
         switch deviceType {
@@ -311,7 +312,7 @@ extension ViewController : DOFServiceManagerDelegate {
                 self.tx.text = "Finished"
                 //if (!self.stopComputing) {
                 //    self.service.send(alert: Constant.Code.Integration.isStarting)
-                //}
+            //}
             case .iPhoneX:
                 self.inRealTime = false
             }
@@ -343,4 +344,4 @@ extension ViewController : DOFServiceManagerDelegate {
             }
         }
     }
- }
+}

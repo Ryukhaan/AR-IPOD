@@ -57,29 +57,21 @@ struct Tables {
  * @isolovel : isovalue according to Lorensen & Clide paper (1987)
  */
 func extractMesh(model: Model, isolevel: Float) -> [Vector] {
-    let count = model.numberOfVoxels()
-    let stride = MemoryLayout<Vector>.stride
-    // Why i can't allocate more than around "count" bytes ?
-    let byteCount = 3 * stride * model.dimension * model.dimension
-    //let byteCount = 3 * stride
-    let triangles = UnsafeMutablePointer<Vector>.allocate(capacity: byteCount)
-    defer {
-        triangles.deallocate()
-    }
-    //var sdfs = volume.voxels.map { $0.sdf }
+    var numberOfTriangles: Int32 = 0
     var tempTri = Tables.triTable.flatMap { $0 }
-    let numberOfTriangles = bridge_extractMesh(
-        triangles,
+    let triangles = bridge_extractMesh(
+        &numberOfTriangles,
         &(model.voxels),
-        //&sdfs,
-        //&volume.centroids,
         &Tables.edgeTable,
         &tempTri,
         Int32(model.dimension),
         isolevel,
         model.voxelResolution)
-    let buffer = UnsafeBufferPointer(start: triangles, count: Int(numberOfTriangles))
-    return Array(buffer)
+    if let pointee = triangles?.assumingMemoryBound(to: Vector.self) {
+        let buffer = UnsafeBufferPointer(start: pointee, count: Int(numberOfTriangles))
+        return Array(buffer)
+    }
+    return [Vector]()
 }
 
 func extractTSDF(model: Model, isolevel: Float) -> [Vector] {

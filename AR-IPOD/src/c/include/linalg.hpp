@@ -162,16 +162,15 @@ simd_float2x3 compute_bounding_box(float* depthmap,
                                    const simd_float4x4 Kinv,
                                    const float cx,
                                    const float cy) {
-    simd_float2x3 box = simd_matrix(simd_make_float3(1000, 1000, 1000),
-                                    simd_make_float3(-1000, -1000, -1000));
+    float FINF = 65535.0;
+    simd_float2x3 box = simd_matrix(simd_make_float3(FINF, FINF, FINF),
+                                    simd_make_float3(-FINF, -FINF, -FINF));
     
     int num_threads = omp_get_max_threads();
-    omp_set_dynamic(0);
     omp_set_num_threads(num_threads);
-    int i ,j;
-#pragma omp parallel for private(i, j) collapse(2)
-    for (i=0; i<height; i++) {
-        for (j=0; j<width; j++) {
+#pragma omp parallel for collapse(2)
+    for (int i=0; i<height; i++) {
+        for (int j=0; j<width; j++) {
             float depth = depthmap[i*width+j];
             if (std::isnan(depth) || depth < 1e-6) continue;
             
@@ -179,6 +178,7 @@ simd_float2x3 compute_bounding_box(float* depthmap,
             simd::float4 local = simd_mul(Kinv, uv);
             simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
             simd::float3 global = simd_mul(rotation, rlocal) + translation;
+            
             
             box.columns[0].x = simd_min(box.columns[0].x, global.x);
             box.columns[0].y = simd_min(box.columns[0].y, global.y);
