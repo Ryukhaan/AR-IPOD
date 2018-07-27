@@ -33,27 +33,29 @@ extern "C" {
 #include "omp.h"
 
 using namespace std;
-                                          
+
 /*
  * GLOBAL FUNCTION (hpp)
  */
 
-void* bridge_extractMesh(int* ntriangles,
-                           void* voxels,
-                           const int edgeTable[256],
-                           const int triTable[4096],
-                           const int dimension,
-                           const float isolevel,
-                           const float resolution) {
-    simd::float3* mesh = nullptr;
+void* bridge_extractMesh(int* n_triangles,
+                        const void* voxels,
+                        const int edgeTable[256],
+                        const int triTable[4096],
+                        const int dimension,
+                        const float isolevel,
+                        const float resolution) {
     const int n = dimension;
     const float offset = 0.5 * (dimension * resolution);
     int n2 = n * n;
-
+    int n3 = n2 * n;
     
-//    int num_threads = omp_get_max_threads();
-//    omp_set_num_threads(num_threads);
-//#pragma omp parallel for collapse(3)
+    simd_float3* triangles = (simd_float3 *) malloc( 3 * sizeof(m_float3) * (n3));
+    *n_triangles = 0;
+    
+    int num_threads = omp_get_max_threads();
+    omp_set_num_threads(num_threads);
+#pragma omp parallel for collapse(3)
     for (int i = 0; i<n-1; i++) {
         for (int j = 0; j<n-1; j++) {
             for (int k = 0; k<n-1; k++) {
@@ -99,21 +101,31 @@ void* bridge_extractMesh(int* ntriangles,
                 };
                 std::vector<simd::float3> temp = polygonise(points, values, isolevel, edgeTable, triTable);
                 if (temp.size() <= 0) continue;
-                
-                void* ptr_realloc = realloc(mesh, sizeof(simd::float3) * (*ntriangles + temp.size()));
-                if (ptr_realloc != NULL)
-                    mesh = (simd::float3 *)ptr_realloc;
-            
-                for (simd::float3 triangle : temp) {
-                    mesh[*ntriangles][0] = triangle[0];
-                    mesh[*ntriangles][1] = triangle[1];
-                    mesh[*ntriangles][2] = triangle[2];
-                    (*ntriangles)++;
-                }
+                    
+                    for (simd::float3 triangle : temp) {
+                        #pragma omp critical
+                        {
+                            //_triangles.push_back(copy);
+                            triangles[*n_triangles] = triangle;
+                            (*n_triangles)++;
+                        }
+                    }
             }
         }
     }
-    return (void*)&mesh[0];
+    
+    void* ptr_realloc = realloc(triangles,  (3 * sizeof(simd_float3)) * (*n_triangles));
+    if (ptr_realloc != NULL)
+        triangles = (simd_float3 *)ptr_realloc;
+    return (void *)triangles;
+    /*
+    for (int i = 0; i < _triangles.size(); i++) {
+        triangles[i].x = _triangles.at(i).x;
+        triangles[i].y = _triangles.at(i).y;
+        triangles[i].z = _triangles.at(i).z;
+    }
+    */
+    //triangles = _triangles.data();
 }
 
 void bridge_integrateDepthMap(float* depthmap,

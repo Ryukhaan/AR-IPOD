@@ -47,6 +47,13 @@ extension Vector {
         self.y = Float(v.y)
         self.z = Float(v.z)
     }
+    
+    init(_ v: m_float3) {
+        self.init()
+        self.x = v.x
+        self.y = v.y
+        self.z = v.z
+    }
 }
 
 extension Float {

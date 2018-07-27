@@ -146,9 +146,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         switch self.deviceType {
         case .iPad:
             //NSLog("%@", "\(cameraPose)")
-            self.ty.numberOfLines = 4
+            self.ty.numberOfLines = 1
             self.tz.numberOfLines = 4
-            //let f = ".2"
+            let f = ".2"
+            self.ty.text = """
+            \((Rt.columns.3.x.format(f)))\t\(Rt.columns.3.y.format(f))\t\(Rt.columns.3.z.format(f))
+            """
             /*
              self.ty.text = """
              \(Rt.columns.0.x.format(f))\t \(Rt.columns.1.x.format(f))\t \(Rt.columns.2.x.format(f))\t \(Rt.columns.3.x.format(f))

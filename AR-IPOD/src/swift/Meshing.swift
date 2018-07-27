@@ -13,7 +13,12 @@ import ARKit
  * For C files -> Int32
  * Otherwise -> Int
  */
-
+/*
+struct Mesh {
+    var n_triangles: CInt = 0
+    var triangles: UnsafeMutableBufferPointer<Vector> = UnsafeMutableBufferPointer<Vector>.allocate(capacity: 0)
+}
+*/
 /**
  * Tables contains the two tables required for marching cubes algorithm.
  * Those tables are saved under "EdgeTableContents" and "TriTableContents", see resources/ directory.
@@ -57,9 +62,10 @@ struct Tables {
  * @isolovel : isovalue according to Lorensen & Clide paper (1987)
  */
 func extractMesh(model: Model, isolevel: Float) -> [Vector] {
-    var numberOfTriangles: Int32 = 0
+    //var numberOfTriangles: Int32 = 0
     var tempTri = Tables.triTable.flatMap { $0 }
-    let triangles = bridge_extractMesh(
+    /*
+    guard let triangles = bridge_extractMesh(
         &numberOfTriangles,
         &(model.voxels),
         &Tables.edgeTable,
@@ -67,9 +73,23 @@ func extractMesh(model: Model, isolevel: Float) -> [Vector] {
         Int32(model.dimension),
         isolevel,
         model.voxelResolution)
+        else { return [Vector]() }
+    */
+    var n_triangles: CInt = 0
+    //var x = [m_float3](repeating: m_float3(x: 0,y: 0,z: 0), count: 393_216)
+    let triangles = bridge_extractMesh(
+        &n_triangles,
+        (model.voxels),
+        &Tables.edgeTable,
+        &tempTri,
+        Int32(model.dimension),
+        isolevel,
+        model.voxelResolution)
     if let pointee = triangles?.assumingMemoryBound(to: Vector.self) {
-        let buffer = UnsafeBufferPointer(start: pointee, count: Int(numberOfTriangles))
-        return Array(buffer)
+        let m_buffer = UnsafeBufferPointer(start: pointee, count: Int(n_triangles))
+        //let array = Array(m_buffer)
+        //return array.map { Vector($0) }
+        return Array(m_buffer)
     }
     return [Vector]()
 }

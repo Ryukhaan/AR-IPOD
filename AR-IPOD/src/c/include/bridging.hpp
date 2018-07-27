@@ -11,13 +11,26 @@
 #include <stdio.h>
 #include <string.h>
 
-void* bridge_extractMesh(int* ntriangles,
-                         void* voxels,
-                         const int edgeTable[256],
-                         const int triTable[4096],
-                         const int dimension,
-                         const float isolevel,
-                         const float resolution);
+typedef struct m_float3{
+    float x, y, z;
+} m_float3;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
+    void* bridge_extractMesh(
+                            int* n_triangles,
+                            const void* voxels,
+                            const int edgeTable[256],
+                            const int triTable[4096],
+                            const int dimension,
+                            const float isolevel,
+                            const float resolution);
+    
+#ifdef __cplusplus
+}
+#endif
 
 void bridge_integrateDepthMap(float* depthmap,
                               //const void* centroids,
