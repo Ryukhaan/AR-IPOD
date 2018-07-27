@@ -87,8 +87,6 @@ func extractMesh(model: Model, isolevel: Float) -> [Vector] {
         model.voxelResolution)
     if let pointee = triangles?.assumingMemoryBound(to: Vector.self) {
         let m_buffer = UnsafeBufferPointer(start: pointee, count: Int(n_triangles))
-        //let array = Array(m_buffer)
-        //return array.map { Vector($0) }
         return Array(m_buffer)
     }
     return [Vector]()

@@ -101,15 +101,14 @@ void* bridge_extractMesh(int* n_triangles,
                 };
                 std::vector<simd::float3> temp = polygonise(points, values, isolevel, edgeTable, triTable);
                 if (temp.size() <= 0) continue;
-                    
+#pragma omp critical
+                {
                     for (simd::float3 triangle : temp) {
-                        #pragma omp critical
-                        {
-                            //_triangles.push_back(copy);
-                            triangles[*n_triangles] = triangle;
-                            (*n_triangles)++;
-                        }
+                        //_triangles.push_back(copy);
+                        triangles[*n_triangles] = triangle;
+                        (*n_triangles)++;
                     }
+                }
             }
         }
     }
