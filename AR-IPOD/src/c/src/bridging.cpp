@@ -56,9 +56,9 @@ void* bridge_extractMesh(int* n_triangles,
     int num_threads = omp_get_max_threads();
     omp_set_num_threads(num_threads);
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i<n-1; i++) {
-        for (int j = 0; j<n-1; j++) {
-            for (int k = 0; k<n-1; k++) {
+    for (int i = 1; i<n; i++) {
+        for (int j = 1; j<n; j++) {
+            for (int k = 1; k<n; k++) {
                 int idx = i * n2 + j * n + k;
                 
                 int i0 = idx;

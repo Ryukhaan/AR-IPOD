@@ -21,8 +21,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet var sceneView: ARSCNView!
     
     var passage: matrix_float4x4 = matrix_float4x4(
-        float4( 0, -1,  0,  0),
-        float4( 1,  0,  0,  0),
+        float4( 0,  1,  0,  0),
+        float4(-1,  0,  0,  0),
         float4( 0,  0, -1,  0),
         float4( 0,  0,  0,  1))
     
@@ -152,14 +152,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             self.ty.text = """
             \((Rt.columns.3.x.format(f)))\t\(Rt.columns.3.y.format(f))\t\(Rt.columns.3.z.format(f))
             """
+            
+            self.tz.text = """
+            \(Rt.columns.0.x.format(f))\t \(Rt.columns.1.x.format(f))\t \(Rt.columns.2.x.format(f))\t \(Rt.columns.3.x.format(f))
+            \(Rt.columns.0.y.format(f))\t \(Rt.columns.1.y.format(f))\t \(Rt.columns.2.y.format(f))\t \(Rt.columns.3.y.format(f))
+            \(Rt.columns.0.z.format(f))\t \(Rt.columns.1.z.format(f))\t \(Rt.columns.2.z.format(f))\t \(Rt.columns.3.z.format(f))
+            \(Rt.columns.0.w.format(f))\t \(Rt.columns.1.w.format(f))\t \(Rt.columns.2.w.format(f))\t \(Rt.columns.3.w.format(f))
+            """
             /*
-             self.ty.text = """
-             \(Rt.columns.0.x.format(f))\t \(Rt.columns.1.x.format(f))\t \(Rt.columns.2.x.format(f))\t \(Rt.columns.3.x.format(f))
-             \(Rt.columns.0.y.format(f))\t \(Rt.columns.1.y.format(f))\t \(Rt.columns.2.y.format(f))\t \(Rt.columns.3.y.format(f))
-             \(Rt.columns.0.z.format(f))\t \(Rt.columns.1.z.format(f))\t \(Rt.columns.2.z.format(f))\t \(Rt.columns.3.z.format(f))
-             \(Rt.columns.0.w.format(f))\t \(Rt.columns.1.w.format(f))\t \(Rt.columns.2.w.format(f))\t \(Rt.columns.3.w.format(f))
-             """
-             
              self.tz.text = """
              \(M.columns.0.x.format(f))\t \(M.columns.1.x.format(f))\t \(M.columns.2.x.format(f))\t \(M.columns.3.x.format(f))
              \(M.columns.0.y.format(f))\t \(M.columns.1.y.format(f))\t \(M.columns.2.y.format(f))\t \(M.columns.3.y.format(f))
@@ -169,19 +169,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
              */
             service.send(transform: Rt)
         case .iPhoneX:
-            self.ty.numberOfLines = 1
+            self.ty.numberOfLines = 4
             let f = ".2"
-            /*
+            
              self.ty.text = """
              \(M.columns.0.x.format(f)) \(M.columns.1.x.format(f)) \(M.columns.2.x.format(f)) \(M.columns.3.x.format(f))
              \(M.columns.0.y.format(f)) \(M.columns.1.y.format(f)) \(M.columns.2.y.format(f)) \(M.columns.3.y.format(f))
              \(M.columns.0.z.format(f)) \(M.columns.1.z.format(f)) \(M.columns.2.z.format(f)) \(M.columns.3.z.format(f))
              \(M.columns.0.w.format(f)) \(M.columns.1.w.format(f)) \(M.columns.2.w.format(f)) \(M.columns.3.w.format(f))
              """
-             */
-            self.ty.text = """
-            \((M.columns.3.x.format(f)))\t\(M.columns.3.y.format(f))\t\(M.columns.3.z.format(f))
-            """
+            
+            //M.columns.3.x = -M.columns.3.x
+            //M.columns.3.z = -M.columns.3.z
+            //self.ty.text = """
+            //\((M.columns.3.x.format(f)))\t\(M.columns.3.y.format(f))\t\(M.columns.3.z.format(f))
+            //"""
             Model.sharedInstance.update(translation: M)
             Model.sharedInstance.update(rotation: M)
             if let image = frame.capturedDepthData
@@ -251,8 +253,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         self.stopComputing = !self.stopComputing
         switch deviceType {
         case .iPad:
-            self.tx.text = "Integrating..."
-            service.send(alert: Constant.Code.Integration.isStarting)
+            if (!self.stopComputing) {
+                self.tx.text = "Integrating..."
+                service.send(alert: Constant.Code.Integration.isStarting)
+            }
         case .iPhoneX:
             self.inRealTime = true
         }

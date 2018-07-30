@@ -43,7 +43,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="834" height="1063"/>
                             </arscnView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q9c-hL-Hn7">
-                                <rect key="frame" x="20" y="20" width="256" height="64"/>
+                                <rect key="frame" x="20" y="20" width="400" height="64"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="64" id="ASO-3L-EYg"/>
                                 </constraints>
@@ -95,10 +95,10 @@
                         <constraints>
                             <constraint firstItem="IL4-TE-v6a" firstAttribute="top" secondItem="Q9c-hL-Hn7" secondAttribute="bottom" constant="8" symbolic="YES" id="2df-lq-cZ0"/>
                             <constraint firstItem="Q9c-hL-Hn7" firstAttribute="leading" secondItem="hhj-Jp-2IH" secondAttribute="leadingMargin" id="8pD-7F-kj1"/>
-                            <constraint firstItem="SvY-0D-dDP" firstAttribute="trailing" secondItem="Q9c-hL-Hn7" secondAttribute="trailing" constant="558" id="BPv-88-WPI"/>
+                            <constraint firstItem="SvY-0D-dDP" firstAttribute="trailing" secondItem="Q9c-hL-Hn7" secondAttribute="trailing" constant="414" id="BPv-88-WPI"/>
                             <constraint firstItem="Qax-Jz-iq4" firstAttribute="baseline" secondItem="yle-OG-6qI" secondAttribute="baseline" constant="108.5" id="Cs3-d5-ELg"/>
                             <constraint firstItem="yle-OG-6qI" firstAttribute="leading" secondItem="SvY-0D-dDP" secondAttribute="leading" constant="45" id="D1C-xN-YlQ"/>
-                            <constraint firstItem="Q9c-hL-Hn7" firstAttribute="trailing" secondItem="IL4-TE-v6a" secondAttribute="trailing" constant="-538" id="D9Y-Pj-J4k"/>
+                            <constraint firstItem="Q9c-hL-Hn7" firstAttribute="trailing" secondItem="IL4-TE-v6a" secondAttribute="trailing" constant="-394" id="D9Y-Pj-J4k"/>
                             <constraint firstItem="Q9c-hL-Hn7" firstAttribute="leading" secondItem="IL4-TE-v6a" secondAttribute="leading" id="Ezm-ys-a7t"/>
                             <constraint firstItem="yle-OG-6qI" firstAttribute="centerX" secondItem="Qax-Jz-iq4" secondAttribute="centerX" id="IqD-bI-J6Z"/>
                             <constraint firstItem="Qax-Jz-iq4" firstAttribute="top" secondItem="yle-OG-6qI" secondAttribute="bottom" constant="56" id="LDA-aR-iOu"/>

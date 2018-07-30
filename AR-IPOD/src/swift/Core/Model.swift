@@ -41,7 +41,7 @@ class Model {
     
     private init(type: CameraType) {
         dimension       = 256
-        voxelResolution = 0.01
+        voxelResolution = 0.02
         voxels          = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
         switch type {
         case .Kinect:

@@ -178,7 +178,7 @@ simd_float2x3 compute_bounding_box(float* depthmap,
             simd::float4 local = simd_mul(Kinv, uv);
             simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
             simd::float3 global = simd_mul(rotation, rlocal) + translation;
-            
+            //simd::float3 global = simd_mul(simd_transpose(rotation), rlocal - translation);
             
             box.columns[0].x = simd_min(box.columns[0].x, global.x);
             box.columns[0].y = simd_min(box.columns[0].y, global.y);
