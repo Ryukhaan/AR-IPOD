@@ -21,7 +21,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet var sceneView: ARSCNView!
     
     var passage: matrix_float4x4 = matrix_float4x4(
-        float4( 0,  1,  0,  0),
+        float4( 0, -1,  0,  0),
         float4(-1,  0,  0,  0),
         float4( 0,  0, -1,  0),
         float4( 0,  0,  0,  1))
@@ -138,17 +138,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
-        let Rt = frame.camera.transform
-        var M = frame.camera.transform
-        let t = float4(Model.sharedInstance.camera.translation, 1)
-        M.columns.3 = t
-        M = simd_transpose(passage) * M * passage
+        var Rt = frame.camera.transform
         switch self.deviceType {
         case .iPad:
             //NSLog("%@", "\(cameraPose)")
             self.ty.numberOfLines = 1
             self.tz.numberOfLines = 4
             let f = ".2"
+            
             self.ty.text = """
             \((Rt.columns.3.x.format(f)))\t\(Rt.columns.3.y.format(f))\t\(Rt.columns.3.z.format(f))
             """
@@ -159,6 +156,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             \(Rt.columns.0.z.format(f))\t \(Rt.columns.1.z.format(f))\t \(Rt.columns.2.z.format(f))\t \(Rt.columns.3.z.format(f))
             \(Rt.columns.0.w.format(f))\t \(Rt.columns.1.w.format(f))\t \(Rt.columns.2.w.format(f))\t \(Rt.columns.3.w.format(f))
             """
+            
             /*
              self.tz.text = """
              \(M.columns.0.x.format(f))\t \(M.columns.1.x.format(f))\t \(M.columns.2.x.format(f))\t \(M.columns.3.x.format(f))
@@ -169,14 +167,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
              */
             service.send(transform: Rt)
         case .iPhoneX:
+            Rt = Model.sharedInstance.camera.extrinsics()
+            //let t = float4(Model.sharedInstance.camera.translation, 1)
+            //Rt.columns.3 = t
+            Rt = simd_transpose(passage) * (Rt * passage)
+            //Rt.columns.3 = t
             self.ty.numberOfLines = 4
             let f = ".2"
             
              self.ty.text = """
-             \(M.columns.0.x.format(f)) \(M.columns.1.x.format(f)) \(M.columns.2.x.format(f)) \(M.columns.3.x.format(f))
-             \(M.columns.0.y.format(f)) \(M.columns.1.y.format(f)) \(M.columns.2.y.format(f)) \(M.columns.3.y.format(f))
-             \(M.columns.0.z.format(f)) \(M.columns.1.z.format(f)) \(M.columns.2.z.format(f)) \(M.columns.3.z.format(f))
-             \(M.columns.0.w.format(f)) \(M.columns.1.w.format(f)) \(M.columns.2.w.format(f)) \(M.columns.3.w.format(f))
+             \(Rt.columns.0.x.format(f)) \(Rt.columns.1.x.format(f)) \(Rt.columns.2.x.format(f)) \(Rt.columns.3.x.format(f))
+             \(Rt.columns.0.y.format(f)) \(Rt.columns.1.y.format(f)) \(Rt.columns.2.y.format(f)) \(Rt.columns.3.y.format(f))
+             \(Rt.columns.0.z.format(f)) \(Rt.columns.1.z.format(f)) \(Rt.columns.2.z.format(f)) \(Rt.columns.3.z.format(f))
+             \(Rt.columns.0.w.format(f)) \(Rt.columns.1.w.format(f)) \(Rt.columns.2.w.format(f)) \(Rt.columns.3.w.format(f))
              """
             
             //M.columns.3.x = -M.columns.3.x
@@ -184,8 +187,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             //self.ty.text = """
             //\((M.columns.3.x.format(f)))\t\(M.columns.3.y.format(f))\t\(M.columns.3.z.format(f))
             //"""
-            Model.sharedInstance.update(translation: M)
-            Model.sharedInstance.update(rotation: M)
+            //Model.sharedInstance.update(translation: Rt)
+            Model.sharedInstance.update(rotation: Rt)
             if let image = frame.capturedDepthData
             {
                 self.myDepthDataRaw =  image
@@ -277,9 +280,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         case .iPad:
             N = matrix_float4x4(
                 float4( 0, -1,  0,  0),
-                float4(-1,  0,  0,  0),
+                float4( 1,  0,  0,  0),
                 float4( 0,  0,  1,  0),
                 float4( 0,  0,  0,  1))
+ 
+            //N = (sceneView.session.currentFrame?.camera.transform)!
+            //N.columns.1 = -N.columns.1
         case .iPhoneX:
             N = matrix_float4x4(
                 float4( 0, -1,  0,  0),
@@ -303,10 +309,14 @@ extension ViewController : DOFServiceManagerDelegate {
     
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4) {
         // Update Rotation and Transformation : Camera Position
+        //var T = transform
+        //T.columns.3.x = -T.columns.3.x
+        //T.columns.3.z = -T.columns.3.z
         OperationQueue.main.addOperation {
             switch self.deviceType {
             case .iPhoneX:
-                Model.sharedInstance.update(translation: transform)
+                Model.sharedInstance.update(extrinsics: transform)
+                //Model.sharedInstance.update(translation: transform)
                 self.tx.text = "Received"
             case .iPad:
                 return;

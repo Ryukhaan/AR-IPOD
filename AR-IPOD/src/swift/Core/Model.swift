@@ -27,7 +27,7 @@ class Model {
     
     private init() {
         dimension       = 256
-        voxelResolution = 0.006
+        voxelResolution = 0.02
         voxels          = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
         camera  = IphoneCamera()
         image   = IphoneDepthImage()
@@ -134,6 +134,11 @@ class Model {
         image.update(_data: data)
     }
     
+    func update(extrinsics: matrix_float4x4) {
+        self.update(rotation: extrinsics)
+        self.update(translation: extrinsics)
+    }
+    
     func push(data: UnsafeMutablePointer<Float>) {
         image.push(map: data)
     }
@@ -169,16 +174,17 @@ class Model {
     }
     
     private func getRotationFrom(matrix: matrix_float4x4) -> matrix_float3x3 {
-        return matrix_float3x3(
+        return matrix_float3x3([
             float3(matrix.columns.0),
             float3(matrix.columns.1),
-            float3(matrix.columns.2))
+            float3(matrix.columns.2)])
     }
     
     private func getTranslationFrom(matrix: matrix_float4x4) -> float3 {
         return float3(matrix.columns.3.x, matrix.columns.3.y, matrix.columns.3.z)
     }
     
+    /*
     func toGlobal(point: simd_int3, resolution: Float) -> float3 {
         return resolution * Vector(point)
     }
@@ -241,4 +247,5 @@ class Model {
             }
         }
     }
+    */
 }

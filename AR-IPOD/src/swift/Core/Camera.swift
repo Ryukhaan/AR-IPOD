@@ -27,6 +27,15 @@ class Camera : CameraProtocol {
     var rotation:       matrix_float3x3 = matrix_float3x3(diagonal: float3(1,1,1)) // Camera's rotation
     var translation:    Vector = Vector(0,0,0) // Camera's translation
     
+    func extrinsics() -> matrix_float4x4 {
+        return matrix_float4x4([
+            float4(self.rotation.columns.0, 0),
+            float4(self.rotation.columns.1, 0),
+            float4(self.rotation.columns.2, 0),
+            float4(self.translation, 1)
+            ])
+    }
+    
     func update(intrinsics: matrix_float4x4) {}
     func update(rotation: matrix_float3x3) {}
     func update(translation: vector_float3) {}

@@ -57,27 +57,27 @@ void* bridge_extractMesh(int* n_triangles,
     omp_set_num_threads(num_threads);
 #pragma omp parallel for collapse(3)
     for (int i = 1; i<n; i++) {
-        for (int j = 1; j<n; j++) {
+        for (int j = 0; j<n-1; j++) {
             for (int k = 1; k<n; k++) {
                 int idx = i * n2 + j * n + k;
                 
                 int i0 = idx;
-                int i1 = idx + n2;
-                int i2 = idx + n2 + 1;
-                int i3 = idx + 1;
+                int i1 = idx - n2;
+                int i2 = idx - n2 - 1;
+                int i3 = idx - 1;
                 int i4 = idx + n;
-                int i5 = idx + n + n2;
-                int i6 = idx + n + n2 + 1;
-                int i7 = idx + n + 1;
+                int i5 = idx + n - n2;
+                int i6 = idx + n - n2 - 1;
+                int i7 = idx + n - 1;
                 
                 simd_int3 p0 = simd_make_int3(i, j, k);
-                simd_int3 p1 = simd_make_int3(i+1, j, k);
-                simd_int3 p2 = simd_make_int3(i+1, j, k+1);
-                simd_int3 p3 = simd_make_int3(i, j, k+1);
+                simd_int3 p1 = simd_make_int3(i-1, j, k);
+                simd_int3 p2 = simd_make_int3(i-1, j, k-1);
+                simd_int3 p3 = simd_make_int3(i, j, k-1);
                 simd_int3 p4 = simd_make_int3(i, j+1, k);
-                simd_int3 p5 = simd_make_int3(i+1, j+1, k);
-                simd_int3 p6 = simd_make_int3(i+1, j+1, k+1);
-                simd_int3 p7 = simd_make_int3(i, j+1, k+1);
+                simd_int3 p5 = simd_make_int3(i-1, j+1, k);
+                simd_int3 p6 = simd_make_int3(i-1, j+1, k-1);
+                simd_int3 p7 = simd_make_int3(i, j+1, k-1);
                 
                 simd::float3 c0 = integer_to_global(p0, resolution) - offset;
                 simd::float3 c1 = integer_to_global(p1, resolution) - offset;
