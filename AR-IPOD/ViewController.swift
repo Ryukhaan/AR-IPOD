@@ -306,7 +306,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             
             N = matrix_float4x4(
                 float4( 0, -1,  0,  0),
-                float4( 1,  0,  0,  0),
+                float4(-1,  0,  0,  0),
                 float4( 0,  0,  1,  0),
                 float4( 0,  0,  0,  1))
  
