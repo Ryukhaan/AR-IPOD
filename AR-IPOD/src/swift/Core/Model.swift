@@ -14,6 +14,7 @@ class Model {
     // Singleton pattern : Only one volume will be create
     static let sharedInstance = Model()
     
+    var graph: [SCNVector3] = [SCNVector3]()
     var raytracingEnable: Bool = false
     var cameraPoseEstimationEnable: Bool = false
     var type: CameraType = .Other
@@ -27,7 +28,7 @@ class Model {
     
     private init() {
         dimension       = 256
-        voxelResolution = 0.006
+        voxelResolution = 0.01
         voxels          = [Voxel](repeating: Voxel(), count: Int(pow(Float(dimension), 3.0)))
         camera  = IphoneCamera()
         image   = IphoneDepthImage()

@@ -127,7 +127,7 @@ void* bridge_extractMesh(int* n_triangles,
     //triangles = _triangles.data();
 }
 
-void bridge_integrateDepthMap(float* depthmap,
+void bridge_integrateDepthMap(const float* depthmap,
                               //const void* centroids,
                               const void* rotation,
                               const void* translation,

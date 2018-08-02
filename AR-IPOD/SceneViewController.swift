@@ -39,12 +39,38 @@ class SceneViewController: UIViewController {
         // create and add a camera to the scene
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 5)
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 4)
+        //cameraNode.rotation = SCNVector4(x: 1, y: 1, z: 1, w: 3.14)
         cameraNode.camera?.zNear = 0.01
         cameraNode.camera?.zFar = 15
         scene.rootNode.addChildNode(cameraNode)
 
         // add a cube
+        let indices: [Int32] = [0, 1]
+        let v0 = SCNVector3(0,0,0)
+        let v1 = SCNVector3(1,0,0)
+        let v2 = SCNVector3(0,1,0)
+        let v3 = SCNVector3(0,0,1)
+        
+        var axisSource = SCNGeometrySource(vertices: [v0, v1])
+        var axisElement = SCNGeometryElement(indices: indices, primitiveType: .line)
+        var axisGeo = SCNGeometry(sources: [axisSource], elements: [axisElement])
+        var axisNode = SCNNode(geometry: axisGeo)
+        scene.rootNode.addChildNode(axisNode)
+        
+        axisSource = SCNGeometrySource(vertices: [v0, v2])
+        axisElement = SCNGeometryElement(indices: indices, primitiveType: .line)
+        axisGeo = SCNGeometry(sources: [axisSource], elements: [axisElement])
+        axisNode = SCNNode(geometry: axisGeo)
+        scene.rootNode.addChildNode(axisNode)
+        
+        
+        axisSource = SCNGeometrySource(vertices: [v0, v3])
+        axisElement = SCNGeometryElement(indices: indices, primitiveType: .line)
+        axisGeo = SCNGeometry(sources: [axisSource], elements: [axisElement])
+        axisNode = SCNNode(geometry: axisGeo)
+        scene.rootNode.addChildNode(axisNode)
+        
         let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0)
         let node = SCNNode(geometry: cube)
         scene.rootNode.addChildNode(node)
@@ -119,8 +145,8 @@ class SceneViewController: UIViewController {
     @IBAction func export(_ sender: Any) {
         // Export mesh at an isolovel (need to extract mesh once again, not so logical but easiest way)
         if (!alreadyMeshed) {
-            let iso = Float(isolevel.text!)
-            self.points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
+            //let iso = Float(isolevel.text!)
+            self.points = extractMesh(model: Model.sharedInstance, isolevel: 0.00)
             self.alreadyMeshed = true
         }
         let path = IO.Export.toPLYFormat(mesh: points, at: "meshing.ply")!
@@ -133,9 +159,23 @@ class SceneViewController: UIViewController {
         // On IphoneX keyboard won't close (so meshWithIso() does not work)
         // Extract mesh with isolevel = 0.0
         DispatchQueue.global().async {
-            self.points = extractMesh(model: Model.sharedInstance, isolevel: 0.00)
             self.alreadyMeshed = true
+            
+            self.points = extractMesh(model: Model.sharedInstance, isolevel: 0.00)
             let pointCloudNode = UIFactory.mesh(from: self.points)
+            
+            /*
+            let positionSources = SCNGeometrySource(vertices: Model.sharedInstance.graph)
+            let elements = SCNGeometryElement(
+                data: nil,
+                primitiveType: .point,
+                primitiveCount: Model.sharedInstance.graph.count,
+                bytesPerIndex: MemoryLayout<SCNVector3>.size
+            )
+            let geo = SCNGeometry(sources: [positionSources], elements: [elements])
+            let pointCloudNode = SCNNode(geometry: geo)
+            */
+            
             let scnView = self.view as! SCNView
             if self.self.indexOfPointCloud > 0 {
                 scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()

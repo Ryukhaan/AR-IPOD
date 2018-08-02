@@ -59,8 +59,8 @@ inline simd_float3 integer_to_global(simd_int3 point, float resolution) {
 }
 
 inline int hash_code(simd_int3 point, int base) {
-    int a = point.x * (base * base);
-    int b = point.y * base;
+    int a = point.x * (base * base); // point.x
+    int b = point.y * base; // point.y
     int c = point.z;
     return a + b + c;
 }
@@ -154,18 +154,27 @@ inline simd::float3 global_to_local(simd::float3 global, simd_float3x3 R, simd::
     return simd_mul(R, global) + T;
 }
 
-simd_float2x3 compute_bounding_box(float* depthmap,
+simd_float2x3 compute_bounding_box(const float* depthmap,
                                    const int width,
                                    const int height,
-                                   const simd_float3x3 rotation,
-                                   const simd_float3 translation,
+                                   const simd_float4x4 Rt,
+                                   //const simd_float3 translation,
                                    const simd_float4x4 Kinv,
                                    const float cx,
                                    const float cy) {
     float FINF = 65535.0;
     simd_float2x3 box = simd_matrix(simd_make_float3(FINF, FINF, FINF),
                                     simd_make_float3(-FINF, -FINF, -FINF));
-    
+    simd_float4x4 passage_global = simd_matrix(
+                                               simd_make_float4( 0, -1,  0,  0),
+                                               simd_make_float4( 1,  0,  0,  0),
+                                               simd_make_float4( 0,  0,  1,  0),
+                                               simd_make_float4( 0,  0,  0,  1));
+    simd_float4x4 passage_local = simd_matrix(
+                                              simd_make_float4( 1,  0,  0,  0),
+                                              simd_make_float4( 0, -1,  0,  0),
+                                              simd_make_float4( 0,  0, -1,  0),
+                                              simd_make_float4( 0,  0,  0,  1));
     int num_threads = omp_get_max_threads();
     omp_set_num_threads(num_threads);
 #pragma omp parallel for collapse(2)
@@ -176,8 +185,11 @@ simd_float2x3 compute_bounding_box(float* depthmap,
             
             simd::float4 uv = simd_make_float4(depth * j * cx, depth * i * cy, depth, 1);
             simd::float4 local = simd_mul(Kinv, uv);
-            simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
-            simd::float3 global = simd_mul(rotation, rlocal) + translation;
+            local = simd_mul(passage_local, local);
+            simd::float4 global = simd_mul(Rt, local);
+            global = simd_mul(passage_global, global);
+            //simd::float3 rlocal = simd_make_float3(local.x, local.y, local.z);
+            //simd::float3 global = simd_mul(rotation, rlocal) + translation;
             
             
             box.columns[0].x = simd_min(box.columns[0].x, global.x);

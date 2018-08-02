@@ -23,6 +23,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var passage: matrix_float4x4 = matrix_float4x4(
         float4( 0, -1,  0,  0),
         float4( 1,  0,  0,  0),
+        float4( 0,  0,  1,  0),
+        float4( 0,  0,  0,  1))
+    var right: matrix_float4x4 = matrix_float4x4(
+        float4( 1,  0,  0,  0),
+        float4( 0, -1,  0,  0),
         float4( 0,  0, -1,  0),
         float4( 0,  0,  0,  1))
     
@@ -125,6 +130,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         sceneView.session.run(configuration)
         sceneView.session.delegate = self
         
+        //let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0)
+        //let node = SCNNode(geometry: cube)
+        //sceneView.scene.rootNode.addChildNode(node)
         self.deviceType = .iPad
     }
     
@@ -138,11 +146,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // Capture DepthMap
-        let Rt = frame.camera.transform
-        var M = frame.camera.transform
-        let t = float4(Model.sharedInstance.camera.translation, 1)
-        M.columns.3 = t
-        M = simd_transpose(passage) * M * passage
+        var Rt = frame.camera.transform
         switch self.deviceType {
         case .iPad:
             //NSLog("%@", "\(cameraPose)")
@@ -169,27 +173,31 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
              */
             service.send(transform: Rt)
         case .iPhoneX:
-            self.ty.numberOfLines = 1
+            let t = float4(Model.sharedInstance.camera.translation, 1)
+            Rt.columns.3 = t
+            //Rt = simd_transpose(passage) * Rt * passage
+            //Rt = right * Rt
+            //Rt.columns.3 = float4(t.x, t.y, t.z, 1)
+            //M.columns.3 = t
+            self.ty.numberOfLines = 4
             let f = ".2"
-            /*
+            
              self.ty.text = """
-             \(M.columns.0.x.format(f)) \(M.columns.1.x.format(f)) \(M.columns.2.x.format(f)) \(M.columns.3.x.format(f))
-             \(M.columns.0.y.format(f)) \(M.columns.1.y.format(f)) \(M.columns.2.y.format(f)) \(M.columns.3.y.format(f))
-             \(M.columns.0.z.format(f)) \(M.columns.1.z.format(f)) \(M.columns.2.z.format(f)) \(M.columns.3.z.format(f))
-             \(M.columns.0.w.format(f)) \(M.columns.1.w.format(f)) \(M.columns.2.w.format(f)) \(M.columns.3.w.format(f))
+             \(Rt.columns.0.x.format(f)) \(Rt.columns.1.x.format(f)) \(Rt.columns.2.x.format(f)) \(Rt.columns.3.x.format(f))
+             \(Rt.columns.0.y.format(f)) \(Rt.columns.1.y.format(f)) \(Rt.columns.2.y.format(f)) \(Rt.columns.3.y.format(f))
+             \(Rt.columns.0.z.format(f)) \(Rt.columns.1.z.format(f)) \(Rt.columns.2.z.format(f)) \(Rt.columns.3.z.format(f))
+             \(Rt.columns.0.w.format(f)) \(Rt.columns.1.w.format(f)) \(Rt.columns.2.w.format(f)) \(Rt.columns.3.w.format(f))
              """
-             */
+            /*
             self.ty.text = """
             \((M.columns.3.x.format(f)))\t\(M.columns.3.y.format(f))\t\(M.columns.3.z.format(f))
             """
-            Model.sharedInstance.update(translation: M)
-            Model.sharedInstance.update(rotation: M)
+            */
             if let image = frame.capturedDepthData
             {
                 self.myDepthDataRaw =  image
                 let depthDataMap = image.depthDataMap
-                if inRealTime /*|| (!stopComputing)*/ {
-                    self.inRealTime = false
+                if inRealTime {
                     CVPixelBufferLockBaseAddress(depthDataMap, CVPixelBufferLockFlags(rawValue: 0))
                     let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap), to: UnsafeMutablePointer<Float>.self)
                     
@@ -215,17 +223,36 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                          Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.update(data: depthmap)
                     
-                    //let start = Double(CFAbsoluteTimeGetCurrent())
-                    //var end = Double(CFAbsoluteTimeGetCurrent())
-                    DispatchQueue.global().async {
-                        Model.sharedInstance.integrate()
-                        //end = Double(CFAbsoluteTimeGetCurrent())
-                        DispatchQueue.main.async {
-                            //print("\(end - start)")
-                            self.service.send(alert: Constant.Code.Integration.hasFinished)
-                        }
-                    }
+                    self.inRealTime = false
+                    Model.sharedInstance.update(translation: Rt)
+                    Model.sharedInstance.update(rotation: Rt)
                     
+                    let group = DispatchGroup()
+                    group.enter()
+                    DispatchQueue.global().async {
+                        /*
+                        for i in 0..<Model.sharedInstance.image.height {
+                            for j in 0..<Model.sharedInstance.image.width {
+                                let depth = Model.sharedInstance.image.at(row: i, column: j)
+                                let cx: Float = 6
+                                let cy: Float = 6
+                                let homogene = float4(Float(j) * depth * cx, Float(i) * depth * cy, depth, 1)
+                                let K = simd_inverse(Model.sharedInstance.camera.intrinsics)
+                                //let Kmod = simd_transpose(self.passage) * K * self.passage
+                                let local = simd_mul(K, homogene)
+                                let rlocal = self.right * local
+                                let global = simd_mul(Rt, rlocal)
+                                let rglobal = self.passage * global
+                                Model.sharedInstance.graph.append(SCNVector3(rglobal.x, rglobal.y, rglobal.z))
+                                
+                            }
+                        }
+                        */
+                        Model.sharedInstance.integrate()
+                        group.leave()
+                    }
+                    group.wait()
+                    self.service.send(alert: Constant.Code.Integration.hasFinished)
                 }
             }
         }
@@ -243,16 +270,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             service.send(alert: Constant.Code.Integration.reset)
         case .iPhoneX:
             Model.sharedInstance.reinit()
+            Model.sharedInstance.graph = [SCNVector3](repeating: SCNVector3(0,0,0), count: 0)
         }
     }
     
     
     @IBAction func startRealTimeIntegration(_ sender: Any) {
+        //guard let Rt = sceneView.session.currentFrame else { return }
         self.stopComputing = !self.stopComputing
         switch deviceType {
         case .iPad:
-            self.tx.text = "Integrating..."
-            service.send(alert: Constant.Code.Integration.isStarting)
+            if (!self.stopComputing) {
+                self.tx.text = "Integrating..."
+                //service.send(transform: Rt.camera.transform)
+                service.send(alert: Constant.Code.Integration.isStarting)
+            }
         case .iPhoneX:
             self.inRealTime = true
         }
@@ -271,11 +303,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         var N = matrix_identity_float4x4
         switch deviceType {
         case .iPad:
+            
             N = matrix_float4x4(
                 float4( 0, -1,  0,  0),
-                float4(-1,  0,  0,  0),
+                float4( 1,  0,  0,  0),
                 float4( 0,  0,  1,  0),
                 float4( 0,  0,  0,  1))
+ 
+            //return;
         case .iPhoneX:
             N = matrix_float4x4(
                 float4( 0, -1,  0,  0),
@@ -312,12 +347,14 @@ extension ViewController : DOFServiceManagerDelegate {
     
     func integrationFinished(manager: DOFServiceManager) {
         // IPAD : Receive message when integration has been finished
+        //guard let Rt = self.sceneView.session.currentFrame else { return }
         OperationQueue.main.addOperation {
             switch self.deviceType {
             case .iPad:
                 self.timeStep += 1
                 self.tx.text = "Finished : Time \(self.timeStep)"
                 if (!self.stopComputing) {
+                    //self.service.send(transform: Rt.camera.transform)
                     self.service.send(alert: Constant.Code.Integration.isStarting)
                 }
             case .iPhoneX:

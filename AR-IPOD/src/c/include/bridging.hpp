@@ -32,7 +32,7 @@ extern "C" {
 }
 #endif
 
-void bridge_integrateDepthMap(float* depthmap,
+void bridge_integrateDepthMap(const float* depthmap,
                               //const void* centroids,
                               const void* rotation,
                               const void* translation,
