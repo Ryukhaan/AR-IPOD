@@ -13,9 +13,6 @@
 		A52C3D4F2091E00700BA5BDC /* TriTableContents in Resources */ = {isa = PBXBuildFile; fileRef = A52C3D4E2091E00700BA5BDC /* TriTableContents */; };
 		A52C3D652093185000BA5BDC /* bridging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A52C3D632093185000BA5BDC /* bridging.cpp */; };
 		A53502C42109E46F00E158F1 /* openmp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A53502C32109E46F00E158F1 /* openmp.framework */; };
-		A53502CB2109FF2800E158F1 /* libiomp5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A53502C82109FF2700E158F1 /* libiomp5.dylib */; };
-		A53502CC2109FF2800E158F1 /* libomp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A53502C92109FF2800E158F1 /* libomp.dylib */; };
-		A53502CD2109FF2800E158F1 /* libgomp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A53502CA2109FF2800E158F1 /* libgomp.dylib */; };
 		A544222120A5A39D00AE55C7 /* SceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A544222020A5A39D00AE55C7 /* SceneViewController.swift */; };
 		A554D20420CA677F0096DE8A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A554D20320CA677F0096DE8A /* SettingsViewController.swift */; };
 		A57BF49B20F622380017B09C /* DOFServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57BF49A20F622380017B09C /* DOFServiceManager.swift */; };
@@ -91,10 +88,9 @@
 		A52C3D632093185000BA5BDC /* bridging.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bridging.cpp; sourceTree = "<group>"; };
 		A52C3D642093185000BA5BDC /* bridging.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bridging.hpp; sourceTree = "<group>"; };
 		A53502C32109E46F00E158F1 /* openmp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openmp.framework; sourceTree = "<group>"; };
-		A53502C52109F81100E158F1 /* libomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libomp.dylib; path = ../../../../../usr/local/Cellar/llvm/4.0.1/lib/libomp.dylib; sourceTree = "<group>"; };
-		A53502C82109FF2700E158F1 /* libiomp5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiomp5.dylib; path = ../../OpenMP/openmp/build/runtime/src/libiomp5.dylib; sourceTree = "<group>"; };
-		A53502C92109FF2800E158F1 /* libomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libomp.dylib; path = ../../OpenMP/openmp/build/runtime/src/libomp.dylib; sourceTree = "<group>"; };
-		A53502CA2109FF2800E158F1 /* libgomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgomp.dylib; path = ../../OpenMP/openmp/build/runtime/src/libgomp.dylib; sourceTree = "<group>"; };
+		A53502CE21144A6A00E158F1 /* libiomp5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiomp5.dylib; path = ../../OpenMP/openmp/runtime/build/runtime/src/libiomp5.dylib; sourceTree = "<group>"; };
+		A53502CF21144A6A00E158F1 /* libomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libomp.dylib; path = ../../OpenMP/openmp/runtime/build/runtime/src/libomp.dylib; sourceTree = "<group>"; };
+		A53502D021144A6A00E158F1 /* libgomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgomp.dylib; path = ../../OpenMP/openmp/runtime/build/runtime/src/libgomp.dylib; sourceTree = "<group>"; };
 		A544222020A5A39D00AE55C7 /* SceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneViewController.swift; sourceTree = "<group>"; };
 		A554D20320CA677F0096DE8A /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		A57BF46320F4E56E0017B09C /* libpcl_search.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcl_search.a; path = "../../Install/build/CMakeExternals/Build/pcl-ios-device-arm64/lib/libpcl_search.a"; sourceTree = "<group>"; };
@@ -152,9 +148,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A53502C42109E46F00E158F1 /* openmp.framework in Frameworks */,
-				A53502CB2109FF2800E158F1 /* libiomp5.dylib in Frameworks */,
-				A53502CC2109FF2800E158F1 /* libomp.dylib in Frameworks */,
-				A53502CD2109FF2800E158F1 /* libgomp.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,10 +195,9 @@
 		A52C3D6620933EAC00BA5BDC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A53502C52109F81100E158F1 /* libomp.dylib */,
-				A53502CA2109FF2800E158F1 /* libgomp.dylib */,
-				A53502C82109FF2700E158F1 /* libiomp5.dylib */,
-				A53502C92109FF2800E158F1 /* libomp.dylib */,
+				A53502D021144A6A00E158F1 /* libgomp.dylib */,
+				A53502CE21144A6A00E158F1 /* libiomp5.dylib */,
+				A53502CF21144A6A00E158F1 /* libomp.dylib */,
 				A53502C32109E46F00E158F1 /* openmp.framework */,
 				A57BF46420F4E56E0017B09C /* libpcl_common.a */,
 				A57BF46720F4E56E0017B09C /* libpcl_features.a */,

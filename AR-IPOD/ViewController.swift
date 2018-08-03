@@ -48,7 +48,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     var wait: Bool                  = false
     var timeStep: Int               = 0
     
-    var acquisitionNumber: Int      = 4
+    var acquisitionNumber: Int      = 10
+    var tempMatrix: matrix_float4x4 = matrix_identity_float4x4
     //var myDepthStrings = [String]()
     //var myDepthImage: UIImage?
     //var myFocus: CGFloat = 0.5
@@ -87,6 +88,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         
         // Run the view's session
         sceneView.session.run(configuration)
+        //sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWorldOrigin]
         sceneView.session.delegate = self
     }
     
@@ -131,6 +133,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         sceneView.session.run(configuration)
         sceneView.session.delegate = self
         
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWorldOrigin]
         //let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0)
         //let node = SCNNode(geometry: cube)
         //sceneView.scene.rootNode.addChildNode(node)
@@ -172,7 +175,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
              \(M.columns.0.w.format(f))\t \(M.columns.1.w.format(f))\t \(M.columns.2.w.format(f))\t \(M.columns.3.w.format(f))
              """
              */
-            service.send(transform: Rt)
+            //service.send(transform: Rt)
+            self.tempMatrix = Rt
         case .iPhoneX:
             let t = float4(Model.sharedInstance.camera.translation, 1)
             Rt.columns.3 = t
@@ -283,6 +287,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         case .iPad:
             if (!self.stop) {
                 self.tx.text = "Integrating..."
+                service.send(transform: self.tempMatrix)
                 service.send(alert: Constant.Code.Integration.isStarting)
             }
         case .iPhoneX:
@@ -328,6 +333,12 @@ extension ViewController : DOFServiceManagerDelegate {
     
     func connectedDevicesChanged(manager : DOFServiceManager, connectedDevices: [String]) {
         print("Connections: \(connectedDevices)")
+        if (connectedDevices.count > 0) {
+            self.tx.text = "Connected"
+        }
+        else {
+            self.tx.text = "Device Not Found"
+        }
     }
     
     func transformChanged(manager : DOFServiceManager, transform: matrix_float4x4) {
@@ -356,7 +367,7 @@ extension ViewController : DOFServiceManagerDelegate {
                     self.stop = true
                 }
                 if (!self.stop) {
-                    //self.service.send(transform: Rt.camera.transform)
+                    self.service.send(transform: self.tempMatrix)
                     self.service.send(alert: Constant.Code.Integration.isStarting)
                 }
             case .iPhoneX:
