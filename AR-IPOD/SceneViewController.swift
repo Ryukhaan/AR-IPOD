@@ -13,21 +13,21 @@ import SceneKit
 class SceneViewController: UIViewController {
     //@IBOutlet var sceneView: SCNView!
     
-    @IBOutlet var isoLabel: UILabel!
-    @IBOutlet var isolevel: UITextField!
-    @IBOutlet var withoutMesh: UITextField!
+    //@IBOutlet var isoLabel: UILabel!
+    //@IBOutlet var isolevel: UITextField!
+    //@IBOutlet var withoutMesh: UITextField!
     
     @IBOutlet var wireFrame: UISwitch!
     
-    var myModel: Model = Model.sharedInstance
-    var indexOfPointCloud: Int = 0
-    var savedDeltaIndex: Double = 0
-    var savedEpsilonIndex: Double = 0
-    var savedVolumeSizeIndex: Double = 0
-    var savedDatasetIndex: Int = 0
-    var savedFramesIndex: Int = 0
+    var model: Model = Model.sharedInstance
+    var meshIndex: Int = 0
+    //var savedDeltaIndex: Double = 0
+    //var savedEpsilonIndex: Double = 0
+    //var savedVolumeSizeIndex: Double = 0
+    //var savedDatasetIndex: Int = 0
+    //var savedFramesIndex: Int = 0
     var points: [Vector] = [Vector]()
-    var alreadyMeshed: Bool = false
+    var isMeshed: Bool = false
 
     
     override func viewDidLoad() {
@@ -74,7 +74,7 @@ class SceneViewController: UIViewController {
         let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0)
         let node = SCNNode(geometry: cube)
         scene.rootNode.addChildNode(node)
-        indexOfPointCloud = scene.rootNode.childNodes.count - 1
+        meshIndex = scene.rootNode.childNodes.count - 1
         
         // create View
         let sceneView = view as! SCNView
@@ -99,22 +99,25 @@ class SceneViewController: UIViewController {
         // What is that ?
         sceneView.rendersContinuously = true
     }
-
+    
+    /*
     @IBAction func meshWithIso(_ sender: Any) {
         let iso = Float(isolevel.text!)
         DispatchQueue.global().async {
             self.points = extractMesh(model: Model.sharedInstance, isolevel: iso!)
-            self.alreadyMeshed = true
+            self.isMeshed = true
             let pointCloudNode = UIFactory.mesh(from: self.points)
             let scnView = self.view as! SCNView
-            if self.self.indexOfPointCloud > 0 {
-                scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
+            if self.self.meshIndex > 0 {
+                scnView.scene?.rootNode.childNodes[self.meshIndex].removeFromParentNode()
             }
             scnView.scene?.rootNode.addChildNode(pointCloudNode)
-            self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
+            self.meshIndex = (scnView.scene?.rootNode.childNodes.count)! - 1
         }
     }
+    */
     
+    /*
     @IBAction func showOnlyPoints(_ sender: Any) {
         //let iso = Int(withoutMesh.text!)
         let iso = Float(withoutMesh.text!)
@@ -134,20 +137,21 @@ class SceneViewController: UIViewController {
             let points = extractTSDF(model: Model.sharedInstance, isolevel: iso!)
             let pointCloudNode = UIFactory.pointCloud(points: points)
             let scnView = self.view as! SCNView
-            if self.self.indexOfPointCloud > 0 {
-                scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
+            if self.self.meshIndex > 0 {
+                scnView.scene?.rootNode.childNodes[self.meshIndex].removeFromParentNode()
             }
             scnView.scene?.rootNode.addChildNode(pointCloudNode)
-            self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
+            self.meshIndex = (scnView.scene?.rootNode.childNodes.count)! - 1
         }
     }
+    */
     
     @IBAction func export(_ sender: Any) {
         // Export mesh at an isolovel (need to extract mesh once again, not so logical but easiest way)
-        if (!alreadyMeshed) {
+        if (!isMeshed) {
             //let iso = Float(isolevel.text!)
             self.points = extractMesh(model: Model.sharedInstance, isolevel: 0.00)
-            self.alreadyMeshed = true
+            self.isMeshed = true
         }
         let path = IO.Export.toPLYFormat(mesh: points, at: "meshing.ply")!
         let tabPath = [path]
@@ -159,7 +163,7 @@ class SceneViewController: UIViewController {
         // On IphoneX keyboard won't close (so meshWithIso() does not work)
         // Extract mesh with isolevel = 0.0
         DispatchQueue.global().async {
-            self.alreadyMeshed = true
+            self.isMeshed = true
             
             self.points = extractMesh(model: Model.sharedInstance, isolevel: 0.00)
             let pointCloudNode = UIFactory.mesh(from: self.points)
@@ -177,11 +181,11 @@ class SceneViewController: UIViewController {
             */
             
             let scnView = self.view as! SCNView
-            if self.self.indexOfPointCloud > 0 {
-                scnView.scene?.rootNode.childNodes[self.indexOfPointCloud].removeFromParentNode()
+            if self.self.meshIndex > 0 {
+                scnView.scene?.rootNode.childNodes[self.meshIndex].removeFromParentNode()
             }
             scnView.scene?.rootNode.addChildNode(pointCloudNode)
-            self.indexOfPointCloud = (scnView.scene?.rootNode.childNodes.count)! - 1
+            self.meshIndex = (scnView.scene?.rootNode.childNodes.count)! - 1
         }
     }
     
@@ -189,10 +193,10 @@ class SceneViewController: UIViewController {
         // Switch between wireframe mode and texture mode
         let scnView = self.view as! SCNView
         if wireFrame.isOn {
-            scnView.scene?.rootNode.childNodes[indexOfPointCloud].geometry?.firstMaterial?.fillMode = .lines
+            scnView.scene?.rootNode.childNodes[meshIndex].geometry?.firstMaterial?.fillMode = .lines
         }
         else {
-            scnView.scene?.rootNode.childNodes[indexOfPointCloud].geometry?.firstMaterial?.fillMode = .fill
+            scnView.scene?.rootNode.childNodes[meshIndex].geometry?.firstMaterial?.fillMode = .fill
         }
     }
     
@@ -202,10 +206,10 @@ class SceneViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        self.alreadyMeshed = false
+        self.isMeshed = false
         if segue.identifier == "Main" {
             if let destination = segue.destination as? ViewController {
-                destination.myModel = Model.sharedInstance
+                destination.model = Model.sharedInstance
                 //destination.datasetChoice.selectedSegmentIndex  = savedDatasetIndex
                 //destination.datasetSize.selectedSegmentIndex    = savedFramesIndex
             }

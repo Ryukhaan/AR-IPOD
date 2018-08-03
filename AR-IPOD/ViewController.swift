@@ -20,45 +20,46 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     
+    /*
     var passage: matrix_float4x4 = matrix_float4x4(
         float4( 0, -1,  0,  0),
         float4( 1,  0,  0,  0),
         float4( 0,  0,  1,  0),
         float4( 0,  0,  0,  1))
+     */
+    /*
     var right: matrix_float4x4 = matrix_float4x4(
         float4( 1,  0,  0,  0),
         float4( 0, -1,  0,  0),
         float4( 0,  0, -1,  0),
         float4( 0,  0,  0,  1))
-    
-    let systemSoundID: SystemSoundID = 1016
-    var myModel: Model              = Model.sharedInstance
+    */
+    //let systemSoundID: SystemSoundID = 1016
+    var model: Model              = Model.sharedInstance
     //var myDepthImage: DepthImage    = DepthImage(onRealTime: false)
     //var myCamera: Camera            = Camera(onRealTime: false)
     
     let service:    DOFServiceManager   = DOFServiceManager()
     var deviceType: DeviceType      = .iPhoneX
-    let batchSize:  Int             = 3
-    var sizeOfDataset: Int          = 1
-    var nameOfDataset: String       = "tasse-set"
-    var numberOfIterations: Int     = 0
     var timer                       = Double(CFAbsoluteTimeGetCurrent())
-    var inRealTime: Bool            = false
+    var startIntegrating: Bool            = false
     var isSetUp: Bool               = false
-    var stopComputing: Bool         = true
+    var stop: Bool                  = false
+    var wait: Bool                  = false
     var timeStep: Int               = 0
     
-    var myDepthStrings = [String]()
+    var acquisitionNumber: Int      = 4
+    //var myDepthStrings = [String]()
     //var myDepthImage: UIImage?
-    var myFocus: CGFloat = 0.5
-    var mySlope: CGFloat = 4.0
-    var myDepthData: AVDepthData?
+    //var myFocus: CGFloat = 0.5
+    //var mySlope: CGFloat = 4.0
+    //var myDepthData: AVDepthData?
     var myDepthDataRaw: AVDepthData?
-    var myCIImage: CIImage?
+    //var myCIImage: CIImage?
     
-    var previousLocation: SCNVector3 = SCNVector3(0, 0, 0)
-    var cameraPose: matrix_float4x4 = matrix_float4x4(diagonal: float4(1,1,1,1))
-    var oldFrame: matrix_float4x4 = matrix_float4x4(diagonal: float4(1,1,1,1))
+    //var previousLocation: SCNVector3 = SCNVector3(0, 0, 0)
+    //var cameraPose: matrix_float4x4 = matrix_float4x4(diagonal: float4(1,1,1,1))
+    //var oldFrame: matrix_float4x4 = matrix_float4x4(diagonal: float4(1,1,1,1))
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -67,7 +68,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         sceneView.delegate = self
         
         // Show statistics such as fps and timing information
-        sceneView.showsStatistics = true
+        sceneView.showsStatistics = false
         
         // Create a new scene
         let scene = SCNScene()
@@ -197,7 +198,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             {
                 self.myDepthDataRaw =  image
                 let depthDataMap = image.depthDataMap
-                if inRealTime {
+                if startIntegrating {
                     CVPixelBufferLockBaseAddress(depthDataMap, CVPixelBufferLockFlags(rawValue: 0))
                     let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(depthDataMap), to: UnsafeMutablePointer<Float>.self)
                     
@@ -223,7 +224,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                                          Int32(Model.sharedInstance.camera.height))
                     Model.sharedInstance.update(data: depthmap)
                     
-                    self.inRealTime = false
+                    self.startIntegrating = false
                     Model.sharedInstance.update(translation: Rt)
                     Model.sharedInstance.update(rotation: Rt)
                     
@@ -270,30 +271,29 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             service.send(alert: Constant.Code.Integration.reset)
         case .iPhoneX:
             Model.sharedInstance.reinit()
-            Model.sharedInstance.graph = [SCNVector3](repeating: SCNVector3(0,0,0), count: 0)
+            //Model.sharedInstance.graph = [SCNVector3](repeating: SCNVector3(0,0,0), count: 0)
         }
     }
     
     
     @IBAction func startRealTimeIntegration(_ sender: Any) {
         //guard let Rt = sceneView.session.currentFrame else { return }
-        self.stopComputing = !self.stopComputing
+        self.stop = !self.stop
         switch deviceType {
         case .iPad:
-            if (!self.stopComputing) {
+            if (!self.stop) {
                 self.tx.text = "Integrating..."
-                //service.send(transform: Rt.camera.transform)
                 service.send(alert: Constant.Code.Integration.isStarting)
             }
         case .iPhoneX:
-            self.inRealTime = true
+            self.startIntegrating = true
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ScenePoints" {
             if let destination = segue.destination as? SceneViewController {
-                destination.myModel = Model.sharedInstance
+                destination.model = Model.sharedInstance
             }
         }
     }
@@ -303,13 +303,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         var N = matrix_identity_float4x4
         switch deviceType {
         case .iPad:
-            
             N = matrix_float4x4(
                 float4( 0, -1,  0,  0),
                 float4(-1,  0,  0,  0),
                 float4( 0,  0,  1,  0),
                 float4( 0,  0,  0,  1))
- 
             //return;
         case .iPhoneX:
             N = matrix_float4x4(
@@ -353,12 +351,16 @@ extension ViewController : DOFServiceManagerDelegate {
             case .iPad:
                 self.timeStep += 1
                 self.tx.text = "Finished : Time \(self.timeStep)"
-                if (!self.stopComputing) {
+                let halt = (self.timeStep % self.acquisitionNumber == 0)
+                if (halt) {
+                    self.stop = true
+                }
+                if (!self.stop) {
                     //self.service.send(transform: Rt.camera.transform)
                     self.service.send(alert: Constant.Code.Integration.isStarting)
                 }
             case .iPhoneX:
-                self.inRealTime = false
+                self.startIntegrating = false
             }
         }
     }
@@ -368,7 +370,7 @@ extension ViewController : DOFServiceManagerDelegate {
         OperationQueue.main.addOperation {
             switch self.deviceType {
             case .iPhoneX:
-                self.inRealTime = true
+                self.startIntegrating = true
             default:
                 self.tx.text = "Integrating..."
             }

@@ -114,7 +114,7 @@ class SettingsViewController: UIViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "Main" {
             if let destination = segue.destination as? ViewController {
-                destination.myModel = Model.sharedInstance
+                destination.model = Model.sharedInstance
             }
         }
     }
